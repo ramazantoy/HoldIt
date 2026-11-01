@@ -1,0 +1,23 @@
+{
+    "name": "AF.Input.Editor",
+    "rootNamespace": "AF.Input.Editor",
+    "references": [
+        "GUID:49a10fdb401f355489a4b9579e7f2b80",
+        "GUID:43fee209c84a282438ab1e43940bf9d2",
+        "GUID:578899b0abdf32146ac62fb0a54d7ece",
+        "GUID:75469ad4d38634e559750d17036d5f7c",
+        "GUID:2bafac87e7f4b9b418d9448d219b01ab",
+        "GUID:b0214a6008ed146ff8f122a6a9c2f6cc"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

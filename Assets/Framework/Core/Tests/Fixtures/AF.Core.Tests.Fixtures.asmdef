@@ -1,0 +1,19 @@
+{
+    "name": "AF.Core.Tests.Fixtures",
+    "rootNamespace": "AF.Core.Tests",
+    "references": [
+        "GUID:49a10fdb401f355489a4b9579e7f2b80",
+        "GUID:b0214a6008ed146ff8f122a6a9c2f6cc"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": false,
+    "defineConstraints": [
+        "UNITY_INCLUDE_TESTS"
+    ],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

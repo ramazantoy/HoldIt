@@ -1,0 +1,29 @@
+{
+    "name": "AF.Build.Editor",
+    "rootNamespace": "AF.Build.Editor",
+    "references": [
+        "GUID:49a10fdb401f355489a4b9579e7f2b80",
+        "GUID:43fee209c84a282438ab1e43940bf9d2",
+        "GUID:9e24947de15b9834991c9d8411ea37cf",
+        "GUID:69448af7b92c7f342b298e06a37122aa"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": true,
+    "precompiledReferences": [
+        "Mono.Cecil.dll"
+    ],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [
+        {
+            "name": "com.unity.addressables",
+            "expression": "",
+            "define": "AF_ADDRESSABLES"
+        }
+    ],
+    "noEngineReferences": false
+}

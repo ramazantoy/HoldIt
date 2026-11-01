@@ -1,0 +1,20 @@
+{
+    "name": "AF.Save.Editor",
+    "rootNamespace": "AF.Save.Editor",
+    "references": [
+        "GUID:49a10fdb401f355489a4b9579e7f2b80",
+        "GUID:43fee209c84a282438ab1e43940bf9d2",
+        "GUID:36d8d270e681dff4f9581a034259a3ae"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

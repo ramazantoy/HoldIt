@@ -1,0 +1,21 @@
+{
+    "name": "AF.Settings.Editor",
+    "rootNamespace": "AF.Settings.Editor",
+    "references": [
+        "GUID:49a10fdb401f355489a4b9579e7f2b80",
+        "GUID:43fee209c84a282438ab1e43940bf9d2",
+        "GUID:8fa5ac687f97f8341aeb523e72244110",
+        "GUID:578899b0abdf32146ac62fb0a54d7ece"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

@@ -1,0 +1,20 @@
+{
+    "name": "AF.Audio.Editor",
+    "rootNamespace": "AF.Audio.Editor",
+    "references": [
+        "GUID:49a10fdb401f355489a4b9579e7f2b80",
+        "GUID:43fee209c84a282438ab1e43940bf9d2",
+        "GUID:fca9104c0cc68b8458a8133b4ee45458"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
