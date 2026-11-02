@@ -1,22 +1,22 @@
 using System;
 using AF.Core;
+using HoldIt.UI;
 using UnityEngine;
 using UnityEngine.UI;
 
 namespace HoldIt.Menu
 {
     /// <summary>The settings screen (SettingsScreen prefab). Only a back button until M7.</summary>
-    public sealed class SettingsView : MonoBehaviour, ISettingsView
+    public sealed class SettingsView : ScreenView, ISettingsView
     {
         [SerializeField, Required] private Button _back;
 
         public event Action BackClicked;
 
-        public void Show() => gameObject.SetActive(true);
+        public void Show() => ShowScreen();
 
-        public void Hide() => gameObject.SetActive(false);
+        public void Hide() => HideScreen();
 
-        // Awake, not OnEnable: the listener stays through Show and Hide, which toggle this GameObject.
         private void Awake() => _back.onClick.AddListener(() => BackClicked?.Invoke());
     }
 }

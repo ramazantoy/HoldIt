@@ -553,6 +553,9 @@ GameObject:
   - component: {fileID: 2061519583568336064}
   - component: {fileID: 8098366102857526892}
   - component: {fileID: 491650018897434904}
+  - component: {fileID: 6273503479963805245}
+  - component: {fileID: 1435221621029500506}
+  - component: {fileID: 6061583585983043704}
   m_Layer: 5
   m_Name: MainMenuScreen
   m_TagString: Untagged
@@ -630,9 +633,64 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 774bd028e56f82c4184a742979e4e1ae, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Game::HoldIt.Menu.MainMenuView
+  _transition: {fileID: 11400000, guid: 6cb594a274743d04589be63d4101884f, type: 2}
+  _canvas: {fileID: 6273503479963805245}
+  _group: {fileID: 6061583585983043704}
   _play: {fileID: 1323805775630771298}
   _settings: {fileID: 5299871162224051867}
   _quit: {fileID: 7784032293496800929}
+--- !u!223 &6273503479963805245
+Canvas:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6516029623741559579}
+  m_Enabled: 1
+  serializedVersion: 3
+  m_RenderMode: 2
+  m_Camera: {fileID: 0}
+  m_PlaneDistance: 100
+  m_PixelPerfect: 0
+  m_ReceivesEvents: 1
+  m_OverrideSorting: 0
+  m_OverridePixelPerfect: 0
+  m_SortingBucketNormalizedSize: 0
+  m_VertexColorAlwaysGammaSpace: 0
+  m_AdditionalShaderChannelsFlag: 0
+  m_UpdateRectTransformForStandalone: 0
+  m_SortingLayerID: 0
+  m_SortingOrder: 0
+  m_TargetDisplay: 0
+--- !u!114 &1435221621029500506
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6516029623741559579}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dc42784cf147c0c48a680349fa168899, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.GraphicRaycaster
+  m_IgnoreReversedGraphics: 1
+  m_BlockingObjects: 0
+  m_BlockingMask:
+    serializedVersion: 2
+    m_Bits: 4294967295
+--- !u!225 &6061583585983043704
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6516029623741559579}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0
 --- !u!1 &7319098799252812380
 GameObject:
   m_ObjectHideFlags: 0

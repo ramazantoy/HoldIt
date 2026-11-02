@@ -1,12 +1,13 @@
 using System;
 using AF.Core;
+using HoldIt.UI;
 using UnityEngine;
 using UnityEngine.UI;
 
 namespace HoldIt.Menu
 {
     /// <summary>The main menu screen (MainMenuScreen prefab). Forwards the clicks; MenuFlow decides what they do.</summary>
-    public sealed class MainMenuView : MonoBehaviour, IMainMenuView
+    public sealed class MainMenuView : ScreenView, IMainMenuView
     {
         [SerializeField, Required] private Button _play;
         [SerializeField, Required] private Button _settings;
@@ -19,12 +20,11 @@ namespace HoldIt.Menu
         public void Show(bool quitVisible)
         {
             _quit.gameObject.SetActive(quitVisible);
-            gameObject.SetActive(true);
+            ShowScreen();
         }
 
-        public void Hide() => gameObject.SetActive(false);
+        public void Hide() => HideScreen();
 
-        // Awake, not OnEnable: the listeners stay through Show and Hide, which toggle this GameObject.
         private void Awake()
         {
             _play.onClick.AddListener(() => PlayClicked?.Invoke());
