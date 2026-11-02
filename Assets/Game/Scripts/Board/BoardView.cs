@@ -33,7 +33,7 @@ namespace HoldIt.Board
             var space = _grid.Space;
             foreach (var piece in BoardLayout.Build(_grid))
             {
-                var prefab = _tileSet.Prefab(piece.Kind, piece.Gender);
+                var prefab = _tileSet.Prefab(piece);
                 var instance = _resolver.Instantiate(prefab, space.CellCenter(piece.Cell), piece.Facing.Rotation(), transform);
                 instance.name = $"{prefab.name} {piece.Cell}";
             }

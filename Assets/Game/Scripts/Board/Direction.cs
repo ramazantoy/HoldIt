@@ -26,5 +26,8 @@ namespace HoldIt.Board
         public static Quaternion Rotation(this Direction direction) => Quaternion.Euler(0f, 90f * (int)direction, 0f);
 
         public static Direction Opposite(this Direction direction) => (Direction)(((int)direction + 2) % 4);
+
+        /// <summary>The next direction clockwise: North to East, West to North.</summary>
+        public static Direction Clockwise(this Direction direction) => (Direction)(((int)direction + 1) % 4);
     }
 }

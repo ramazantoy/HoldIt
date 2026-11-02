@@ -1,13 +1,14 @@
 using System;
 using AF.Core;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace HoldIt.Board
 {
     /// <summary>
-    /// The prefab behind every <see cref="PieceKind"/>, and the base the board stands on. A piece's root sits at its tile's
-    /// centre on the floor (y = 0); edge pieces are modelled on the tile's north edge (+Z). Floors are 0.1 thick, so their
-    /// bottom is at y = -0.1. Swapping a prefab here restyles every map.
+    /// The prefab behind every <see cref="PieceKind"/> (wall blocks one per <see cref="WallShape"/>), and the base the board
+    /// stands on. A piece's root sits at its tile's centre on the floor (y = 0); edge pieces are modelled on the tile's north
+    /// edge (+Z). Floors are 0.1 thick, so their bottom is at y = -0.1. Swapping a prefab here restyles every map.
     /// </summary>
     [CreateAssetMenu(menuName = "HoldIt/Board/Tile Set", fileName = "TileSet")]
     public sealed class TileSet : ScriptableObject
@@ -15,12 +16,22 @@ namespace HoldIt.Board
         [SerializeField, Required] private GameObject _floor;
         [SerializeField, Required] private GameObject _lobbyFloor;
         [SerializeField, Required] private GameObject _entranceFloor;
-        [SerializeField, Required] private GameObject _wallBlock;
+
+        [SerializeField, Required, FormerlySerializedAs("_wallBlock")]
+        private GameObject _wallBlockSingle;
+
+        [SerializeField, Required] private GameObject _wallBlockEnd;
+        [SerializeField, Required] private GameObject _wallBlockStraight;
+        [SerializeField, Required] private GameObject _wallBlockCorner;
+        [SerializeField, Required] private GameObject _wallBlockT;
+        [SerializeField, Required] private GameObject _wallBlockCross;
         [SerializeField, Required] private GameObject _narrowPosts;
         [SerializeField, Required] private GameObject _buildingFloorMale;
         [SerializeField, Required] private GameObject _buildingFloorFemale;
         [SerializeField, Required] private GameObject _buildingWallMale;
         [SerializeField, Required] private GameObject _buildingWallFemale;
+        [SerializeField, Required] private GameObject _buildingCornerMale;
+        [SerializeField, Required] private GameObject _buildingCornerFemale;
         [SerializeField, Required] private GameObject _doorwayMale;
         [SerializeField, Required] private GameObject _doorwayFemale;
 
@@ -41,24 +52,37 @@ namespace HoldIt.Board
         public float BaseDepth => _baseDepth;
         public float BaseTop => _baseTop;
 
-        public GameObject Prefab(PieceKind kind, Gender? gender) => kind switch
+        public GameObject Prefab(PiecePlacement piece) => piece.Kind switch
         {
             PieceKind.Floor => _floor,
             PieceKind.LobbyFloor => _lobbyFloor,
             PieceKind.EntranceFloor => _entranceFloor,
-            PieceKind.WallBlock => _wallBlock,
+            PieceKind.WallBlock => WallBlock(piece.Shape),
             PieceKind.NarrowPosts => _narrowPosts,
-            PieceKind.BuildingFloor => Gendered(kind, gender, _buildingFloorMale, _buildingFloorFemale),
-            PieceKind.BuildingWall => Gendered(kind, gender, _buildingWallMale, _buildingWallFemale),
-            PieceKind.Doorway => Gendered(kind, gender, _doorwayMale, _doorwayFemale),
-            _ => throw new ArgumentOutOfRangeException(nameof(kind), kind, null),
+            PieceKind.BuildingFloor => Gendered(piece, _buildingFloorMale, _buildingFloorFemale),
+            PieceKind.BuildingWall => Gendered(piece, _buildingWallMale, _buildingWallFemale),
+            PieceKind.BuildingCorner => Gendered(piece, _buildingCornerMale, _buildingCornerFemale),
+            PieceKind.Doorway => Gendered(piece, _doorwayMale, _doorwayFemale),
+            _ => throw new ArgumentOutOfRangeException(nameof(piece), piece.Kind, null),
         };
 
-        private static GameObject Gendered(PieceKind kind, Gender? gender, GameObject male, GameObject female)
+        private GameObject WallBlock(WallShape? shape) => shape switch
         {
-            if (!gender.HasValue)
-                throw new ArgumentException($"{kind} needs a gender.", nameof(gender));
-            return gender.Value == Gender.Male ? male : female;
+            WallShape.Single => _wallBlockSingle,
+            WallShape.End => _wallBlockEnd,
+            WallShape.Straight => _wallBlockStraight,
+            WallShape.Corner => _wallBlockCorner,
+            WallShape.T => _wallBlockT,
+            WallShape.Cross => _wallBlockCross,
+            null => throw new ArgumentException($"{PieceKind.WallBlock} needs a shape.", nameof(shape)),
+            _ => throw new ArgumentOutOfRangeException(nameof(shape), shape, null),
+        };
+
+        private static GameObject Gendered(PiecePlacement piece, GameObject male, GameObject female)
+        {
+            if (!piece.Gender.HasValue)
+                throw new ArgumentException($"{piece.Kind} needs a gender.", nameof(piece));
+            return piece.Gender.Value == Gender.Male ? male : female;
         }
     }
 }

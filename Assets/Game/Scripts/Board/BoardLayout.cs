@@ -5,9 +5,10 @@ using UnityEngine;
 namespace HoldIt.Board
 {
     /// <summary>
-    /// Turns a map into the pieces that show it. Each tile gets its floor (a wall tile its block, a door tile its doorway);
-    /// a narrow tile also gets posts across its passage; a restroom gets an outer wall on every edge of its rectangle except
-    /// the one its door opens to. Assumes a map that passes <see cref="MapCheck"/>.
+    /// Turns a map into the pieces that show it. Each tile gets its floor (a wall tile its block, shaped by the wall tiles
+    /// next to it; a door tile its doorway); a narrow tile also gets posts across its passage; a restroom gets an outer wall
+    /// on every edge of its rectangle except the one its door opens to, and a corner post where two of those walls meet.
+    /// Assumes a map that passes <see cref="MapCheck"/>.
     /// </summary>
     public static class BoardLayout
     {
@@ -23,7 +24,7 @@ namespace HoldIt.Board
                     AddTile(grid, new Cell(col, row), pieces);
             }
             foreach (Gender gender in Enum.GetValues(typeof(Gender)))
-                AddBuildingWalls(grid, gender, pieces);
+                AddBuilding(grid, gender, pieces);
             return pieces;
         }
 
@@ -42,7 +43,8 @@ namespace HoldIt.Board
                     pieces.Add(new PiecePlacement(PieceKind.EntranceFloor, cell));
                     break;
                 case TileType.Wall:
-                    pieces.Add(new PiecePlacement(PieceKind.WallBlock, cell));
+                    var (shape, facing) = WallAutotile.Pick(WallSides(grid, cell));
+                    pieces.Add(new PiecePlacement(PieceKind.WallBlock, cell, facing, shape: shape));
                     break;
                 case TileType.Narrow:
                     pieces.Add(new PiecePlacement(PieceKind.Floor, cell));
@@ -57,7 +59,20 @@ namespace HoldIt.Board
             }
         }
 
-        private static void AddBuildingWalls(ITileGrid grid, Gender gender, List<PiecePlacement> pieces)
+        // Only wall tiles join a wall block; narrow posts, restrooms and the map's edge leave its side finished.
+        private static int WallSides(ITileGrid grid, Cell cell)
+        {
+            var sides = 0;
+            foreach (var direction in Directions.All)
+            {
+                var next = cell.Step(direction);
+                if (grid.InBounds(next) && grid.At(next).Type == TileType.Wall)
+                    sides |= WallAutotile.Bit(direction);
+            }
+            return sides;
+        }
+
+        private static void AddBuilding(ITileGrid grid, Gender gender, List<PiecePlacement> pieces)
         {
             var building = grid.BuildingOf(gender);
             if (building.width == 0)
@@ -66,19 +81,40 @@ namespace HoldIt.Board
             var doors = grid.DoorsOf(gender);
             var door = doors.Count > 0 ? doors[0] : new Cell(-1, -1);
             var opening = doors.Count > 0 ? Opening(grid, door, gender) : Direction.South;
+            bool HasWall(Cell cell, Direction edge) => !(cell == door && edge == opening);
+
             foreach (var position in building.allPositionsWithin)
             {
                 var cell = new Cell(position.x, position.y);
                 foreach (var direction in Directions.All)
                 {
                     var next = cell.Step(direction);
-                    if (building.Contains(new Vector2Int(next.Col, next.Row)))
-                        continue;
-                    if (cell == door && direction == opening)
-                        continue;
-                    pieces.Add(new PiecePlacement(PieceKind.BuildingWall, cell, direction, gender));
+                    if (!building.Contains(new Vector2Int(next.Col, next.Row)) && HasWall(cell, direction))
+                        pieces.Add(new PiecePlacement(PieceKind.BuildingWall, cell, direction, gender));
                 }
             }
+
+            // A corner post facing d stands where the corner tile's d and next-clockwise edges meet; both need a wall.
+            foreach (var facing in Directions.All)
+            {
+                var corner = CornerTile(building, facing);
+                if (HasWall(corner, facing) && HasWall(corner, facing.Clockwise()))
+                    pieces.Add(new PiecePlacement(PieceKind.BuildingCorner, corner, facing, gender));
+            }
+        }
+
+        // The building's tile in the corner between the facing's edge and the next one clockwise (North: north-east).
+        private static Cell CornerTile(RectInt building, Direction facing)
+        {
+            var east = building.xMax - 1;
+            var south = building.yMax - 1;
+            return facing switch
+            {
+                Direction.North => new Cell(east, building.yMin),
+                Direction.East => new Cell(east, south),
+                Direction.South => new Cell(building.xMin, south),
+                _ => new Cell(building.xMin, building.yMin),
+            };
         }
 
         // The posts stand across the passage: east and west of it (facing North) unless both its north and south sides are
