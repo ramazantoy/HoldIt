@@ -12,10 +12,12 @@ namespace HoldIt.Intro
     /// </summary>
     public sealed class IntroScope : SceneScope
     {
-        [SerializeField, Min(0f), Tooltip("The intro shows at least this long; the menu opens once the boot steps are done too.")]
-        private float _minimumSeconds = 2f;
+        [SerializeField, Required] private IntroVideoView _video;
 
-        protected override void ConfigureScene(IContainerBuilder builder, MessagePipeOptions messagePipe) =>
-            builder.RegisterEntryPoint<IntroFlow>().WithParameter(_minimumSeconds);
+        protected override void ConfigureScene(IContainerBuilder builder, MessagePipeOptions messagePipe)
+        {
+            builder.RegisterComponent(_video).As<IIntroVideo>();
+            builder.RegisterEntryPoint<IntroFlow>();
+        }
     }
 }
