@@ -38,8 +38,8 @@ cherry-pick'ler çakışmasın diye.
   - Özellikler birbirini interface ve MessagePipe mesajıyla tanır (aşağıdaki mimari kurallar).
   - Oynanış kodu yalnız `IPointerInput`'u bilir (Point/Press, `Gameplay` map'i); legacy `Input.*` kullanılmaz.
   - Dosyalar küçük ve tek amaçlı olur. Template API'si uydurulmaz; eksikse söylenir ve öneri yapılır.
-  - Ekranlar ve HUD Canvas (uGUI) + TextMeshPro ile, her ekran bir prefab. Sabır barı ve konuşma balonu dünyadaki
-    nesnelerdir (Game.md → UI).
+  - Ekranlar ve HUD Canvas (uGUI) + TextMeshPro ile, her ekran bir prefab; tam ekranlar `ScreenView`'dan türer (fade,
+    gizliyken raycast ve çizim yok). Sabır barı ve konuşma balonu dünyadaki nesnelerdir (Game.md → UI).
   - Repo public olacak: asset yalnız CC0 ya da kendi işin olur; font OFL olabilir, `OFL.txt` yanında durur. Ücretli paket
     (Asset Store, Synty) repoya girmez.
 
