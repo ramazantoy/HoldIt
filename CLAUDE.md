@@ -38,14 +38,15 @@ cherry-pick'ler çakışmasın diye.
   - Özellikler birbirini interface ve MessagePipe mesajıyla tanır (aşağıdaki mimari kurallar).
   - Oynanış kodu yalnız `IPointerInput`'u bilir (Point/Press, `Gameplay` map'i); legacy `Input.*` kullanılmaz.
   - Dosyalar küçük ve tek amaçlı olur. Template API'si uydurulmaz; eksikse söylenir ve öneri yapılır.
-  - UI Toolkit yalnız ekranlar ve HUD için kullanılır. Sabır barı ve konuşma balonu dünyadaki nesnelerdir (Game.md → UI).
+  - Ekranlar ve HUD Canvas (uGUI) + TextMeshPro ile, her ekran bir prefab. Sabır barı ve konuşma balonu dünyadaki
+    nesnelerdir (Game.md → UI).
   - Repo public olacak: asset yalnız CC0 ya da kendi işin olur; font OFL olabilir, `OFL.txt` yanında durur. Ücretli paket
     (Asset Store, Synty) repoya girmez.
 
 ### Milestone'lar
 | # | İçerik | Bitti sayılır |
 |---|---|---|
-| M0 | Namespace `HoldIt` geçişi, kimlik (Company/Product/identifier/Version), portre yön. Intro: splash videosu oynar, boot da bitince Menu'ye geçer. Oyun fontu (Baloo 2). Placeholder ana menü, UI Toolkit'in ilk denemesi: Play → Gameplay (şimdilik boş sahne), Settings (boş ekran), Quit (yalnız masaüstü); Gameplay'den Menu'ye dönüş. `IPointerInput`: Point/Press `Gameplay` map'inde, UI üstünde başlayan basış yok sayılır, Gameplay'de dokunuş logu. Android geri tuşu (Esc ↔ `Gameplay/Pause` + `UI/Cancel` kararı). Menü metinleri şimdilik mevcut Localization tablosuna eklenir | Editor'da Intro → Menu → Gameplay → Menu akışı; Game.md'deki "M0'da doğrulanacaklar" (UI Toolkit) cevaplanır. Telefonda Development build, geri tuşu ve `adb logcat`'teki dokunuşlar Android cihaz bulununca (Game.md → Açık → Cihaz testi) |
+| M0 | Namespace `HoldIt` geçişi, kimlik (Company/Product/identifier/Version), portre yön. Intro: splash videosu oynar, boot da bitince Menu'ye geçer. Oyun fontu (Baloo 2). Placeholder ana menü (UI Toolkit'le denendi, Canvas'a dönüldü): Play → Gameplay (şimdilik boş sahne), Settings (boş ekran), Quit (yalnız masaüstü); Gameplay'den Menu'ye dönüş. `IPointerInput`: Point/Press `Gameplay` map'inde, UI üstünde başlayan basış yok sayılır, Gameplay'de dokunuş logu. Android geri tuşu (Esc ↔ `Gameplay/Pause` + `UI/Cancel` kararı). Menü metinleri şimdilik mevcut Localization tablosuna eklenir | Editor'da Intro → Menu → Gameplay → Menu akışı; Game.md'deki "M0'da doğrulanacaklar" (UI Toolkit) cevaplanır. Telefonda Development build, geri tuşu ve `adb logcat`'teki dokunuşlar Android cihaz bulununca (Game.md → Açık → Cihaz testi) |
 | M0b | Localization en + tr: örnek tablolar oyunun tablolarıyla değişir, Specific seçici belirlenir. "Yeni oyun kontrol listesi"nin kalan adımları ve "İlk mobil oyunda doğrulanacaklar"dan bu build'le bakılabilenler (ikisi de `decisions/README.md` → "Template doğrulaması") | Telefon diline göre en/tr açılır; kontrol listesi ve mobil doğrulama sonuçları decisions'a yazılır |
 | M1 | Grid + harita asset'i + portre kamera sığdırma | Harita 1 farklı en-boy oranlarında doğru görünür |
 | M2 | Yol çizme + LineRenderer | Cihazda çizilir ve geri alınır, duvarlara uyulur |
