@@ -22,6 +22,30 @@ MonoBehaviour:
     m_Localized: Play
     m_Metadata:
       m_Items: []
+  - m_Id: 182436367183872
+    m_Localized: Settings
+    m_Metadata:
+      m_Items: []
+  - m_Id: 182436467847168
+    m_Localized: Quit
+    m_Metadata:
+      m_Items: []
+  - m_Id: 182436467847169
+    m_Localized: Settings
+    m_Metadata:
+      m_Items: []
+  - m_Id: 182436472041472
+    m_Localized: Coming soon
+    m_Metadata:
+      m_Items: []
+  - m_Id: 182436472041473
+    m_Localized: Back
+    m_Metadata:
+      m_Items: []
+  - m_Id: 182436472041474
+    m_Localized: Menu
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

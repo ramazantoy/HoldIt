@@ -19,6 +19,30 @@ MonoBehaviour:
     m_Key: menu.play
     m_Metadata:
       m_Items: []
+  - m_Id: 182436367183872
+    m_Key: menu.settings
+    m_Metadata:
+      m_Items: []
+  - m_Id: 182436467847168
+    m_Key: menu.quit
+    m_Metadata:
+      m_Items: []
+  - m_Id: 182436467847169
+    m_Key: settings.title
+    m_Metadata:
+      m_Items: []
+  - m_Id: 182436472041472
+    m_Key: settings.empty
+    m_Metadata:
+      m_Items: []
+  - m_Id: 182436472041473
+    m_Key: common.back
+    m_Metadata:
+      m_Items: []
+  - m_Id: 182436472041474
+    m_Key: hud.menu
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

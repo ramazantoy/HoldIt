@@ -1,0 +1,21 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="False">
+    <Style src="Common.uss" />
+    <ui:VisualElement name="screen" class="screen">
+        <ui:Label name="title" text="HoldIt" class="title" />
+        <ui:Button name="play-button" text="Play" class="menu-button">
+            <Bindings>
+                <UnityEngine.Localization.LocalizedString property="text" table="GUID:fcd9cf219da082142a209d0cc47936b3" entry="Id(1352413184)" />
+            </Bindings>
+        </ui:Button>
+        <ui:Button name="settings-button" text="Settings" class="menu-button">
+            <Bindings>
+                <UnityEngine.Localization.LocalizedString property="text" table="GUID:fcd9cf219da082142a209d0cc47936b3" entry="Id(182436367183872)" />
+            </Bindings>
+        </ui:Button>
+        <ui:Button name="quit-button" text="Quit" class="menu-button">
+            <Bindings>
+                <UnityEngine.Localization.LocalizedString property="text" table="GUID:fcd9cf219da082142a209d0cc47936b3" entry="Id(182436467847168)" />
+            </Bindings>
+        </ui:Button>
+    </ui:VisualElement>
+</ui:UXML>

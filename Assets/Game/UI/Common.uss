@@ -1,0 +1,79 @@
+/* Shared styles of every screen. Placeholder colours until the art pass (M9). */
+
+/* Each screen's full-size container. SafeArea pads it away from notches and cutouts. Its text inherits the game font
+   (Baloo 2, SIL Open Font License, Fonts/OFL.txt); -unity-font-style: bold picks the Bold face. */
+.screen {
+    -unity-font-definition: url("Fonts/Baloo2-Regular SDF.asset");
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    align-items: center;
+    justify-content: center;
+    background-color: rgb(32, 36, 48);
+}
+
+/* The HUD lets the game show through; its container has picking-mode Ignore in the UXML, so touches pass to the game. */
+.hud {
+    align-items: flex-start;
+    justify-content: flex-start;
+    background-color: rgba(0, 0, 0, 0);
+}
+
+.title {
+    font-size: 140px;
+    -unity-font-style: bold;
+    color: rgb(255, 214, 102);
+    margin-bottom: 120px;
+}
+
+.heading {
+    font-size: 96px;
+    -unity-font-style: bold;
+    color: rgb(255, 255, 255);
+    margin-bottom: 60px;
+}
+
+.body-text {
+    font-size: 52px;
+    color: rgb(200, 205, 220);
+    margin-bottom: 80px;
+}
+
+.menu-button {
+    width: 600px;
+    height: 150px;
+    margin-top: 20px;
+    margin-bottom: 20px;
+    font-size: 60px;
+    -unity-font-style: bold;
+    color: rgb(255, 255, 255);
+    background-color: rgb(70, 130, 220);
+    border-width: 0;
+    border-radius: 32px;
+}
+
+.menu-button:hover {
+    background-color: rgb(90, 150, 240);
+}
+
+.menu-button:active {
+    background-color: rgb(50, 105, 190);
+}
+
+.hud-button {
+    width: 260px;
+    height: 120px;
+    margin: 32px;
+    font-size: 48px;
+    -unity-font-style: bold;
+    color: rgb(255, 255, 255);
+    background-color: rgba(20, 24, 32, 0.8);
+    border-width: 0;
+    border-radius: 24px;
+}
+
+.hud-button:active {
+    background-color: rgba(50, 60, 80, 0.9);
+}
