@@ -1,0 +1,29 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9caa15882dff0954990d81ec42f26855, type: 3}
+  m_Name: TileSet
+  m_EditorClassIdentifier: Game::HoldIt.Board.TileSet
+  _floor: {fileID: 464493897459528998, guid: ded0b96e726ca804dab36f833ba1693a, type: 3}
+  _lobbyFloor: {fileID: 4231473009316153421, guid: 2ee57bc8158520540af9354701ab8b52, type: 3}
+  _entranceFloor: {fileID: 6833120795558492169, guid: eba883f978424ee4b86fac38d5e62184, type: 3}
+  _wallBlock: {fileID: 1318211316744864503, guid: 2657cda6cd7eb994ba76480c4c4775e0, type: 3}
+  _narrowPosts: {fileID: 5978525504959466002, guid: 45137a6045dc0564b83acf531a1c8128, type: 3}
+  _buildingFloorMale: {fileID: 7428428693682080962, guid: f08a080daf0c4f34eaf4984d03ffb444, type: 3}
+  _buildingFloorFemale: {fileID: 6556330272868622205, guid: 0563d9268f1a0a947821011c29d0cab6, type: 3}
+  _buildingWallMale: {fileID: 6649188068577040382, guid: 224d2067d6fe5fb4987432c30d2646fe, type: 3}
+  _buildingWallFemale: {fileID: 8960529902176515624, guid: 8e3331b6a9e747c4ea67b5d6d6d7a882, type: 3}
+  _doorwayMale: {fileID: 7481558444149982344, guid: 6207c5789ef9f984bb454466a2ee3d23, type: 3}
+  _doorwayFemale: {fileID: 8759875967517221313, guid: 8c21bba78e9ef57429c99872836387ae, type: 3}
+  _baseSlab: {fileID: 6780730277846166054, guid: ba2b34aafeb42da41a7c6eba040461eb, type: 3}
+  _baseMargin: 0.4
+  _baseDepth: 0.6
+  _baseTop: -0.1
