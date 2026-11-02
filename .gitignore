@@ -128,3 +128,6 @@ InitTestScene*.unity*
 # Pipeline package: settings baked into development builds and deleted when the build ends; the empty folders stay
 /[Aa]ssets/[Ss]ettings/[Pp]ipeline/
 /[Aa]ssets/[Ss]ettings/[Pp]ipeline.meta
+
+# Game design document and HTML prototype: local working notes, not part of the repository
+/Design/

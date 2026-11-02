@@ -1,20 +1,59 @@
 # CLAUDE.md
 
-Unity 6.3 LTS + URP template'i. Sonraki oyunlara (PC ve mobil) hızlı başlangıç sağlayan hazır sistemler: DI context, GameManager,
-SceneManager, Save, Audio, Input, Pool, Settings, Localization, Platform, Build. Kararlar ve gerekçeleri: `.claude/decisions/` (indeks `README.md`, modül başına dosya).
-UI ve oyuna özel oynanış sistemleri template'e girmez.
+HoldIt: Unity 6.3 LTS + URP ile portre bir Android oyunu. Yukarıdan bakışlı tuvalet telaşı: erkek ve kadın karakterler
+(Thin/Normal/Fat) gelir, sabır barları dolar. Oyuncu parmağıyla karakterden kare kare yol çizer. Yanlış kapı, dar geçit
+(Fat için) ya da dolu kare karakteri geri döndürür. Doğru tuvalette karakter boş kabine girer ya da kapıda bekleyip kapıyı
+tıkar. Bar dolarsa kaza olur, üç kazada oyun biter. Oyun mağazaya çıkmaz; amaç public GitHub portföyü ve template'in sahada
+denenmesi. Framework template'ten gelir: DI context, GameManager, SceneManager, Save, Audio, Input, Pool, Settings,
+Localization, Platform, Build. Framework kararları `.claude/decisions/`'ta (indeks `README.md`, modül başına dosya), oyunun
+kararları `.claude/decisions/Game.md`'de.
 
-**Durum:** F1 (framework iskeleti) 2026-10-29'da, inceleme düzeltmeleri ve F2 Save 2026-10-30'da, F3 Input 2026-10-31'de
-commit edildi. F4 Build + Platform Windows IL2CPP build'leriyle doğrulandı ve 2026-10-31'de commit edildi (`315b0c6`).
-F1–F3 kodunun yeni stile toplu dönüşümü 2026-10-31'de commit edildi (`e03f4a0`). Unity 6000.3.27f2 yükseltmesi (`3dfd061`)
-ve F5 SceneManager + intro (`de5f091`), F6 Pool + tween yaşam döngüsü + Audio (`0ef8253`) commit edildi. F7 Settings +
-Localization (`183cb96`) commit edildi. F8 Steam ertelendi (yalnız Steam oyunu yapılırsa). Template doğrulaması + README
-(EN/TR) 2026-11-01'de bitti (393 test, Windows IL2CPP Release build, bağımsız inceleme), commit bekliyor; kayıt
-`.claude/decisions/README.md` → "Template doğrulaması". Faz sırası aynı dosyada → "Fazlar".
-Faz başlarken plan moduna geç.
+**Durum:** 2026-11-02'de template'ten açıldı. Fork `a949bbd`: F1–F7 ve template doğrulaması; framework geçmişi
+`.claude/decisions/README.md` → "Fazlar". Context kuruldu, sıradaki iş M0. Milestone başlarken plan moduna geç.
 
-**Yapı:** framework `Assets/Framework/` (`AF.*` namespace ve asmdef'ler, modül başına `<Modül>/{Runtime,Editor,Tests}`), oyun
-`Assets/Game/` (`Game` asmdef). Framework oyuna referans vermez. İnsan için doküman: `Assets/Framework/Documentation~/`.
+**Yapı:** framework `Assets/Framework/` (`AF.*` namespace ve asmdef'ler, modül başına `<Modül>/{Runtime,Editor,Tests}`).
+Oyun `Assets/Game/`: asmdef `Game`, namespace `HoldIt` (M0'da `Game`'den geçer), özellik klasörü `HoldIt.<Özellik>`.
+Testler `Assets/Game/Tests/` (`Game.Tests`), editor kodu ilk editor script'iyle `Game.Editor`. Framework oyuna referans
+vermez. İnsan için doküman: `Assets/Framework/Documentation~/`. Tasarım `Design/`'da (gitignored, yalnız yerel).
+
+## HoldIt
+Oyuna özel her şey bu bölümde ve dosyanın başında durur. Aşağıdaki bölümler template'le aynı kalır; template'ten gelen
+cherry-pick'ler çakışmasın diye.
+- **Dil:** kullanıcıyla Türkçe konuşulur. CLAUDE.md, `.claude/` ve `Design/` Türkçe yazılır. Kod, yorum, commit mesajı ve
+  framework dokümanı İngilizce.
+- **Kaynaklar:** `Design/GDD.md` yol gösterir, parçalarından vazgeçilebilir. `Design/prototype/index.html` (three.js)
+  davranış ve tuning referansıdır, kodu port edilmez. İkisi ayrışırsa kullanıcıya sor (bilinen farklar: Game.md → Açık).
+  Çelişkide CLAUDE.md ve decisions GDD'nin önüne geçer.
+- **Template:** framework burada yamanmaz. Kapsam: `Assets/Framework/`, `.claude/scripts/`, `.claude/decisions/`'ın
+  framework dosyaları ve bu dosyanın HoldIt dışı bölümleri. Bulunan sorun Game.md → "Template'e gidenler"e yazılır,
+  template'te düzeltilir, sonra `git fetch template` + `git cherry-pick -x <sha>` ile alınır.
+- **Faz = milestone:** template'in faz kuralları milestone'lar için de geçerli. Her milestone oynanabilir halde biter. Commit
+  mesajı kısa, emir kipinde ve İngilizce olur.
+- **Oyun kuralları:**
+  - Kurallar (grid, yol, sabır, kabin, spawn) saf C# ile yazılır; MonoBehaviour yalnız view içindir.
+  - Her kural sınıfının EditMode testi aynı milestone'da yazılır. Her test dosyasında kod bir kez bilerek bozulur; test yine
+    geçiyorsa işe yaramıyordur.
+  - Ayarlanabilir her sayı ScriptableObject config'de durur.
+  - Özellikler birbirini interface ve MessagePipe mesajıyla tanır (aşağıdaki mimari kurallar).
+  - Oynanış kodu yalnız `IPointerInput`'u bilir (Point/Press, `Gameplay` map'i); legacy `Input.*` kullanılmaz.
+  - Dosyalar küçük ve tek amaçlı olur. Template API'si uydurulmaz; eksikse söylenir ve öneri yapılır.
+  - UI Toolkit yalnız ekranlar ve HUD için kullanılır. Sabır barı ve konuşma balonu dünyadaki nesnelerdir (Game.md → UI).
+  - Repo public olacak: asset yalnız CC0 ya da kendi modelin olur. Ücretli paket (Asset Store, Synty) repoya girmez.
+
+### Milestone'lar
+| # | İçerik | Bitti sayılır |
+|---|---|---|
+| M0 | Kimlik (Company/Product/identifier/Version), namespace `HoldIt`, portre yön, Android Development build. `IPointerInput`: Point/Press `Gameplay` map'inde, dokunuş logu. Intro uyarlaması, placeholder ana menü (UI Toolkit'in ilk denemesi), Intro → Menu → Gameplay akışı. Android geri tuşu (Esc ↔ `Gameplay/Pause` + `UI/Cancel` kararı). Localization en + tr: örnek tablolar oyunun tablolarıyla değişir, Specific seçici belirlenir. "Yeni oyun kontrol listesi"nin kalan adımları ve "İlk mobil oyunda doğrulanacaklar"dan bu build'le bakılabilenler (ikisi de `decisions/README.md` → "Template doğrulaması") | Oyun telefonda açılır; akış ve geri tuşu çalışır; dokunuşlar `adb logcat`'te görünür; doğrulama sonuçları decisions'a yazılır |
+| M1 | Grid + harita asset'i + portre kamera sığdırma | Harita 1 farklı en-boy oranlarında doğru görünür |
+| M2 | Yol çizme + LineRenderer | Cihazda çizilir ve geri alınır, duvarlara uyulur |
+| M3 | Karakter yolu yürür, state machine | Bir karakter çizilen yolu yürür |
+| M4 | Adım doğrulama + geri dönüş + balonlar | Bütün engel nedenleri çalışır |
+| M5 | Tuvaletler, kabinler, kuyruk | Doğru giriş, meşgul ışıkları, kapı tıkama |
+| M6 | Spawn, sabır, kaza, can, skor | Tam döngü oynanır, oyun sonu |
+| M7 | Harita seçimi, ayarlar (ses, haptik, dil), en iyi skor kaydı | Tam oyun akışı |
+| M8 | Harita 2 ve 3, tuning turu | Bütün haritalar baştan sona oynanır |
+| M9 | Juice: PrimeTween animasyonları, sesler, haptik | Cihazda iyi hissettirir |
+| M10 | Eksik kalan testler, README EN/TR (GIF + diyagram), Release APK GitHub Releases'te (APK git'e girmez) | Public repo hazır |
 
 ## Çalışma şekli
 - Fazlarla ilerliyoruz. Her seferinde yalnız bir faz planlanır; onaylanınca uygulanır, bitince durulur.
@@ -81,9 +120,8 @@ Faz başlarken plan moduna geç.
   olanları `DestroyImmediate`.
 - **Build:** yalnız `AF.Build.Editor.Builder` (menü `AF/Build`). CLI: `.claude/scripts/BuildCli.cs` (`ClaudeBuild.Development`)
   + `script run --timeout 3600`, Bash arka planda (Windows IL2CPP ~12 dk; Editor bu sürede komut almaz). Pipeline `build run`
-  ve Build Profiles penceresi `BuildGuard` ile reddedilir. Rapor `Builds/<Platform>/<Kind>-report.txt`. Template'in kendi
-  Release build'i `new BuildRequest(BuildKind.Release) { AllowPlaceholderIdentity = true }` ister
-  (`ClaudeBuild.ReleaseWithPlaceholderNames`).
+  ve Build Profiles penceresi `BuildGuard` ile reddedilir. Rapor `Builds/<Platform>/<Kind>-report.txt`. Release
+  `ClaudeBuild.Release`; placeholder Company/Product ile reddedilir (HoldIt'in kimliği M0'da).
 - Build URP'nin `PC_RPAsset` prefilter alanlarını ve global ayarlarını yeniden yazar (rapor "build changed project files"
   diye listeler); diff'e bak, kendiliğinden commit'e girmesin. Builder Addressables içeriğini kendisi kurar (~25 sn, rapora not);
   Addressables'ın "Build Addressables on Player Build" ayarı "Do not build" kalır (değilse build hatası). Localization ayar
@@ -253,9 +291,9 @@ Faz başlarken plan moduna geç.
 - Play: `.claude/scripts/PlayMode.cs` (`ClaudePlayMode.Enter` / `EnterPaused` / `Step` / `Exit`).
 
 ## Notlar
-- `CLAUDE.md` ve `.claude/` commit'li (2026-11-01; template private); `.claude/settings.local.json`, kilit dosyaları,
-  `prompts/` ve `notes/` yerel. Düzen `.claude/README.md`'de. Repo public yapılmadan önce CLAUDE.md ve `.claude/` kişisel yol ve eski ürüne atıf
-  açısından gözden geçirilir.
+- `CLAUDE.md` ve `.claude/` commit'li; `.claude/settings.local.json`, kilit dosyaları, `prompts/` ve `notes/` yerel.
+  Düzen `.claude/README.md`'de. HoldIt şimdilik private (2026-11-02). Public'e geçmeden önce CLAUDE.md ve `.claude/` kişisel
+  yol ve eski ürüne atıf açısından gözden geçirilir; `decisions/`'ın framework dosyalarındakiler template'te düzeltilip alınır.
 - Kalıcı kararlar: `.claude/decisions/` (önce `README.md`, sonra yalnız ilgili modül dosyası). Tek seferlik prompt'lar
   `.claude/prompts/`, gerektiğinde iş notları `.claude/notes/<konu>/` (ikisi de yerel), tekrar kullanılan editor betikleri `.claude/scripts/`.
 - Framework sistem dokümanı commit'li (`Assets/Framework/Documentation~/`, modül başına bir dosya). İnsan için, İngilizce yazılır.

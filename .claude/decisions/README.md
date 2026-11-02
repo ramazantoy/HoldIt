@@ -19,6 +19,7 @@ UI ve oyuna özel oynanış sistemleri template dışında kalır.
 | `Platform.md` | Platform sözleşmeleri ve Mock (F4) | ⚠ Her backend her sözleşmeyi kaydeder (eksikse `UsePlatform` fırlatır); mağaza SDK tipleri yalnız backend asmdef'inde · ⚠ Başarım doğruluğu oyunun save'inde; yüklemede kazanılmışlar yeniden `Unlock` |
 | `Build.md` | Build menüsü, build öncesi/sonrası kontroller, IL2CPP (F4); Addressables içerik adımı (F7) | ⚠ Build yalnız `Builder`; diğer yollar `BuildGuard`'da reddedilir · ⚠ Define yalnız `BuildKinds.Defines` (Pipeline dev toggle'ı hariç) · ⚠ Platform define'ının pozitif dalında serialize alan yok (`#if UNITY_EDITOR` dahil) · ⚠ Addressables "build with player" kapalı kalır; URP build'de pipeline asset'lerini yeniden yazar |
 | `CodeStyle.md` | F1–F3 kodunun yeni stile toplu dönüşümü | ⚠ Serialize alan rename'inde `[FormerlySerializedAs]` + YAML'ın yeniden yazımı, yoksa değer sessizce default'a düşer |
+| `Game.md` | HoldIt'in oyun kararları: kaynaklar, UI, görsel ve asset; oyunun "Açık" listesi ve template'e giden sorunlar | ⚠ Framework burada yamanmaz: template'te düzeltilir, cherry-pick · ⚠ Repo public: yalnız CC0 ya da kendi asset |
 
 Kullanım:
 - Faz ya da iş başlarken bu dosyayı oku, sonra yalnız ilgili modül dosyalarını aç; klasörün tamamını okuma.
