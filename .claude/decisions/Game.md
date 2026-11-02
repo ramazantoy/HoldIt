@@ -69,10 +69,24 @@ UI Toolkit'le yapılan denemenin sonuçları; HoldIt sonra Canvas'a döndü ("UI
 ## Görsel ve asset (2026-11-02)
 | Konu | Karar | Gerekçe |
 |---|---|---|
-| Sıra | Önce placeholder (primitive); gerçek modeller oynanış bitince | Oynanış değişirken model işi boşa gider |
+| Sıra | ~~Önce placeholder (primitive); gerçek modeller oynanış bitince~~ | ~~Oynanış değişirken model işi boşa gider~~ |
+| Sıra (2026-11-02, M1) | Ortam kiti (zemin, duvar, dar geçit, bina duvarı, kapı) kendi Blender kitimizden gelir: M1'le paralel üretilir, M1b'de alınır. Kabin, klozet, lamba (M5), su birikintisi (M6) ve karakterler (CC0 paket) oynanıştan sonra | Kullanıcı kararı. Parçaların şekli ve ölçüsü grid'le M1'de sabitlendi ("Harita ve tahta" → Parçalar); placeholder'dan gerçek modele geçiş prefab'ın içinde kalır |
 | Ortam | Harita verisinden modüler kare parçalarıyla kurulur (1 birim = 1 kare: zemin, duvar, kapı, kabin, dar geçit). Parçalar değiştirilebilir prefab'lardır; harita elle modellenmez | Harita veridir: yeni harita model işi istemez, placeholder'dan gerçek modele geçiş bir prefab değişimidir |
 | Lisans | Repo public: yalnız CC0 (Kenney, Quaternius vb.) ya da kendi modellerin. Ücretli paket (Asset Store, Synty) repoya girmez. (2026-11-02) Fontlar OFL olabilir ("Kimlik ve kaynaklar" → Lisans: font) | Ücretli paket lisansları kaynak dosyaların public repoda dağıtılmasına izin vermez |
+| Stil (2026-11-02) | Stilize, el boyaması görünümlü ve yumuşak. Low-poly siluet ve hafif pahlı kenarlar. Renk dokuda durur: üstten alta açıktan koyuya gradyan, kenarlarda açık vurgu, iç köşelerde AO, hafif fırça ve noise varyasyonu. Yönlü ışık ve gölge dokuya basılmaz. Bütün kit tek atlas ve tek materyal kullanır. Unity'de URP Shader Graph ile toon shader (yumuşak 2–3 bant, isteğe bağlı rim) M1b'de yapılır. Palet aynı kalır | Kullanıcı kararı; GDD §8'deki "düz renk"in yerine geçer. Ekranda bir kare ~90 px: ince detay okunmaz, gradyan ve kenar vurgusu okunur. Boyama script'le bake edilir (AO + curvature + gradyan + noise), ışığı shader verir. Tek materyal batching'i korur |
 | Karakterler | Hazır bir CC0 paketten gelir. Thin/Normal/Fat aynı modelin yatay ölçeğiyle yapılır. Ortam kiti belki Blender'da bpy script'iyle yapılır | Tek model, üç beden. Prototip de böyle yapıyor (beden ölçeği 0.75/1.0/1.45) |
+
+## Harita ve tahta (2026-11-02, M1)
+| Konu | Karar | Gerekçe |
+|---|---|---|
+| Level = harita | Her level kendi harita asset'idir (`MapDefinition`, `Assets/Game/Board/Maps/`). Harita 1 `Lobby` (prototipin haritası). Level'ın kalabalık, spawn ve sabır ayarları ile ilerleme M6'da (Açık → GDD ↔ prototip) | Kullanıcı isteği: her level'da farklı grid/labirent. Yeni level model işi istemez |
+| Format | Satır satır metin, üst satır kameradan en uzak: `.` zemin, `L` lobi, `E` giriş, `#` duvar, `n` dar geçit, `M`/`W` erkek/kadın binası, `m`/`w` kapıları (`MapParser`). Boyut veriden gelir; parmakla çizim için genişlik ~10 kare kalır. Haritalar elle yapılır, prosedürel üretim yok | YAML diff'inde her satır ayrı görünür, testler haritayı string olarak yazar. Üretilen haritanın oynanabilirliği ve zorluğu kontrol edilemez; ileride bir üretici gelirse aynı formatı üretir |
+| Kare türleri | Prototipinkiler kalır: bina (yürünemez; kabinler M5'te içinde) ve lobi (spawn'ın beklediği yer) | GDD'nin döngüsü lobiyi zaten anıyor; bina kabinlerin ve ışıkların yeri |
+| Oynanabilirlik | `MapCheck`: en az bir giriş; her cinsiyete tek kapı; bina, kapısıyla birlikte dolu bir dikdörtgen; kapı dışarıda tam bir yürünebilir kareye açılır; iki kapı yan yana değil; girişten kapılardan geçmeden bir lobi karesine ve iki kapıya yol var, Fat (dar geçitsiz) için de. `MapValidator` (`Game.Editor`) bütün haritaları Validate All'da kontrol eder | Bozuk harita build'den önce yakalanır. Dikdörtgen bina M5'te kabin dizilimini basit tutar; yan yana kapıların kasaları aynı yere düşer |
+| Koordinat | `Cell(Col, Row)`, satır 0 en üstte. 1 kare = 1 birim, tahtanın merkezi dünya orijininde, zemin y = 0, satırlar −Z'ye doğru (`BoardSpace`). Kare seçimi ekran ışınını y = 0 düzlemiyle keser (`IBoardPicker`) | Collider gerekmez; parçalar değişse de seçim aynı kalır |
+| Parçalar | `BoardLayout` haritayı parçalara çevirir, `TileSet` her parçanın prefab'ını verir. Parçanın kökü kare merkezinde, y = 0'da; kenar parçaları karenin kuzey (+Z) kenarında modellenip 0/90/180/270 döndürülür, zeminler dönmez. Zeminler 0.1 kalın. Ölçüler prototipten: WallBlock 1×1, y −0.1..0.9; NarrowPosts zemin parçasının üstünde, 0.18×0.81×0.96 iki dikme, x=±0.41 (açıklık 0.64), kuzey ve güneyi kapalı geçitte 90°; BuildingWall 1.0×0.7×0.14, z 0.36..0.5, köşelerde üst üste biner; Doorway kapı karesinin kendi zemini + açıklık kenarında 0.12×0.92×0.22 dikmeler (x=±0.5) + piktogram (başı bina içine). Kaide ölçeklenmiş küp: haritayı 0.4 taşar, 0.6 derin. Placeholder'lar collider'sız küpler (`Assets/Game/Board/Pieces/`), materyaller prototip paletinden | Harita veridir ("Görsel ve asset" → Ortam); kit gelince yalnız prefab'ların içi değişir |
+| Kamera | Perspektif, dikeyden 22°, FOV 40 (`BoardCameraConfig`). `CameraFit` tahtanın renderer bounds köşelerini güvenli alan eksi HUD üst barı eksi paylar (yanlar %2, alt %2, üst %1) dikdörtgenine ortalayıp bir eksende dayanacak şekilde sığdırır. `BoardCamera` ekran, safe area, HUD, bounds ya da config değişince yeniden sığdırır. Telefonlarda genişlik sınırlar (9:16'da tahta merkezine ~31 m); uzun ekranlarda üstte ve altta boşluk kalır | Prototipin değerleri. Bounds'tan sığdırma gerçek modellerle de doğru kalır |
+| HUD üst barı | `GameplayHud` → `SafeArea/TopBar` (tam genişlik, 184 referans px); menü düğmesi içinde, skor ve can M6'da buraya girer. `GameplayHudView` alt kenarını `IBoardInsets` olarak verir | Tahta HUD'un altında kalır; kamera HUD'u değil interface'i bilir |
 
 ## Açık
 - ~~**Dil:** GDD §11 "yalnız İngilizce" diyor, template'te Localization modülü var (en/tr örneği). Mobil doğrulama listesindeki
@@ -88,7 +102,8 @@ UI Toolkit'le yapılan denemenin sonuçları; HoldIt sonra Canvas'a döndü ("UI
   geri tuşunun Escape → `UI/Cancel` olarak gelmesi (`androidPredictiveBackSupport` açık; gelmezse kapatmak denenir), kökte
   geri ile çıkış, Gameplay'de dokunuş logu ve HUD'a basışın loglanmaması, mod None iken panelin tepkisizliği, portre kilit,
   Türkçe karakterler, çentik altında HUD, H.264 High'ın oynaması, ilk build'in yeniden yazdığı URP asset'leri (ayrı commit).
-  Ardından `README.md` → "İlk mobil oyunda doğrulanacaklar" (M0b'nin cihaz kısmı)
+  Ardından `README.md` → "İlk mobil oyunda doğrulanacaklar" (M0b'nin cihaz kısmı). (2026-11-02) M0b'nin tamamı
+  cihaz bulununca yapılır (kullanıcı kararı; bitti şartı telefon istiyor), M1 ondan önce
 - **Haptik** (GDD §7'deki ayar, M9): template'te yok. Açma/kapama oyunun kendi Global savable'ında durur. Titreşimin
   kendisinin oyunda mı template'te mi (Platform sözleşmesi olarak) yazılacağı → M9
 - **En iyi skor** (harita başına): template'in Save'i slot odaklı. HoldIt slot kullanmaz, skor Global savable'da tutulur
@@ -113,8 +128,8 @@ UI Toolkit'le yapılan denemenin sonuçları; HoldIt sonra Canvas'a döndü ("UI
   | Hız Thin/Normal/Fat (kare/sn) | 3.0 / 2.6 / 2.0 | 3.6 / 3.0 / 2.2 | M3 |
   | En fazla karakter | 14 | 9 | M6 |
   | Sabır | Seviyeye göre 30 → 22 sn | Sabit 30 sn | M6 |
-  | Kare türleri | Bina (M/W, yürünemez) ve lobi (L) var | Yok | M1 |
-  | Diğer | Su birikintisi 12 sn, beden ölçeği 0.75/1.0/1.45, kamera 22° eğim / FOV 40, metinler Türkçe | "Birkaç saniye" | M1–M6 |
+  | ~~Kare türleri~~ | ~~Bina (M/W, yürünemez) ve lobi (L) var~~ | ~~Yok~~ | M1: prototipinki ("Harita ve tahta") |
+  | Diğer | Su birikintisi 12 sn, beden ölçeği 0.75/1.0/1.45, ~~kamera 22° eğim / FOV 40~~ (M1'de alındı), metinler Türkçe | "Birkaç saniye" | M3–M6 |
 
 ## Template'e gidenler
 Burada bulunup template'te düzeltilen framework sorunları.

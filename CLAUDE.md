@@ -10,7 +10,8 @@ kararları `.claude/decisions/Game.md`'de.
 
 **Durum:** 2026-11-02'de template'ten açıldı. Fork `a949bbd`: F1–F7 ve template doğrulaması; framework geçmişi
 `.claude/decisions/README.md` → "Fazlar". M0 Editor'da bitti (2026-11-02); Android cihaz olmadığı için cihaz kısmı bekliyor
-(Game.md → Açık → Cihaz testi). Sıradaki iş M0b. Milestone başlarken plan moduna geç.
+(Game.md → Açık → Cihaz testi). M0b da cihaz bulununca yapılır. M1 Editor'da bitti (2026-11-02). Sıradaki iş M2; M1b ortam
+kiti hazır olunca araya girer. Milestone başlarken plan moduna geç.
 
 **Yapı:** framework `Assets/Framework/` (`AF.*` namespace ve asmdef'ler, modül başına `<Modül>/{Runtime,Editor,Tests}`).
 Oyun `Assets/Game/`: asmdef `Game`, namespace `HoldIt`, özellik klasörü `HoldIt.<Özellik>`.
@@ -49,6 +50,7 @@ cherry-pick'ler çakışmasın diye.
 | M0 | Namespace `HoldIt` geçişi, kimlik (Company/Product/identifier/Version), portre yön. Intro: splash videosu oynar, boot da bitince Menu'ye geçer. Oyun fontu (Baloo 2). Placeholder ana menü (UI Toolkit'le denendi, Canvas'a dönüldü): Play → Gameplay (şimdilik boş sahne), Settings (boş ekran), Quit (yalnız masaüstü); Gameplay'den Menu'ye dönüş. `IPointerInput`: Point/Press `Gameplay` map'inde, UI üstünde başlayan basış yok sayılır, Gameplay'de dokunuş logu. Android geri tuşu (Esc ↔ `Gameplay/Pause` + `UI/Cancel` kararı). Menü metinleri şimdilik mevcut Localization tablosuna eklenir | Editor'da Intro → Menu → Gameplay → Menu akışı; Game.md'deki "M0'da doğrulanacaklar" (UI Toolkit) cevaplanır. Telefonda Development build, geri tuşu ve `adb logcat`'teki dokunuşlar Android cihaz bulununca (Game.md → Açık → Cihaz testi) |
 | M0b | Localization en + tr: örnek tablolar oyunun tablolarıyla değişir, Specific seçici belirlenir. "Yeni oyun kontrol listesi"nin kalan adımları ve "İlk mobil oyunda doğrulanacaklar"dan bu build'le bakılabilenler (ikisi de `decisions/README.md` → "Template doğrulaması") | Telefon diline göre en/tr açılır; kontrol listesi ve mobil doğrulama sonuçları decisions'a yazılır |
 | M1 | Grid + harita asset'i + portre kamera sığdırma | Harita 1 farklı en-boy oranlarında doğru görünür |
+| M1b | Ortam kiti (zemin, duvar, dar geçit, bina duvarı, kapı) kendi Blender kitimizden gelir; placeholder prefab'ların içi değişir (Game.md → Harita ve tahta → Parçalar) | Harita 1 gerçek parçalarla kurulur; M1'in en-boy kontrolleri yine geçer |
 | M2 | Yol çizme + LineRenderer | Cihazda çizilir ve geri alınır, duvarlara uyulur |
 | M3 | Karakter yolu yürür, state machine | Bir karakter çizilen yolu yürür |
 | M4 | Adım doğrulama + geri dönüş + balonlar | Bütün engel nedenleri çalışır |
