@@ -10,8 +10,8 @@ kararları `.claude/decisions/Game.md`'de.
 
 **Durum:** 2026-11-02'de template'ten açıldı. Fork `a949bbd`: F1–F7 ve template doğrulaması; framework geçmişi
 `.claude/decisions/README.md` → "Fazlar". M0 Editor'da bitti (2026-11-02); Android cihaz olmadığı için cihaz kısmı bekliyor
-(Game.md → Açık → Cihaz testi). M0b da cihaz bulununca yapılır. M1 Editor'da bitti (2026-11-02). Sıradaki iş M2; M1b ortam
-kiti hazır olunca araya girer. Milestone başlarken plan moduna geç.
+(Game.md → Açık → Cihaz testi). M0b da cihaz bulununca yapılır. M1 ve M1b (ortam kiti, toon shader) Editor'da bitti
+(2026-11-02). Sıradaki iş M2. Milestone başlarken plan moduna geç.
 
 **Yapı:** framework `Assets/Framework/` (`AF.*` namespace ve asmdef'ler, modül başına `<Modül>/{Runtime,Editor,Tests}`).
 Oyun `Assets/Game/`: asmdef `Game`, namespace `HoldIt`, özellik klasörü `HoldIt.<Özellik>`.
