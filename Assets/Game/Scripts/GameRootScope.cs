@@ -5,6 +5,7 @@ using AF.Localization;
 using AF.Platform;
 using AF.Save;
 using AF.Settings;
+using HoldIt.Input;
 using MessagePipe;
 using UnityEngine;
 using UnityEngine.Audio;
@@ -31,6 +32,8 @@ namespace HoldIt
             // First: its boot step loads the global and device data; the settings are applied as they load.
             builder.UseSave();
             builder.UseInput(_inputActions, messagePipe, InputModes.CreateOptions());
+            // UI/Cancel is the game's only back action: Escape, and the Android back button.
+            builder.UseBackButton(messagePipe);
             builder.UseAudio(_audioMixer, messagePipe, AudioChannels.CreateOptions());
             // After UseSave: its boot step applies the saved language and waits for its tables.
             builder.UseLocalization(messagePipe);

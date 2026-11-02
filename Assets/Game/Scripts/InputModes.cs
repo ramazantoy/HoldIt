@@ -11,7 +11,7 @@ namespace HoldIt
     {
         public static readonly InputMode Menu = new InputMode("menu", CursorState.Free, "UI");
 
-        /// <summary>The UI map stays on so HUD buttons and touch work; drop it if the HUD takes no input.</summary>
+        /// <summary>The UI map stays on: the HUD buttons take touches, and UI/Cancel is the back button (BackPressed).</summary>
         public static readonly InputMode Gameplay = new InputMode("gameplay", CursorState.Free, "Gameplay", "UI");
 
         public static InputOptions CreateOptions() =>
