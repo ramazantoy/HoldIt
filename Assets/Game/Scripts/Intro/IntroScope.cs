@@ -4,7 +4,7 @@ using UnityEngine;
 using VContainer;
 using VContainer.Unity;
 
-namespace Game
+namespace HoldIt.Intro
 {
     /// <summary>
     /// The intro scene's scope; the intro is the first scene of the build. Its Boot Target is Manual: the intro leaves Boot

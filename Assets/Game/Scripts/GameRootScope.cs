@@ -12,7 +12,7 @@ using UnityEngine.InputSystem;
 using UnityEngine.Serialization;
 using VContainer;
 
-namespace Game
+namespace HoldIt
 {
     /// <summary>
     /// The game's project-wide composition root. It sits on the root scope prefab that VContainerSettings points to.

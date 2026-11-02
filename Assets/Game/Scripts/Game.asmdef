@@ -1,6 +1,6 @@
 {
     "name": "Game",
-    "rootNamespace": "Game",
+    "rootNamespace": "HoldIt",
     "references": [
         "GUID:49a10fdb401f355489a4b9579e7f2b80",
         "GUID:b0214a6008ed146ff8f122a6a9c2f6cc",
@@ -13,7 +13,8 @@
         "GUID:f1a32c34bd30d9f47b82d745368269d5",
         "GUID:fca9104c0cc68b8458a8133b4ee45458",
         "GUID:4ea83554e943bab449334a507a437bb8",
-        "GUID:8fa5ac687f97f8341aeb523e72244110"
+        "GUID:8fa5ac687f97f8341aeb523e72244110",
+        "GUID:2bafac87e7f4b9b418d9448d219b01ab"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

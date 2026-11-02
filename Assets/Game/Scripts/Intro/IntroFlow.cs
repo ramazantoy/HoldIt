@@ -4,7 +4,7 @@ using AF.Core;
 using Cysharp.Threading.Tasks;
 using VContainer.Unity;
 
-namespace Game
+namespace HoldIt.Intro
 {
     /// <summary>
     /// Placeholder intro: waits for its minimum length and for the boot steps, which run meanwhile, then opens the menu. A real

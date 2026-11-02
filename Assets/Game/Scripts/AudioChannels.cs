@@ -1,6 +1,6 @@
 using AF.Audio;
 
-namespace Game
+namespace HoldIt
 {
     /// <summary>
     /// The game's volume channels: the groups of Assets/Game/Audio/GameMixer.mixer and the exposed parameters of their volume.
