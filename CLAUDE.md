@@ -11,9 +11,9 @@ kararları `.claude/decisions/Game.md`'de.
 **Durum:** 2026-11-02'de template'ten açıldı. Fork `a949bbd`: F1–F7 ve template doğrulaması; framework geçmişi
 `.claude/decisions/README.md` → "Fazlar". M0 Editor'da bitti (2026-11-02); Android cihaz olmadığı için cihaz kısmı bekliyor
 (Game.md → Açık → Cihaz testi). M0b da cihaz bulununca yapılır. M1 ve M1b (ortam kiti, toon shader) Editor'da bitti
-(2026-11-03). Sıradaki iş karakter aşaması; yol çizimi bilerek bekletiliyor (Game.md →
-Açık → Yol çizimi), milestone tablosunun yeni sırası o planda yazılır. Karakter modelleri ayrı oturumda üretiliyor.
-Milestone başlarken plan moduna geç.
+(2026-11-03). Milestone'lar 2026-11-03'te yeniden sıralandı: yol çizimi M5'e gitti, eski M3–M5 birer öne kaydı
+(Game.md → Karakterler ve yol). M2 (yol modeli + karakter yürür, placeholder) Editor'da bitti (2026-11-03). Karakter
+modelleri ayrı oturumda üretiliyor; gelince M2b. Sıradaki iş M3. Milestone başlarken plan moduna geç.
 
 **Yapı:** framework `Assets/Framework/` (`AF.*` namespace ve asmdef'ler, modül başına `<Modül>/{Runtime,Editor,Tests}`).
 Oyun `Assets/Game/`: asmdef `Game`, namespace `HoldIt`, özellik klasörü `HoldIt.<Özellik>`.
@@ -53,10 +53,11 @@ cherry-pick'ler çakışmasın diye.
 | M0b | Localization en + tr: örnek tablolar oyunun tablolarıyla değişir, Specific seçici belirlenir. "Yeni oyun kontrol listesi"nin kalan adımları ve "İlk mobil oyunda doğrulanacaklar"dan bu build'le bakılabilenler (ikisi de `decisions/README.md` → "Template doğrulaması") | Telefon diline göre en/tr açılır; kontrol listesi ve mobil doğrulama sonuçları decisions'a yazılır |
 | M1 | Grid + harita asset'i + portre kamera sığdırma | Harita 1 farklı en-boy oranlarında doğru görünür |
 | M1b | Ortam kiti (zemin, duvar, dar geçit, bina duvarı, kapı) kendi Blender kitimizden gelir; placeholder prefab'ların içi değişir (Game.md → Harita ve tahta → Parçalar) | Harita 1 gerçek parçalarla kurulur; M1'in en-boy kontrolleri yine geçer |
-| M2 | Yol çizme + LineRenderer | Cihazda çizilir ve geri alınır, duvarlara uyulur |
-| M3 | Karakter yolu yürür, state machine | Bir karakter çizilen yolu yürür |
-| M4 | Adım doğrulama + geri dönüş + balonlar | Bütün engel nedenleri çalışır |
-| M5 | Tuvaletler, kabinler, kuyruk | Doğru giriş, meşgul ışıkları, kapı tıkama |
+| M2 | Yol modeli (saf C#: çizim kuralları, geri alma, en kısa yol) + karakter modeli ve state machine (Idle, Walking) + placeholder karakter (SPEC hiyerarşisi, 6 prefab, havuz). Çizim yok; Editor/dev'de debug kaynağı (6 karakter + dokun → en kısa yolu yürü) | Editor'da bir karakter debug yolunu kare kare yürür, köşede döner, yol bitince Idle olur |
+| M2b | Karakter modelleri gelince (zamanı modele bağlı): FBX import ayarları, 6 prefab'ın içi, UV renk/ifade varyantı (ofset hesabı saf C# + test), parça animasyonları | 6 varyant gerçek modelle yürür; M2'nin kontrolleri yine geçer |
+| M3 | Adım doğrulama + doluluk + geri dönüş + balonlar | Bütün engel nedenleri çalışır |
+| M4 | Tuvaletler, kabinler, kuyruk | Doğru giriş, meşgul ışıkları, kapı tıkama |
+| M5 | Yol çizimi: `IPointerInput` → yol modeli; görsel kare efektleriyle (LineRenderer'dan vazgeçildi). Debug kaynağı kalkar | Cihazda çizilir ve geri alınır, duvarlara uyulur; karakter çizilen yolu yürür |
 | M6 | Spawn, sabır, kaza, can, skor | Tam döngü oynanır, oyun sonu |
 | M7 | Harita seçimi, ayarlar (ses, haptik, dil), en iyi skor kaydı | Tam oyun akışı |
 | M8 | Harita 2 ve 3, tuning turu | Bütün haritalar baştan sona oynanır |
