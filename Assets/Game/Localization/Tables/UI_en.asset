@@ -46,6 +46,18 @@ MonoBehaviour:
     m_Localized: Menu
     m_Metadata:
       m_Items: []
+  - m_Id: 585092608831488
+    m_Localized: Wrong door!
+    m_Metadata:
+      m_Items: []
+  - m_Id: 585092663357440
+    m_Localized: Can't fit!
+    m_Metadata:
+      m_Items: []
+  - m_Id: 585092663357441
+    m_Localized: Blocked!
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

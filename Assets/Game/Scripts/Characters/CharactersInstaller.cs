@@ -15,6 +15,7 @@ namespace HoldIt.Characters
         {
             builder.RegisterMessageBroker<CharacterSpawned>(messagePipe);
             builder.RegisterMessageBroker<CharacterStateChanged>(messagePipe);
+            builder.RegisterMessageBroker<StepRefused>(messagePipe);
 
             builder.RegisterInstance(config);
             builder.RegisterInstance(set);

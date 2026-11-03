@@ -13,7 +13,7 @@ namespace HoldIt.Board
         {
             builder.RegisterInstance<ITileGrid>(MapParser.Parse(map.Rows));
             builder.RegisterComponent(view).As<IBoardBounds>();
-            builder.RegisterComponent(camera).As<IBoardPicker>();
+            builder.RegisterComponent(camera).As<IBoardPicker, IBoardProjection>();
         }
     }
 }

@@ -1,0 +1,19 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 387c7d72beb22804ba3ff430bd07bc7f, type: 3}
+  m_Name: DrawingConfig
+  m_EditorClassIdentifier: Game::HoldIt.Drawing.DrawingConfig
+  _marker: {fileID: 4847676444633538741, guid: fefcc19d4fd1d8242a0259ac212d4c06, type: 3}
+  _pickRadius: 0.75
+  _pickHeight: 1.1
+  _walkedMarkHeight: 0.02
+  _drawnMarkHeight: 0.03

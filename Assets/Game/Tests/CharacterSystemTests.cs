@@ -14,14 +14,18 @@ namespace HoldIt.Tests
     public class CharacterSystemTests
     {
         private static readonly Cell _lobby = new Cell(0, 10);
+        private static readonly Cell _maleDoor = new Cell(2, 3);
 
         private IObjectResolver _container;
+        private ITileGrid _grid;
         private CharacterConfig _config;
         private FakeClock _clock;
         private CharacterSystem _system;
         private List<CharacterSpawned> _spawned;
         private List<CharacterStateChanged> _changed;
         private List<CharacterState> _stateWhenAnnounced;
+        private List<StepRefused> _refused;
+        private List<CharacterState> _stateWhenRefused;
         private IDisposable _subscriptions;
 
         [SetUp]
@@ -31,16 +35,20 @@ namespace HoldIt.Tests
             var messagePipe = builder.RegisterMessagePipe();
             builder.RegisterMessageBroker<CharacterSpawned>(messagePipe);
             builder.RegisterMessageBroker<CharacterStateChanged>(messagePipe);
+            builder.RegisterMessageBroker<StepRefused>(messagePipe);
             _container = builder.Build();
 
+            _grid = MapParser.Parse(TestMaps.Lobby);
             _config = ScriptableObject.CreateInstance<CharacterConfig>();
             _clock = new FakeClock();
-            _system = new CharacterSystem(MapParser.Parse(TestMaps.Lobby), _config, _clock,
-                _container.Resolve<IPublisher<CharacterSpawned>>(), _container.Resolve<IPublisher<CharacterStateChanged>>());
+            _system = new CharacterSystem(_grid, _config, _clock, _container.Resolve<IPublisher<CharacterSpawned>>(),
+                _container.Resolve<IPublisher<CharacterStateChanged>>(), _container.Resolve<IPublisher<StepRefused>>());
 
             _spawned = new List<CharacterSpawned>();
             _changed = new List<CharacterStateChanged>();
             _stateWhenAnnounced = new List<CharacterState>();
+            _refused = new List<StepRefused>();
+            _stateWhenRefused = new List<CharacterState>();
             var bag = DisposableBag.CreateBuilder();
             _container.Resolve<ISubscriber<CharacterSpawned>>().Subscribe(_spawned.Add).AddTo(bag);
             _container.Resolve<ISubscriber<CharacterStateChanged>>().Subscribe(message =>
@@ -48,6 +56,12 @@ namespace HoldIt.Tests
                 _changed.Add(message);
                 _system.TryGet(message.Id, out var character);
                 _stateWhenAnnounced.Add(character.State);
+            }).AddTo(bag);
+            _container.Resolve<ISubscriber<StepRefused>>().Subscribe(message =>
+            {
+                _refused.Add(message);
+                _system.TryGet(message.Id, out var character);
+                _stateWhenRefused.Add(character.State);
             }).AddTo(bag);
             _subscriptions = bag.Build();
         }
@@ -92,9 +106,10 @@ namespace HoldIt.Tests
         [Test]
         public void Spawn_WalksAtItsSizesSpeed()
         {
+            var col = 0;
             foreach (BodySize size in Enum.GetValues(typeof(BodySize)))
             {
-                _system.TryGet(_system.Spawn(Gender.Male, size, _lobby), out var character);
+                _system.TryGet(_system.Spawn(Gender.Male, size, new Cell(col++, 10)), out var character);
                 Assert.AreEqual(_config.WalkSpeed(size), character.Speed, size.ToString());
             }
         }
@@ -104,6 +119,15 @@ namespace HoldIt.Tests
         {
             Assert.Throws<ArgumentException>(() => _system.Spawn(Gender.Male, BodySize.Normal, new Cell(1, 5)));
             Assert.AreEqual(0, _spawned.Count);
+        }
+
+        [Test]
+        public void Spawn_WhereSomeoneStands_Throws()
+        {
+            _system.Spawn(Gender.Male, BodySize.Normal, _lobby);
+
+            Assert.Throws<ArgumentException>(() => _system.Spawn(Gender.Female, BodySize.Thin, _lobby));
+            Assert.AreEqual(1, _system.All.Count);
         }
 
         [Test]
@@ -130,16 +154,68 @@ namespace HoldIt.Tests
         }
 
         [Test]
+        public void TryWalk_ToWhereSomeoneStands_IsRefused()
+        {
+            var walker = _system.Spawn(Gender.Male, BodySize.Normal, _lobby);
+            var other = _system.Spawn(Gender.Female, BodySize.Normal, new Cell(0, 8));
+
+            Assert.IsFalse(_system.CanEndOn(walker, new Cell(0, 8)));
+            Assert.IsFalse(_system.TryWalk(walker, North(3)));
+            Assert.IsTrue(_system.CanEndOn(other, new Cell(0, 8)));
+        }
+
+        [Test]
+        public void TryWalk_ToWhereSomeoneIsGoing_IsRefused()
+        {
+            var first = _system.Spawn(Gender.Male, BodySize.Normal, _lobby);
+            var second = _system.Spawn(Gender.Female, BodySize.Normal, new Cell(0, 7));
+            _system.TryWalk(first, North(3));
+
+            Assert.IsFalse(_system.IsFree(new Cell(0, 8)));
+            Assert.IsFalse(_system.TryWalk(second, new CellPath(new[] { new Cell(0, 7), new Cell(0, 8) })));
+        }
+
+        [Test]
+        public void TryWalk_KeepsTheStartForTheWalkerUntilItArrives()
+        {
+            var walker = _system.Spawn(Gender.Male, BodySize.Normal, _lobby);
+            var other = _system.Spawn(Gender.Female, BodySize.Normal, new Cell(1, 10));
+            _system.TryWalk(walker, North(3));
+            _clock.DeltaTime = 0.6f;
+            _system.Tick();
+
+            Assert.AreNotEqual(_lobby, Character(walker).Cell);
+            Assert.IsFalse(_system.CanEndOn(other, _lobby));
+
+            _clock.DeltaTime = 10f;
+            _system.Tick();
+
+            Assert.AreEqual(CharacterState.Idle, Character(walker).State);
+            Assert.IsTrue(_system.CanEndOn(other, _lobby));
+            Assert.IsTrue(_system.IsFree(_lobby));
+        }
+
+        [Test]
+        public void TryWalk_ToTheSameDoor_LetsBothGo()
+        {
+            var first = _system.Spawn(Gender.Male, BodySize.Normal, new Cell(2, 9));
+            var second = _system.Spawn(Gender.Male, BodySize.Normal, new Cell(3, 9));
+
+            Assert.IsTrue(_system.TryWalk(first, ToMaleDoor(new Cell(2, 9))));
+            Assert.IsTrue(_system.CanEndOn(second, _maleDoor));
+            Assert.IsTrue(_system.TryWalk(second, ToMaleDoor(new Cell(3, 9))));
+        }
+
+        [Test]
         public void Tick_MovesByTheClocksDeltaTime()
         {
             var id = _system.Spawn(Gender.Male, BodySize.Normal, _lobby);
             _system.TryWalk(id, North(3));
-            _system.TryGet(id, out var character);
 
             _clock.DeltaTime = 0.1f;
             _system.Tick();
 
-            Assert.AreEqual(character.Speed * 0.1f, character.StepProgress, 1e-5f);
+            Assert.AreEqual(Character(id).Speed * 0.1f, Character(id).StepProgress, 1e-5f);
         }
 
         [Test]
@@ -147,13 +223,12 @@ namespace HoldIt.Tests
         {
             var id = _system.Spawn(Gender.Male, BodySize.Normal, _lobby);
             _system.TryWalk(id, North(3));
-            _system.TryGet(id, out var character);
 
             _clock.DeltaTime = 0f;
             _system.Tick();
 
-            Assert.AreEqual(0f, character.StepProgress);
-            Assert.AreEqual(_lobby, character.Cell);
+            Assert.AreEqual(0f, Character(id).StepProgress);
+            Assert.AreEqual(_lobby, Character(id).Cell);
         }
 
         [Test]
@@ -168,6 +243,7 @@ namespace HoldIt.Tests
             Assert.AreEqual(2, _changed.Count);
             Assert.AreEqual(CharacterState.Idle, _changed[1].State);
             Assert.AreEqual(CharacterState.Idle, _stateWhenAnnounced[1]);
+            Assert.AreEqual(0, _refused.Count);
         }
 
         [Test]
@@ -183,6 +259,106 @@ namespace HoldIt.Tests
             Assert.AreEqual(0, _changed.Count);
         }
 
+        [Test]
+        public void Tick_TwoCrossingPaths_NeverShareACell()
+        {
+            var across = _system.Spawn(Gender.Male, BodySize.Thin, new Cell(0, 9));
+            var up = _system.Spawn(Gender.Female, BodySize.Fat, new Cell(2, 11));
+            _system.TryWalk(across, Path((0, 9), (1, 9), (2, 9), (3, 9), (4, 9)));
+            _system.TryWalk(up, Path((2, 11), (2, 10), (2, 9), (1, 9), (1, 10)));
+
+            _clock.DeltaTime = 0.02f;
+            for (var frame = 0; frame < 500; frame++)
+            {
+                _system.Tick();
+                var a = Character(across);
+                var b = Character(up);
+                Assert.IsFalse(a.Cell == b.Cell || a.Cell == b.Next || a.Next == b.Cell || a.Next == b.Next,
+                    $"Frame {frame}: {a.Cell}->{a.Next} and {b.Cell}->{b.Next} overlap.");
+            }
+        }
+
+        [Test]
+        public void Tick_BlockedTooLong_StopsWhereItIsAndSaysSoAfterward()
+        {
+            var walker = _system.Spawn(Gender.Male, BodySize.Normal, _lobby);
+            _system.Spawn(Gender.Female, BodySize.Normal, new Cell(0, 9));
+            var other = _system.Spawn(Gender.Female, BodySize.Thin, new Cell(5, 10));
+            _system.TryWalk(walker, North(3));
+
+            _clock.DeltaTime = _config.BlockedWaitSeconds * 0.5f;
+            _system.Tick();
+            Assert.AreEqual(CharacterState.Walking, Character(walker).State);
+            _system.Tick();
+
+            Assert.AreEqual(CharacterState.Idle, Character(walker).State);
+            Assert.AreEqual(_lobby, Character(walker).Cell);
+            Assert.AreEqual(1, _refused.Count);
+            Assert.AreEqual(walker, _refused[0].Id);
+            Assert.AreEqual(StepRefusal.Blocked, _refused[0].Reason);
+            Assert.AreEqual(CharacterState.Idle, _stateWhenRefused[0]);
+            Assert.IsTrue(_system.CanEndOn(other, new Cell(0, 8)), "Its end is no longer reserved.");
+        }
+
+        [Test]
+        public void Tick_AtTheWrongDoor_WalksBackAndSaysSo()
+        {
+            var start = new Cell(3, 7);
+            var walker = _system.Spawn(Gender.Female, BodySize.Normal, start);
+            var other = _system.Spawn(Gender.Male, BodySize.Normal, new Cell(5, 10));
+            _system.TryWalk(walker, Path((3, 7), (3, 6), (3, 5), (3, 4), (2, 4), (2, 3)));
+
+            _clock.DeltaTime = 4f / _config.WalkSpeed(BodySize.Normal) + 0.01f;
+            _system.Tick();
+
+            Assert.AreEqual(CharacterState.Returning, Character(walker).State);
+            Assert.AreEqual(StepRefusal.WrongDoor, _refused[0].Reason);
+            Assert.AreEqual(CharacterState.Returning, _stateWhenRefused[0]);
+            Assert.AreEqual(CharacterState.Returning, _changed[_changed.Count - 1].State);
+            Assert.IsFalse(_system.CanEndOn(other, start), "It keeps the cell it returns to.");
+
+            _clock.DeltaTime = 10f;
+            _system.Tick();
+
+            Assert.AreEqual(CharacterState.Idle, Character(walker).State);
+            Assert.AreEqual(start, Character(walker).Cell);
+            Assert.AreEqual(1, _refused.Count);
+        }
+
+        [Test]
+        public void Tick_FatAtANarrowPassage_IsRefusedButThinPasses()
+        {
+            var fat = _system.Spawn(Gender.Male, BodySize.Fat, new Cell(4, 9));
+            var thin = _system.Spawn(Gender.Male, BodySize.Thin, new Cell(5, 9));
+            _system.TryWalk(fat, Path((4, 9), (4, 8), (4, 7)));
+            _system.TryWalk(thin, Path((5, 9), (5, 8), (5, 7)));
+
+            _clock.DeltaTime = 10f;
+            _system.Tick();
+
+            Assert.AreEqual(new Cell(4, 9), Character(fat).Cell);
+            Assert.AreEqual(new Cell(5, 7), Character(thin).Cell);
+            Assert.AreEqual(1, _refused.Count);
+            Assert.AreEqual(fat, _refused[0].Id);
+            Assert.AreEqual(StepRefusal.TooWide, _refused[0].Reason);
+        }
+
+        [Test]
+        public void TryEnter_WalkingBack_SkipsTheTileRules()
+        {
+            IStepGate gate = _system;
+            var femaleStep = new Character(new CharacterId(50), Gender.Female, BodySize.Fat, new Cell(2, 4), 1f, 1f, 1f);
+
+            Assert.AreEqual(StepVerdict.WrongDoor, gate.TryEnter(new Walker(femaleStep, CharacterState.Walking), _maleDoor));
+            Assert.AreEqual(StepVerdict.Enter, gate.TryEnter(new Walker(femaleStep, CharacterState.Returning), _maleDoor));
+        }
+
+        private ICharacter Character(CharacterId id)
+        {
+            _system.TryGet(id, out var character);
+            return character;
+        }
+
         /// <summary>A path north up column 0 from the lobby, <paramref name="count"/> cells long.</summary>
         private static CellPath North(int count)
         {
@@ -190,6 +366,42 @@ namespace HoldIt.Tests
             for (var i = 0; i < count; i++)
                 cells[i] = new Cell(_lobby.Col, _lobby.Row - i);
             return new CellPath(cells);
+        }
+
+        private CellPath ToMaleDoor(Cell from) =>
+            PathFinder.Shortest(_grid, from, _maleDoor,
+                cell => PathRules.IsDrawable(_grid, cell) && (cell == _maleDoor || _grid.At(cell).Type != TileType.Door));
+
+        private static CellPath Path(params (int Col, int Row)[] cells)
+        {
+            var path = new Cell[cells.Length];
+            for (var i = 0; i < cells.Length; i++)
+                path[i] = new Cell(cells[i].Col, cells[i].Row);
+            return new CellPath(path);
+        }
+
+        /// <summary>A character as the gate sees it, in the state the test needs.</summary>
+        private sealed class Walker : ICharacter
+        {
+            private readonly ICharacter _character;
+
+            public Walker(ICharacter character, CharacterState state)
+            {
+                _character = character;
+                State = state;
+            }
+
+            public CharacterId Id => _character.Id;
+            public Gender Gender => _character.Gender;
+            public BodySize Size => _character.Size;
+            public float Speed => _character.Speed;
+            public CharacterState State { get; }
+            public Cell Cell => _character.Cell;
+            public Cell Next => _character.Next;
+            public float StepProgress => _character.StepProgress;
+            public Direction Facing => _character.Facing;
+            public CellPath Route => _character.Route;
+            public int RouteIndex => _character.RouteIndex;
         }
     }
 }

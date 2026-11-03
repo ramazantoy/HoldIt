@@ -1,4 +1,5 @@
 using HoldIt.Board;
+using HoldIt.Paths;
 
 namespace HoldIt.Characters
 {
@@ -23,7 +24,18 @@ namespace HoldIt.Characters
         /// <summary>How far the current step from <see cref="Cell"/> to <see cref="Next"/> is, from 0 to 1.</summary>
         float StepProgress { get; }
 
-        /// <summary>The side the last step went toward; South (toward the camera) before the first one.</summary>
+        /// <summary>
+        /// The side of the last cell it stepped into or asked to; South (toward the camera) before the first one.
+        /// </summary>
         Direction Facing { get; }
+
+        /// <summary>
+        /// The cells being walked: the path while Walking, the way back while Returning; null while Idle. The character is
+        /// on <c>Route[RouteIndex]</c>.
+        /// </summary>
+        CellPath Route { get; }
+
+        /// <summary>Where on <see cref="Route"/> the character's <see cref="Cell"/> is.</summary>
+        int RouteIndex { get; }
     }
 }

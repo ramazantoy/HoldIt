@@ -232,6 +232,55 @@ namespace HoldIt.Tests
                 Assert.AreEqual(_draft.Cells[i], path[i]);
         }
 
+        [Test]
+        public void TrimEnd_DropsTheCellsItCannotEndOn()
+        {
+            DrawLoop();
+
+            Assert.IsTrue(_draft.TrimEnd(cell => cell.Row != 10 || cell == new Cell(3, 10)));
+
+            Assert.That(_draft.Cells, Is.EqualTo(Cells((3, 10), (3, 9), (4, 9))));
+        }
+
+        [Test]
+        public void TrimEnd_StopsAtTheFirstCellItCanEndOn()
+        {
+            DrawLoop();
+
+            Assert.IsTrue(_draft.TrimEnd(cell => cell == new Cell(3, 9)));
+
+            Assert.That(_draft.Cells, Is.EqualTo(Cells((3, 10), (3, 9))));
+        }
+
+        [Test]
+        public void TrimEnd_AnEndItCanEndOn_KeepsThePath()
+        {
+            DrawLoop();
+
+            Assert.IsFalse(_draft.TrimEnd(cell => true));
+
+            Assert.AreEqual(4, _draft.Cells.Count);
+        }
+
+        [Test]
+        public void TrimEnd_NowhereToEnd_KeepsOnlyTheStart()
+        {
+            DrawLoop();
+
+            _draft.TrimEnd(cell => false);
+
+            Assert.That(_draft.Cells, Is.EqualTo(Cells((3, 10))));
+            Assert.IsFalse(_draft.CanCommit);
+        }
+
+        [Test]
+        public void TrimEnd_BeforeBeginOrWithoutARule_Throws()
+        {
+            Assert.Throws<InvalidOperationException>(() => _draft.TrimEnd(cell => true));
+            _draft.Begin(new Cell(3, 10));
+            Assert.Throws<ArgumentNullException>(() => _draft.TrimEnd(null));
+        }
+
         /// <summary>(3, 10) north to (3, 9), east to (4, 9), south to (4, 10).</summary>
         private void DrawLoop()
         {

@@ -15,6 +15,15 @@ namespace HoldIt.Characters
         [SerializeField, Min(0.1f), Tooltip("Fat characters' walking speed, in tiles per second.")]
         private float _fatSpeed = 2.0f;
 
+        [SerializeField, Min(0f), Tooltip("How long a character waits before a cell someone else stands on, in seconds; then it stops where it is.")]
+        private float _blockedWaitSeconds = 0.6f;
+
+        [SerializeField, Min(0.1f), Tooltip("How much faster than its walking speed a refused character walks back.")]
+        private float _returnSpeedFactor = 1.2f;
+
+        public float BlockedWaitSeconds => _blockedWaitSeconds;
+        public float ReturnSpeedFactor => _returnSpeedFactor;
+
         public float WalkSpeed(BodySize size) => size switch
         {
             BodySize.Thin => _thinSpeed,

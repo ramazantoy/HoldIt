@@ -64,6 +64,23 @@ namespace HoldIt.Paths
             return changed;
         }
 
+        /// <summary>
+        /// Drops cells from the end until the last one passes <paramref name="canEndOn"/> or only the start is left. True
+        /// when the path changed.
+        /// </summary>
+        public bool TrimEnd(Func<Cell, bool> canEndOn)
+        {
+            if (canEndOn == null)
+                throw new ArgumentNullException(nameof(canEndOn));
+            if (_cells.Count == 0)
+                throw NotBegun();
+
+            var count = _cells.Count;
+            while (_cells.Count > 1 && !canEndOn(Last))
+                _cells.RemoveAt(_cells.Count - 1);
+            return _cells.Count != count;
+        }
+
         /// <summary>The finished path. Throws unless <see cref="CanCommit"/>.</summary>
         public CellPath ToPath() =>
             CanCommit ? new CellPath(_cells) : throw new InvalidOperationException("A path needs at least two cells.");

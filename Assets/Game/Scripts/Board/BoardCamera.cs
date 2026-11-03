@@ -8,10 +8,10 @@ namespace HoldIt.Board
     /// <summary>
     /// Keeps the gameplay camera fitted to the board (<see cref="CameraFit"/>): inside the safe area, below the HUD's top bar,
     /// less the config's margins. Refits whenever the screen, the safe area, the insets, the board or the config changes;
-    /// Android can report the insets late. Also says which tile is under a screen point.
+    /// Android can report the insets late. Also says which tile is under a screen point, and where a world point lands.
     /// </summary>
     [RequireComponent(typeof(Camera))]
-    public sealed class BoardCamera : MonoBehaviour, IBoardPicker
+    public sealed class BoardCamera : MonoBehaviour, IBoardPicker, IBoardProjection
     {
         [SerializeField, Required] private BoardCameraConfig _config;
         [SerializeField, Required] private Camera _camera;
@@ -31,11 +31,31 @@ namespace HoldIt.Board
             _insets = insets;
         }
 
+        public Quaternion Rotation => transform.rotation;
+
         public bool TryPick(Vector2 screenPosition, out Cell cell)
         {
             cell = default;
             return BoardSpace.TryHitFloor(_camera.ScreenPointToRay(screenPosition), out var point) &&
                    _grid.Space.TryGetCell(point, out cell);
+        }
+
+        public bool TryPickClamped(Vector2 screenPosition, out Cell cell)
+        {
+            cell = default;
+            if (!BoardSpace.TryHitFloor(_camera.ScreenPointToRay(screenPosition), out var point))
+                return false;
+
+            _grid.Space.TryGetCell(point, out var unclamped);
+            cell = new Cell(Mathf.Clamp(unclamped.Col, 0, _grid.Cols - 1), Mathf.Clamp(unclamped.Row, 0, _grid.Rows - 1));
+            return true;
+        }
+
+        public bool TryWorldToScreen(Vector3 world, out Vector2 screen)
+        {
+            var point = _camera.WorldToScreenPoint(world);
+            screen = point;
+            return point.z > 0f;
         }
 
         private void LateUpdate()

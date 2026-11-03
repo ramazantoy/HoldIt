@@ -43,6 +43,18 @@ MonoBehaviour:
     m_Key: hud.menu
     m_Metadata:
       m_Items: []
+  - m_Id: 585092608831488
+    m_Key: bubble.wrong_door
+    m_Metadata:
+      m_Items: []
+  - m_Id: 585092663357440
+    m_Key: bubble.cant_fit
+    m_Metadata:
+      m_Items: []
+  - m_Id: 585092663357441
+    m_Key: bubble.blocked
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

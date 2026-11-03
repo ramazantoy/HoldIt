@@ -46,6 +46,18 @@ MonoBehaviour:
     m_Localized: "Men\xFC"
     m_Metadata:
       m_Items: []
+  - m_Id: 585092608831488
+    m_Localized: "Yanl\u0131\u015F kap\u0131!"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 585092663357440
+    m_Localized: "S\u0131\u011Fm\u0131yorum!"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 585092663357441
+    m_Localized: "Yol kapal\u0131!"
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

@@ -19,3 +19,14 @@ MonoBehaviour:
   _womanNormal: {fileID: 1378775174860889065, guid: 00f3d270cf271664c9e74340931a2656, type: 3}
   _womanFat: {fileID: 4296709586033861824, guid: 80ccc9673c7103845b54f442ea09bb8a, type: 3}
   _turnRate: 14
+  _walk:
+    _cyclesPerTile: 0.8
+    _legSwing: 40
+    _armSwing: 30
+    _bob: 0.04
+    _sway: 4
+    _blendRate: 10
+  _bubble:
+    _pop: 0.18
+    _fadeAt: 1.2
+    _fade: 0.3

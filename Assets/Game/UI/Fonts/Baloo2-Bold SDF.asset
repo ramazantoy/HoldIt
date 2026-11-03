@@ -38,9 +38,9 @@ Material:
     - _OutlineSoftness: 0
     - _OutlineWidth: 0
     - _PerspectiveFilter: 0.875
-    - _ScaleRatioA: 1
+    - _ScaleRatioA: 0.85714287
     - _ScaleRatioB: 1
-    - _ScaleRatioC: 1
+    - _ScaleRatioC: 0.6964286
     - _ScaleX: 1
     - _ScaleY: 1
     - _ShaderFlags: 0
@@ -6442,7 +6442,7 @@ MonoBehaviour:
   m_AtlasTextureIndex: 0
   m_IsMultiAtlasTexturesEnabled: 1
   m_GetFontFeatures: 1
-  m_ClearDynamicDataOnBuild: 1
+  m_ClearDynamicDataOnBuild: 0
   m_AtlasWidth: 1024
   m_AtlasHeight: 1024
   m_AtlasPadding: 6

@@ -15,3 +15,5 @@ MonoBehaviour:
   _thinSpeed: 3
   _normalSpeed: 2.6
   _fatSpeed: 2
+  _blockedWaitSeconds: 0.6
+  _returnSpeedFactor: 1.2
