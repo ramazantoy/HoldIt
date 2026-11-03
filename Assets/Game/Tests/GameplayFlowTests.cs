@@ -9,6 +9,7 @@ namespace HoldIt.Tests
     {
         private FakeHud _hud;
         private FakePauseView _view;
+        private FakeSettingsScreen _settings;
         private FakePause _pause;
         private FakeLevelRun _run;
         private FakeSceneLoader _scenes;
@@ -20,11 +21,12 @@ namespace HoldIt.Tests
         {
             _hud = new FakeHud();
             _view = new FakePauseView();
+            _settings = new FakeSettingsScreen();
             _pause = new FakePause();
             _run = new FakeLevelRun();
             _scenes = new FakeSceneLoader();
             _back = new BackBroker();
-            _flow = new GameplayFlow(_hud, _view, _pause, _run, _scenes, _back.Subscriber);
+            _flow = new GameplayFlow(_hud, _view, _settings, _pause, _run, _scenes, _back.Subscriber);
             _flow.Initialize();
             _flow.Start();
         }
@@ -123,6 +125,68 @@ namespace HoldIt.Tests
         }
 
         [Test]
+        public void Settings_ReplacesThePauseScreen_AndTheGameStaysPaused()
+        {
+            _hud.ClickPause();
+
+            _view.ClickSettings();
+
+            Assert.IsTrue(_settings.IsOpen);
+            Assert.IsFalse(_view.Visible);
+            Assert.IsTrue(_pause.IsPaused);
+        }
+
+        [Test]
+        public void Back_ClosesTheTopmostScreen_SettingsThenPause()
+        {
+            _hud.ClickPause();
+            _view.ClickSettings();
+
+            _back.Press();
+            Assert.IsFalse(_settings.IsOpen, "First back");
+            Assert.IsTrue(_view.Visible, "First back brings the pause screen back.");
+            Assert.IsTrue(_pause.IsPaused, "First back");
+
+            _back.Press();
+            Assert.IsFalse(_view.Visible, "Second back");
+            Assert.IsFalse(_pause.IsPaused, "Second back");
+        }
+
+        [Test]
+        public void SettingsClosedItself_BringsThePauseScreenBack()
+        {
+            _hud.ClickPause();
+            _view.ClickSettings();
+
+            _settings.Close();
+
+            Assert.IsTrue(_view.Visible);
+            Assert.IsTrue(_pause.IsPaused);
+        }
+
+        [Test]
+        public void Settings_WithoutThePauseScreen_DoesNothing()
+        {
+            _view.ClickSettings();
+
+            Assert.IsFalse(_settings.IsOpen);
+        }
+
+        [Test]
+        public void ResumeAndMenu_WhileTheSettingsAreOpen_DoNothing()
+        {
+            _hud.ClickPause();
+            _view.ClickSettings();
+
+            _view.ClickResume();
+            _view.ClickMenu();
+
+            Assert.IsTrue(_pause.IsPaused);
+            Assert.IsTrue(_settings.IsOpen);
+            Assert.AreEqual(0, _scenes.Loads.Count);
+        }
+
+        [Test]
         public void Dispose_ReleasesThePause()
         {
             _hud.ClickPause();
@@ -154,6 +218,7 @@ namespace HoldIt.Tests
         private sealed class FakePauseView : IPauseView
         {
             public event Action ResumeClicked;
+            public event Action SettingsClicked;
             public event Action MenuClicked;
 
             public bool Visible { get; private set; }
@@ -168,6 +233,7 @@ namespace HoldIt.Tests
             }
 
             public void ClickResume() => ResumeClicked?.Invoke();
+            public void ClickSettings() => SettingsClicked?.Invoke();
             public void ClickMenu() => MenuClicked?.Invoke();
         }
     }

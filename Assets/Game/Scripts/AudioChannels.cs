@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using AF.Audio;
 
 namespace HoldIt
@@ -12,6 +13,12 @@ namespace HoldIt
         public static readonly AudioChannel Music = new AudioChannel("Music", "MusicVolume");
         public static readonly AudioChannel Sfx = new AudioChannel("SFX", "SfxVolume");
         public static readonly AudioChannel Ui = new AudioChannel("UI", "UiVolume");
+
+        /// <summary>
+        /// The settings screen's volume sliders, top to bottom; the screen's prefab has one slider per row. The UI channel
+        /// is not among them: it follows Master.
+        /// </summary>
+        public static readonly IReadOnlyList<AudioChannel> SettingsSliders = new[] { Master, Music, Sfx };
 
         public static AudioOptions CreateOptions() =>
             new AudioOptions { Music = Music }

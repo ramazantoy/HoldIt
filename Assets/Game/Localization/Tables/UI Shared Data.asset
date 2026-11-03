@@ -20,7 +20,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 182436367183872
-    m_Key: menu.settings
+    m_Key: common.settings
     m_Metadata:
       m_Items: []
   - m_Id: 182436467847168
@@ -29,10 +29,6 @@ MonoBehaviour:
       m_Items: []
   - m_Id: 182436467847169
     m_Key: settings.title
-    m_Metadata:
-      m_Items: []
-  - m_Id: 182436472041472
-    m_Key: settings.empty
     m_Metadata:
       m_Items: []
   - m_Id: 182436472041473
@@ -97,6 +93,30 @@ MonoBehaviour:
       m_Items: []
   - m_Id: 819959196037128
     m_Key: result.retry
+    m_Metadata:
+      m_Items: []
+  - m_Id: 867408212144128
+    m_Key: menu.levels
+    m_Metadata:
+      m_Items: []
+  - m_Id: 867408258281472
+    m_Key: settings.master
+    m_Metadata:
+      m_Items: []
+  - m_Id: 867408258281473
+    m_Key: settings.music
+    m_Metadata:
+      m_Items: []
+  - m_Id: 867408258281474
+    m_Key: settings.sfx
+    m_Metadata:
+      m_Items: []
+  - m_Id: 867408258281475
+    m_Key: settings.haptics
+    m_Metadata:
+      m_Items: []
+  - m_Id: 867408258281476
+    m_Key: settings.language
     m_Metadata:
       m_Items: []
   m_Metadata:

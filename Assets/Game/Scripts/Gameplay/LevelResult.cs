@@ -15,10 +15,14 @@ namespace HoldIt.Gameplay
         public readonly int Served;
         public readonly int Crowd;
 
-        /// <summary>Whether a level follows this one.</summary>
+        /// <summary>Whether a level follows this one, open or not.</summary>
         public readonly bool HasNext;
 
-        public LevelResult(LevelOutcome outcome, int level, int stars, int maxStars, int served, int crowd, bool hasNext)
+        /// <summary>Whether a level follows this one and the progress has it open: Next takes the player there.</summary>
+        public readonly bool NextOpen;
+
+        public LevelResult(LevelOutcome outcome, int level, int stars, int maxStars, int served, int crowd, bool hasNext,
+            bool nextOpen)
         {
             Outcome = outcome;
             Level = level;
@@ -27,6 +31,7 @@ namespace HoldIt.Gameplay
             Served = served;
             Crowd = crowd;
             HasNext = hasNext;
+            NextOpen = nextOpen;
         }
 
         public bool IsWon => Outcome == LevelOutcome.Won;

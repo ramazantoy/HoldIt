@@ -10,10 +10,12 @@ namespace HoldIt.Menu
     public sealed class MainMenuView : ScreenView, IMainMenuView
     {
         [SerializeField, Required] private Button _play;
+        [SerializeField, Required] private Button _levels;
         [SerializeField, Required] private Button _settings;
         [SerializeField, Required] private Button _quit;
 
         public event Action PlayClicked;
+        public event Action LevelsClicked;
         public event Action SettingsClicked;
         public event Action QuitClicked;
 
@@ -28,6 +30,7 @@ namespace HoldIt.Menu
         private void Awake()
         {
             _play.onClick.AddListener(() => PlayClicked?.Invoke());
+            _levels.onClick.AddListener(() => LevelsClicked?.Invoke());
             _settings.onClick.AddListener(() => SettingsClicked?.Invoke());
             _quit.onClick.AddListener(() => QuitClicked?.Invoke());
         }

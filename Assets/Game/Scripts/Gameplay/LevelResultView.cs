@@ -10,7 +10,7 @@ namespace HoldIt.Gameplay
 {
     /// <summary>
     /// The level's result screen (LevelResultScreen prefab): a title for a won level, the last one won, or a lost one; a
-    /// star per life left; who made it out of the crowd; and the buttons. Next shows only when won with a level to follow.
+    /// star per life left; who made it out of the crowd; and the buttons. Next shows only when the next level is open.
     /// </summary>
     public sealed class LevelResultView : ScreenView, ILevelResultView
     {
@@ -52,7 +52,7 @@ namespace HoldIt.Gameplay
                 _stars[i].gameObject.SetActive(i < result.MaxStars);
                 _stars[i].color = i < result.Stars ? _style.StarEarned : _style.StarMissed;
             }
-            _next.gameObject.SetActive(result.IsWon && result.HasNext);
+            _next.gameObject.SetActive(result.NextOpen);
             ShowScreen();
         }
 

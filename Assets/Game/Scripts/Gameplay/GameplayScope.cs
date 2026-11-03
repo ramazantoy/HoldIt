@@ -5,6 +5,7 @@ using HoldIt.Drawing;
 using HoldIt.Input;
 using HoldIt.Levels;
 using HoldIt.Restrooms;
+using HoldIt.Settings;
 using HoldIt.Spawning;
 using MessagePipe;
 using UnityEngine;
@@ -15,13 +16,14 @@ namespace HoldIt.Gameplay
 {
     /// <summary>
     /// The gameplay scene's scope. It plays the root's current level (<see cref="ILevelCursor"/>): its map's board and
-    /// restrooms, the characters it brings in, the run that keeps its score, path drawing, the HUD, the pause and result
-    /// screens, and for now a log of the presses.
+    /// restrooms, the characters it brings in, the run that keeps its score, path drawing, the HUD, the pause, settings
+    /// and result screens, and for now a log of the presses.
     /// </summary>
     public sealed class GameplayScope : SceneScope
     {
         [SerializeField, Required] private GameplayHudView _hud;
         [SerializeField, Required] private PauseView _pauseScreen;
+        [SerializeField, Required] private SettingsView _settingsScreen;
         [SerializeField, Required] private LevelResultView _resultScreen;
         [SerializeField, Required] private BoardView _board;
         [SerializeField, Required] private BoardCamera _boardCamera;
@@ -48,6 +50,7 @@ namespace HoldIt.Gameplay
             builder.UseDrawing(_drawingConfig);
             builder.RegisterComponent(_hud).As<IGameplayHudView, IBoardInsets>();
             builder.RegisterComponent(_pauseScreen).As<IPauseView>();
+            builder.UseSettingsScreen(_settingsScreen);
             builder.RegisterComponent(_resultScreen).As<ILevelResultView>();
             builder.RegisterEntryPoint<HudPresenter>();
             builder.RegisterEntryPoint<GameplayFlow>();

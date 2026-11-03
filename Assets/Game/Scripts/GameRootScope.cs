@@ -7,6 +7,7 @@ using AF.Save;
 using AF.Settings;
 using HoldIt.Input;
 using HoldIt.Levels;
+using HoldIt.Settings;
 using MessagePipe;
 using UnityEngine;
 using UnityEngine.Audio;
@@ -45,6 +46,9 @@ namespace HoldIt
             builder.UsePlatform(messagePipe);
             // After UseSave, UseAudio and UseInput: display settings, and saving the channel volumes.
             builder.UseSettings(messagePipe);
+            // The game's own settings (vibration), next to the language in the global data.
+            builder.UseGameSettings();
+            // The levels, and the progress through them in the global data.
             builder.UseLevels(_levels);
         }
     }

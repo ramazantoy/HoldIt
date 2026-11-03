@@ -34,8 +34,8 @@ MonoBehaviour:
     m_Localized: Ayarlar
     m_Metadata:
       m_Items: []
-  - m_Id: 182436472041472
-    m_Localized: "Yak\u0131nda"
+  - m_Id: 867408212144128
+    m_Localized: Seviyeler
     m_Metadata:
       m_Items: []
   - m_Id: 182436472041473
@@ -100,6 +100,26 @@ MonoBehaviour:
       m_Items: []
   - m_Id: 819959196037128
     m_Localized: Tekrar dene
+    m_Metadata:
+      m_Items: []
+  - m_Id: 867408258281472
+    m_Localized: Genel
+    m_Metadata:
+      m_Items: []
+  - m_Id: 867408258281473
+    m_Localized: "M\xFCzik"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 867408258281474
+    m_Localized: Efektler
+    m_Metadata:
+      m_Items: []
+  - m_Id: 867408258281475
+    m_Localized: "Titre\u015Fim"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 867408258281476
+    m_Localized: Dil
     m_Metadata:
       m_Items: []
   references:

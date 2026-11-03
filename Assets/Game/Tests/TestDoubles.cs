@@ -7,6 +7,7 @@ using HoldIt.Input;
 using HoldIt.Levels;
 using HoldIt.Paths;
 using HoldIt.Restrooms;
+using HoldIt.Settings;
 using MessagePipe;
 using UnityEngine;
 using VContainer;
@@ -206,20 +207,62 @@ namespace HoldIt.Tests
         public int Stars { get; set; }
     }
 
-    /// <summary>A cursor over <see cref="Count"/> levels without definitions.</summary>
+    /// <summary>A cursor over <see cref="Count"/> levels without definitions, the first <see cref="Open"/> of them open.</summary>
     internal sealed class FakeLevelCursor : ILevelCursor
     {
         public int Index { get; set; }
         public int Number => Index + 1;
         public int Count { get; set; } = 3;
+        public int Open { get; set; } = int.MaxValue;
         public LevelDefinition Current => null;
         public bool HasNext => Index < Count - 1;
+        public bool IsNextOpen => HasNext && Index + 1 < Open;
+
+        public void Select(int index)
+        {
+            if (index < 0 || index >= Count || index >= Open)
+                throw new InvalidOperationException($"Level {index + 1} cannot be selected.");
+            Index = index;
+        }
 
         public void Next()
         {
-            if (!HasNext)
-                throw new InvalidOperationException("No next level.");
+            if (!IsNextOpen)
+                throw new InvalidOperationException("No open next level.");
             Index++;
+        }
+    }
+
+    /// <summary>Progress the test sets by hand: <see cref="Unlocked"/> levels open, <see cref="Stars"/> per level.</summary>
+    internal sealed class FakeLevelProgress : ILevelProgress
+    {
+        public readonly Dictionary<int, int> Stars = new Dictionary<int, int>();
+        public readonly List<(int Index, int Stars)> Wins = new List<(int, int)>();
+
+        public int Unlocked { get; set; } = 1;
+
+        public bool IsUnlocked(int index) => index >= 0 && index < Unlocked;
+
+        public int BestStars(int index) => Stars.TryGetValue(index, out var stars) ? stars : 0;
+
+        public void RecordWin(int index, int stars) => Wins.Add((index, stars));
+    }
+
+    /// <summary>A settings screen that only opens and closes.</summary>
+    internal sealed class FakeSettingsScreen : ISettingsScreen
+    {
+        public bool IsOpen { get; private set; }
+
+        public event Action Closed;
+
+        public void Open() => IsOpen = true;
+
+        public void Close()
+        {
+            if (!IsOpen)
+                return;
+            IsOpen = false;
+            Closed?.Invoke();
         }
     }
 }

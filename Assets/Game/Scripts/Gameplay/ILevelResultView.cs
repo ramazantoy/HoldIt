@@ -2,7 +2,7 @@ using System;
 
 namespace HoldIt.Gameplay
 {
-    /// <summary>The screen at a level's end: how it went, then the next level (when won and one follows), again, or the menu.</summary>
+    /// <summary>The screen at a level's end: how it went, then the next level (when it is open), again, or the menu.</summary>
     public interface ILevelResultView
     {
         event Action NextClicked;

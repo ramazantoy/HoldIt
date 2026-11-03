@@ -11,8 +11,10 @@ namespace HoldIt.Gameplay
 {
     /// <summary>
     /// A level's end. As it ends, drawing stops (an input mode without the gameplay map) and the board plays on a moment,
-    /// so the last accident is seen; then the game pauses under the result screen. Next moves on to the next level and
-    /// Retry plays this one again, both by loading the gameplay scene anew; Menu, or back, leaves for the menu.
+    /// so the last accident is seen; then the game pauses under the result screen. Next moves on to the next level when the
+    /// progress has it open (a win opens it; a level played again may have it open already, lost or won), and Retry plays
+    /// this one again, both by loading the gameplay scene anew; Menu, or back, leaves for the menu. A win is in the
+    /// progress by the time the screen shows (<see cref="ProgressRecorder"/> keeps it as the level ends).
     /// </summary>
     internal sealed class LevelEndFlow : IInitializable, IStartable, ITickable, IDisposable
     {
@@ -79,7 +81,7 @@ namespace HoldIt.Gameplay
 
             _paused = _pause.Request(PAUSE_REASON);
             _view.Show(new LevelResult(_run.Outcome, _cursor.Number, _run.Stars, _run.MaxLives, _run.Served, _run.Crowd,
-                _cursor.HasNext));
+                _cursor.HasNext, _cursor.IsNextOpen));
         }
 
         public void Dispose()
@@ -103,7 +105,7 @@ namespace HoldIt.Gameplay
 
         private void Next()
         {
-            if (!CanLeave() || _run.Outcome != LevelOutcome.Won || !_cursor.HasNext)
+            if (!CanLeave() || !_cursor.IsNextOpen)
                 return;
             _leaving = true;
             _cursor.Next();

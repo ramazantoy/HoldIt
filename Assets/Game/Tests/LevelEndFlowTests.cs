@@ -118,6 +118,7 @@ namespace HoldIt.Tests
             Assert.AreEqual(7, result.Served);
             Assert.AreEqual(9, result.Crowd);
             Assert.IsTrue(result.HasNext);
+            Assert.IsTrue(result.NextOpen);
             Assert.IsFalse(result.IsGameDone);
         }
 
@@ -129,6 +130,7 @@ namespace HoldIt.Tests
             ShowResult(LevelOutcome.Won);
 
             Assert.IsFalse(_view.Shown.Value.HasNext);
+            Assert.IsFalse(_view.Shown.Value.NextOpen);
             Assert.IsTrue(_view.Shown.Value.IsGameDone);
         }
 
@@ -157,10 +159,25 @@ namespace HoldIt.Tests
         }
 
         [Test]
-        public void Next_AfterALoss_DoesNothing()
+        public void Next_AfterALoss_WithTheNextOpen_MovesOn()
         {
             ShowResult(LevelOutcome.Lost);
 
+            Assert.IsTrue(_view.Shown.Value.NextOpen, "A level played again may have its next one open already.");
+            _view.ClickNext();
+
+            Assert.AreEqual(1, _cursor.Index);
+            CollectionAssert.AreEqual(new[] { Scenes.Gameplay }, _scenes.Loads);
+        }
+
+        [Test]
+        public void Next_WithTheNextLocked_IsHiddenAndDoesNothing()
+        {
+            _cursor.Open = 1;
+            ShowResult(LevelOutcome.Lost);
+
+            Assert.IsTrue(_view.Shown.Value.HasNext);
+            Assert.IsFalse(_view.Shown.Value.NextOpen);
             _view.ClickNext();
 
             Assert.AreEqual(0, _cursor.Index);
