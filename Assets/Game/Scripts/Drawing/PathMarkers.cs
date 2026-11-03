@@ -10,8 +10,8 @@ namespace HoldIt.Drawing
 {
     /// <summary>
     /// Marks every cell of the path being drawn, its end in red while it cannot end there, and the cells still ahead of
-    /// every walking or returning character, so a path shortens as it is walked. Marks come from the scene's pools and are
-    /// matched to the wanted list every frame.
+    /// every walking character, so a path shortens as it is walked. Marks come from the scene's pools and are matched to
+    /// the wanted list every frame.
     /// </summary>
     internal sealed class PathMarkers : ILateTickable, IDisposable
     {

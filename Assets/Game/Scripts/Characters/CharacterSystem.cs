@@ -12,7 +12,7 @@ namespace HoldIt.Characters
     /// <summary>
     /// Drives every character (the presenter the GDD calls CharacterController): adds them, hands them their paths, and
     /// advances them each frame with game time, so they stop while the game is paused. It is also their step gate: the
-    /// tile rules (<see cref="StepRules"/>) for walkers, then the cell claims (<see cref="CellClaims"/>) for everyone. At
+    /// tile rules (<see cref="StepRules"/>), then the cell claims (<see cref="CellClaims"/>). At
     /// its restroom's door a character takes a free stall and walks in, or queues on the door until one frees; once in
     /// the stall it leaves the board.
     /// </summary>
@@ -69,7 +69,7 @@ namespace HoldIt.Characters
 
             var id = new CharacterId(++_lastId);
             var character = new Character(id, gender, size, cell, _config.WalkSpeed(size), _config.BlockedWaitSeconds,
-                _config.ReturnSpeedFactor, _config.StallWalkSpeed);
+                _config.StallWalkSpeed);
             _characters.Add(character);
             _byId.Add(id, character);
             _claims.Occupy(cell, id);
@@ -84,8 +84,8 @@ namespace HoldIt.Characters
             if (!_byId.TryGetValue(id, out var character) || !CanEndOn(id, path.End) || !character.TryWalk(path))
                 return false;
 
-            Reserve(path.Start, id);
-            Reserve(path.End, id);
+            if (!IsDoor(path.End))
+                _claims.Reserve(path.End, id);
             _stateChanged.Publish(new CharacterStateChanged(id, character.State));
             return true;
         }
@@ -106,7 +106,8 @@ namespace HoldIt.Characters
                 AtTheDoor(character);
                 if (character.State != before)
                 {
-                    UpdateReservations(character);
+                    // Only a walker keeps a reservation, and nobody starts walking here.
+                    _claims.UnreserveAll(character.Id);
                     _stateChanged.Publish(new CharacterStateChanged(character.Id, character.State));
                 }
                 if (refusal != StepRefusal.None)
@@ -128,12 +129,9 @@ namespace HoldIt.Characters
 
         StepVerdict IStepGate.TryEnter(ICharacter character, Cell next)
         {
-            if (character.State == CharacterState.Walking)
-            {
-                var rule = StepRules.Check(_grid.At(next), character.Gender, character.Size);
-                if (rule != StepVerdict.Enter)
-                    return rule;
-            }
+            var rule = StepRules.Check(_grid.At(next), character.Gender, character.Size);
+            if (rule != StepVerdict.Enter)
+                return rule;
             return _claims.Occupy(next, character.Id) ? StepVerdict.Enter : StepVerdict.Wait;
         }
 
@@ -181,23 +179,6 @@ namespace HoldIt.Characters
             _claims.UnreserveAll(character.Id);
             _restrooms.Shut(character.Visit.Gender, character.Visit.Stall);
             _removed.Publish(new CharacterRemoved(character.Id));
-        }
-
-        /// <summary>
-        /// Only a character walking back keeps a reservation: the cell it returns to, the end of its way back, which it
-        /// reserved when it set out. Idle, queued and visiting characters need none.
-        /// </summary>
-        private void UpdateReservations(Character character)
-        {
-            _claims.UnreserveAll(character.Id);
-            if (character.State == CharacterState.Returning)
-                Reserve(character.Route.End, character.Id);
-        }
-
-        private void Reserve(Cell cell, CharacterId id)
-        {
-            if (!IsDoor(cell))
-                _claims.Reserve(cell, id);
         }
 
         private bool IsDoor(Cell cell) => _grid.At(cell).Type == TileType.Door;

@@ -6,10 +6,10 @@ namespace HoldIt.Characters
         /// <summary>Nothing was refused.</summary>
         None,
 
-        /// <summary>It reached the other gender's door and walks back.</summary>
+        /// <summary>It reached the other gender's door and stops in front of it.</summary>
         WrongDoor,
 
-        /// <summary>It is Fat, reached a narrow passage and walks back.</summary>
+        /// <summary>It is Fat, reached a narrow passage and stops in front of it.</summary>
         TooWide,
 
         /// <summary>Someone stood in its way for too long; it stops where it is.</summary>

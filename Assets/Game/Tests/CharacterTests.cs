@@ -12,7 +12,6 @@ namespace HoldIt.Tests
     public class CharacterTests
     {
         private const float BlockedWait = 0.6f;
-        private const float ReturnFactor = 1.2f;
         private const float StallSpeed = 2f;
         private static readonly Cell _start = new Cell(0, 10);
 
@@ -25,7 +24,7 @@ namespace HoldIt.Tests
         public void CreateCharacter()
         {
             _character = new Character(new CharacterId(1), Gender.Female, BodySize.Normal, _start, 2f, BlockedWait,
-                ReturnFactor, StallSpeed);
+                StallSpeed);
             _gate = new ScriptedGate();
         }
 
@@ -44,13 +43,11 @@ namespace HoldIt.Tests
         public void New_WithoutSpeedOrWithANegativeWait_Throws()
         {
             Assert.Throws<ArgumentOutOfRangeException>(() =>
-                new Character(new CharacterId(1), Gender.Male, BodySize.Fat, _start, 0f, BlockedWait, ReturnFactor, StallSpeed));
+                new Character(new CharacterId(1), Gender.Male, BodySize.Fat, _start, 0f, BlockedWait, StallSpeed));
             Assert.Throws<ArgumentOutOfRangeException>(() =>
-                new Character(new CharacterId(1), Gender.Male, BodySize.Fat, _start, 2f, -1f, ReturnFactor, StallSpeed));
+                new Character(new CharacterId(1), Gender.Male, BodySize.Fat, _start, 2f, -1f, StallSpeed));
             Assert.Throws<ArgumentOutOfRangeException>(() =>
-                new Character(new CharacterId(1), Gender.Male, BodySize.Fat, _start, 2f, BlockedWait, 0f, StallSpeed));
-            Assert.Throws<ArgumentOutOfRangeException>(() =>
-                new Character(new CharacterId(1), Gender.Male, BodySize.Fat, _start, 2f, BlockedWait, ReturnFactor, 0f));
+                new Character(new CharacterId(1), Gender.Male, BodySize.Fat, _start, 2f, BlockedWait, 0f));
         }
 
         [Test]
@@ -264,24 +261,23 @@ namespace HoldIt.Tests
         }
 
         [Test]
-        public void Advance_ARefusedStep_WalksBackOverTheCellsWalkedAndFaster()
+        public void Advance_ARefusedStep_StopsWhereItIsAndCanBeSentAgain()
         {
             _gate.Verdicts[new Cell(3, 10)] = StepVerdict.WrongDoor;
             _character.TryWalk(East(4));
 
             Assert.AreEqual(StepRefusal.WrongDoor, _character.Advance(1.1f, _gate));
 
-            Assert.AreEqual(CharacterState.Returning, _character.State);
-            Assert.AreEqual(new Cell(2, 10), _character.Cell);
-            Assert.AreEqual(new Cell(1, 10), _character.Next);
-            Assert.AreEqual(Direction.West, _character.Facing);
-            Assert.AreEqual(0.1f * 2f * ReturnFactor, _character.StepProgress, 1e-4f);
-            CollectionAssert.AreEqual(new[] { new Cell(2, 10), new Cell(1, 10), _start }, Cells(_character.Route));
-
-            _character.Advance(10f, _gate);
-
             Assert.AreEqual(CharacterState.Idle, _character.State);
-            Assert.AreEqual(_start, _character.Cell);
+            Assert.AreEqual(new Cell(2, 10), _character.Cell);
+            Assert.AreEqual(new Cell(2, 10), _character.Next);
+            Assert.AreEqual(0f, _character.StepProgress);
+            Assert.AreEqual(Direction.East, _character.Facing, "It faces where it could not go.");
+            Assert.IsNull(_character.Route);
+
+            Assert.AreEqual(StepRefusal.None, _character.Advance(10f, _gate));
+            Assert.AreEqual(new Cell(2, 10), _character.Cell);
+            Assert.IsTrue(_character.TryWalk(new CellPath(new[] { new Cell(2, 10), new Cell(2, 9) })));
         }
 
         [Test]
@@ -296,22 +292,6 @@ namespace HoldIt.Tests
             Assert.AreEqual(_start, _character.Cell);
             Assert.IsNull(_character.Route);
             Assert.AreEqual(Direction.East, _character.Facing, "It faces where it could not go.");
-        }
-
-        [Test]
-        public void Advance_WalkingBackIntoAHeldCell_StopsWhereItIsAfterTheWait()
-        {
-            _gate.Verdicts[new Cell(3, 10)] = StepVerdict.WrongDoor;
-            _character.TryWalk(East(4));
-            _character.Advance(1f, _gate);
-
-            _gate.Verdicts[new Cell(1, 10)] = StepVerdict.Wait;
-            _character.Advance(0.1f, _gate);
-            Assert.AreEqual(CharacterState.Returning, _character.State);
-
-            Assert.AreEqual(StepRefusal.Blocked, _character.Advance(BlockedWait, _gate));
-            Assert.AreEqual(CharacterState.Idle, _character.State);
-            Assert.AreEqual(new Cell(2, 10), _character.Cell);
         }
 
         [Test]
@@ -423,14 +403,6 @@ namespace HoldIt.Tests
             for (var i = 0; i < count; i++)
                 cells[i] = new Cell(_start.Col + i, _start.Row);
             return new CellPath(cells);
-        }
-
-        private static Cell[] Cells(CellPath path)
-        {
-            var cells = new Cell[path.Count];
-            for (var i = 0; i < path.Count; i++)
-                cells[i] = path[i];
-            return cells;
         }
 
         /// <summary>Lets the character into every cell except those given a verdict; records what it was asked.</summary>

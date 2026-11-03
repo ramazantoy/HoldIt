@@ -25,9 +25,9 @@ namespace HoldIt.Characters
         CharacterId Spawn(Gender gender, BodySize size, Cell cell);
 
         /// <summary>
-        /// Starts the character on the path and reserves its end (unless a door) and its start, where a refused walk
-        /// returns. False when there is no such character, it is not Idle, the path does not start on its cell, or the
-        /// character cannot end on the path's last cell (<see cref="CanEndOn"/>).
+        /// Starts the character on the path and reserves its end (unless a door) while it walks. False when there is no
+        /// such character, it is not Idle, the path does not start on its cell, or the character cannot end on the path's
+        /// last cell (<see cref="CanEndOn"/>).
         /// </summary>
         bool TryWalk(CharacterId id, CellPath path);
 

@@ -9,9 +9,6 @@ namespace HoldIt.Characters
         /// <summary>Following its path one cell at a time; every step is checked before it is taken.</summary>
         Walking,
 
-        /// <summary>Refused on the way, walking back to where its path began; only other characters can stop it.</summary>
-        Returning,
-
         /// <summary>At its restroom's door with every stall busy; it holds the door until a stall frees.</summary>
         Queued,
 

@@ -197,7 +197,7 @@ namespace HoldIt.Tests
         }
 
         [Test]
-        public void TryWalk_KeepsTheStartForTheWalkerUntilItArrives()
+        public void TryWalk_KeepsOnlyTheEnd_SoTheStartFreesOnceLeft()
         {
             var walker = _system.Spawn(Gender.Male, BodySize.Normal, _lobby);
             var other = _system.Spawn(Gender.Female, BodySize.Normal, new Cell(1, 10));
@@ -206,14 +206,9 @@ namespace HoldIt.Tests
             _system.Tick();
 
             Assert.AreNotEqual(_lobby, Character(walker).Cell);
-            Assert.IsFalse(_system.CanEndOn(other, _lobby));
-
-            _clock.DeltaTime = 10f;
-            _system.Tick();
-
-            Assert.AreEqual(CharacterState.Idle, Character(walker).State);
             Assert.IsTrue(_system.CanEndOn(other, _lobby));
             Assert.IsTrue(_system.IsFree(_lobby));
+            Assert.IsFalse(_system.CanEndOn(other, new Cell(0, 8)));
         }
 
         [Test]
@@ -322,7 +317,7 @@ namespace HoldIt.Tests
         }
 
         [Test]
-        public void Tick_AtTheWrongDoor_WalksBackAndSaysSo()
+        public void Tick_AtTheWrongDoor_StopsInFrontOfItAndSaysSo()
         {
             var start = new Cell(3, 7);
             var walker = _system.Spawn(Gender.Female, BodySize.Normal, start);
@@ -332,17 +327,19 @@ namespace HoldIt.Tests
             _clock.DeltaTime = 4f / _config.WalkSpeed(BodySize.Normal) + 0.01f;
             _system.Tick();
 
-            Assert.AreEqual(CharacterState.Returning, Character(walker).State);
+            Assert.AreEqual(CharacterState.Idle, Character(walker).State);
+            Assert.AreEqual(new Cell(2, 4), Character(walker).Cell);
+            Assert.AreEqual(Direction.North, Character(walker).Facing);
             Assert.AreEqual(StepRefusal.WrongDoor, _refused[0].Reason);
-            Assert.AreEqual(CharacterState.Returning, _stateWhenRefused[0]);
-            Assert.AreEqual(CharacterState.Returning, _changed[_changed.Count - 1].State);
-            Assert.IsFalse(_system.CanEndOn(other, start), "It keeps the cell it returns to.");
+            Assert.AreEqual(CharacterState.Idle, _stateWhenRefused[0]);
+            Assert.AreEqual(CharacterState.Idle, _changed[_changed.Count - 1].State);
+            Assert.IsTrue(_system.CanEndOn(other, start), "Nothing is kept for it.");
+            Assert.IsTrue(_system.IsFree(_maleDoor), "It never stepped onto the door.");
 
             _clock.DeltaTime = 10f;
             _system.Tick();
 
-            Assert.AreEqual(CharacterState.Idle, Character(walker).State);
-            Assert.AreEqual(start, Character(walker).Cell);
+            Assert.AreEqual(new Cell(2, 4), Character(walker).Cell);
             Assert.AreEqual(1, _refused.Count);
         }
 
@@ -536,16 +533,6 @@ namespace HoldIt.Tests
             Assert.AreEqual(CharacterState.InStall, Character(id).State);
         }
 
-        [Test]
-        public void TryEnter_WalkingBack_SkipsTheTileRules()
-        {
-            IStepGate gate = _system;
-            var femaleStep = new Character(new CharacterId(50), Gender.Female, BodySize.Fat, new Cell(2, 4), 1f, 1f, 1f, 1f);
-
-            Assert.AreEqual(StepVerdict.WrongDoor, gate.TryEnter(new Walker(femaleStep, CharacterState.Walking), _maleDoor));
-            Assert.AreEqual(StepVerdict.Enter, gate.TryEnter(new Walker(femaleStep, CharacterState.Returning), _maleDoor));
-        }
-
         /// <summary>A Normal man walks from <paramref name="from"/>, next to the men's door, onto it.</summary>
         private CharacterId WalkToMaleDoor(Cell from)
         {
@@ -583,32 +570,6 @@ namespace HoldIt.Tests
             for (var i = 0; i < cells.Length; i++)
                 path[i] = new Cell(cells[i].Col, cells[i].Row);
             return new CellPath(path);
-        }
-
-        /// <summary>A character as the gate sees it, in the state the test needs.</summary>
-        private sealed class Walker : ICharacter
-        {
-            private readonly ICharacter _character;
-
-            public Walker(ICharacter character, CharacterState state)
-            {
-                _character = character;
-                State = state;
-            }
-
-            public CharacterId Id => _character.Id;
-            public Gender Gender => _character.Gender;
-            public BodySize Size => _character.Size;
-            public float Speed => _character.Speed;
-            public CharacterState State { get; }
-            public Cell Cell => _character.Cell;
-            public Cell Next => _character.Next;
-            public float StepProgress => _character.StepProgress;
-            public Direction Facing => _character.Facing;
-            public CellPath Route => _character.Route;
-            public int RouteIndex => _character.RouteIndex;
-            public StallVisit Visit => _character.Visit;
-            public float VisitDistance => _character.VisitDistance;
         }
     }
 }

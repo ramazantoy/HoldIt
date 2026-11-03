@@ -33,10 +33,7 @@ namespace HoldIt.Characters
         /// </summary>
         Direction Facing { get; }
 
-        /// <summary>
-        /// The cells being walked: the path while Walking, the way back while Returning; null otherwise. The character is
-        /// on <c>Route[RouteIndex]</c>.
-        /// </summary>
+        /// <summary>The path being walked while Walking; null otherwise. The character is on <c>Route[RouteIndex]</c>.</summary>
         CellPath Route { get; }
 
         /// <summary>Where on <see cref="Route"/> the character's <see cref="Cell"/> is.</summary>

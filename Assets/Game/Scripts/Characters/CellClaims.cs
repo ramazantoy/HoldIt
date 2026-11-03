@@ -5,8 +5,8 @@ namespace HoldIt.Characters
 {
     /// <summary>
     /// Who is on which cell and who will be. A cell holds at most one character (occupancy): the one standing on it, or
-    /// stepping into it. A cell can also be reserved by one character for later (reservation): where a path will end, or
-    /// where a walker would return to. Reservations keep two characters from being sent to the same place.
+    /// stepping into it. A cell can also be reserved by one character for later (reservation): where its path will end.
+    /// Reservations keep two characters from being sent to the same place.
     /// </summary>
     internal sealed class CellClaims
     {

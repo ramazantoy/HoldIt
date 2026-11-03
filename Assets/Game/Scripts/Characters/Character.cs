@@ -7,17 +7,16 @@ namespace HoldIt.Characters
 {
     /// <summary>
     /// One character and its state machine. Idle until it is given a path, then Walking it cell by cell. Before every step
-    /// it asks an <see cref="IStepGate"/>: a refused step (wrong door, too narrow) turns it back along the cells it walked
-    /// (Returning); a held cell makes it wait, and a wait past <c>blockedWait</c> seconds stops it where it is. It turns to
-    /// each cell before asking for it, so a refused or waiting character faces where it wanted to go. It is Idle again at
-    /// its path's end, back where it began, or where it stopped, and keeps facing the way it last turned. At its restroom's
-    /// door it is told to queue (Queued, standing there) or to go into a stall (InStall): then it walks the stall's way in,
-    /// off the grid and asking no gate, until it <see cref="IsInside"/>.
+    /// it asks an <see cref="IStepGate"/>: a refused step (wrong door, too narrow) stops it where it is; a held cell makes
+    /// it wait, and a wait past <c>blockedWait</c> seconds stops it too. It turns to each cell before asking for it, so a
+    /// refused or waiting character faces where it wanted to go. It is Idle again at its path's end or where it stopped,
+    /// and keeps facing the way it last turned. At its restroom's door it is told to queue (Queued, standing there) or to
+    /// go into a stall (InStall): then it walks the stall's way in, off the grid and asking no gate, until it
+    /// <see cref="IsInside"/>.
     /// </summary>
     public sealed class Character : ICharacter
     {
         private readonly float _blockedWait;
-        private readonly float _returnSpeedFactor;
         private readonly float _stallWalkSpeed;
         private CellPath _route;
         private int _index;
@@ -26,18 +25,14 @@ namespace HoldIt.Characters
 
         /// <param name="speed">Tiles per second.</param>
         /// <param name="blockedWait">The longest wait, in seconds, before a held cell; past it the character stops.</param>
-        /// <param name="returnSpeedFactor">How much faster than <paramref name="speed"/> it walks back.</param>
         /// <param name="stallWalkSpeed">World units per second along a stall's way in.</param>
         public Character(CharacterId id, Gender gender, BodySize size, Cell cell, float speed, float blockedWait,
-            float returnSpeedFactor, float stallWalkSpeed)
+            float stallWalkSpeed)
         {
             if (speed <= 0f)
                 throw new ArgumentOutOfRangeException(nameof(speed), $"A character needs a positive speed, not {speed}.");
             if (blockedWait < 0f)
                 throw new ArgumentOutOfRangeException(nameof(blockedWait), $"A wait cannot be negative ({blockedWait}).");
-            if (returnSpeedFactor <= 0f)
-                throw new ArgumentOutOfRangeException(nameof(returnSpeedFactor),
-                    $"Walking back needs a positive speed factor, not {returnSpeedFactor}.");
             if (stallWalkSpeed <= 0f)
                 throw new ArgumentOutOfRangeException(nameof(stallWalkSpeed),
                     $"Walking into a stall needs a positive speed, not {stallWalkSpeed}.");
@@ -47,7 +42,6 @@ namespace HoldIt.Characters
             Size = size;
             Speed = speed;
             _blockedWait = blockedWait;
-            _returnSpeedFactor = returnSpeedFactor;
             _stallWalkSpeed = stallWalkSpeed;
             Cell = cell;
             Next = cell;
@@ -113,10 +107,10 @@ namespace HoldIt.Characters
         }
 
         /// <summary>
-        /// Moves for <paramref name="deltaTime"/> seconds: along the route while Walking or Returning, asking
-        /// <paramref name="gate"/> before every step, or along the stall's way in while InStall. One call can cross several
-        /// cells; what is left of the time carries on, into a wait as well. Returns why a step was given up during the
-        /// call, or <see cref="StepRefusal.None"/>.
+        /// Moves for <paramref name="deltaTime"/> seconds: along the route while Walking, asking <paramref name="gate"/>
+        /// before every step, or along the stall's way in while InStall. One call can cross several cells; what is left of
+        /// the time carries on, into a wait as well. Returns why a step was given up during the call, or
+        /// <see cref="StepRefusal.None"/>.
         /// </summary>
         public StepRefusal Advance(float deltaTime, IStepGate gate)
         {
@@ -133,7 +127,7 @@ namespace HoldIt.Characters
 
             var refusal = StepRefusal.None;
             var time = deltaTime;
-            while (State == CharacterState.Walking || State == CharacterState.Returning)
+            while (State == CharacterState.Walking)
             {
                 if (!_stepping)
                 {
@@ -161,18 +155,17 @@ namespace HoldIt.Characters
                     }
                     if (verdict != StepVerdict.Enter)
                     {
+                        Stop();
                         refusal = verdict == StepVerdict.WrongDoor ? StepRefusal.WrongDoor : StepRefusal.TooWide;
-                        TurnBack();
-                        continue;
+                        break;
                     }
                     BeginStep();
                 }
 
-                var speed = State == CharacterState.Returning ? Speed * _returnSpeedFactor : Speed;
-                var timeLeft = (1f - StepProgress) / speed;
+                var timeLeft = (1f - StepProgress) / Speed;
                 if (time < timeLeft)
                 {
-                    StepProgress += time * speed;
+                    StepProgress += time * Speed;
                     break;
                 }
 
@@ -198,24 +191,6 @@ namespace HoldIt.Characters
             StepProgress = 0f;
             _stepping = false;
             gate.Leave(this, left);
-        }
-
-        /// <summary>Walks back over the cells walked so far; refused on the first step, it simply stays.</summary>
-        private void TurnBack()
-        {
-            if (_index == 0)
-            {
-                Stop();
-                return;
-            }
-
-            var cells = new Cell[_index + 1];
-            for (var i = 0; i <= _index; i++)
-                cells[i] = _route[_index - i];
-            _route = new CellPath(cells);
-            _index = 0;
-            _waited = 0f;
-            State = CharacterState.Returning;
         }
 
         private void Stop()

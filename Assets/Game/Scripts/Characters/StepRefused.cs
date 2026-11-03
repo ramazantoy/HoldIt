@@ -1,7 +1,7 @@
 namespace HoldIt.Characters
 {
     /// <summary>
-    /// A character gave up a step, for <see cref="Reason"/>. It already walks back or stands where it stopped; its
+    /// A character gave up a step, for <see cref="Reason"/>. It already stands where it stopped; its
     /// <see cref="CharacterStateChanged"/> comes first.
     /// </summary>
     public readonly struct StepRefused

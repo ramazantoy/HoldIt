@@ -2,7 +2,7 @@
 
 HoldIt: Unity 6.3 LTS + URP ile portre bir Android oyunu. Yukarıdan bakışlı tuvalet telaşı: erkek ve kadın karakterler
 (Thin/Normal/Fat) gelir, sabır barları dolar. Oyuncu parmağıyla karakterden kare kare yol çizer. Yanlış kapı, dar geçit
-(Fat için) ya da dolu kare karakteri geri döndürür. Doğru tuvalette karakter boş kabine girer ya da kapıda bekleyip kapıyı
+(Fat için) ya da dolu kare karakteri olduğu yerde durdurur. Doğru tuvalette karakter boş kabine girer ya da kapıda bekleyip kapıyı
 tıkar. Bar dolarsa kaza olur, üç kazada oyun biter. Oyun mağazaya çıkmaz; amaç public GitHub portföyü ve template'in sahada
 denenmesi. Framework template'ten gelir: DI context, GameManager, SceneManager, Save, Audio, Input, Pool, Settings,
 Localization, Platform, Build. Framework kararları `.claude/decisions/`'ta (indeks `README.md`, modül başına dosya), oyunun
