@@ -25,9 +25,13 @@ namespace HoldIt.Characters
         [SerializeField, Tooltip("How speech bubbles pop up and fade.")]
         private BubbleTiming _bubble = BubbleTiming.Default;
 
+        [SerializeField, Min(0f), Tooltip("How long a character that leaves the board (into a stall) takes to shrink away, in seconds.")]
+        private float _vanishSeconds = 0.2f;
+
         public float TurnRate => _turnRate;
         public WalkStyle Walk => _walk;
         public BubbleTiming Bubble => _bubble;
+        public float VanishSeconds => _vanishSeconds;
 
         public CharacterView Prefab(Gender gender, BodySize size) => gender == Gender.Male
             ? size switch { BodySize.Thin => _manThin, BodySize.Normal => _manNormal, _ => _manFat }

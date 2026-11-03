@@ -1,5 +1,6 @@
 using HoldIt.Board;
 using HoldIt.Paths;
+using HoldIt.Restrooms;
 
 namespace HoldIt.Characters
 {
@@ -15,7 +16,10 @@ namespace HoldIt.Characters
 
         CharacterState State { get; }
 
-        /// <summary>The cell the character stands on, or is stepping out of.</summary>
+        /// <summary>
+        /// The cell the character stands on, or is stepping out of. InStall, the door it came in through: where it is then
+        /// is on <see cref="Visit"/>'s line.
+        /// </summary>
         Cell Cell { get; }
 
         /// <summary>The cell the character is stepping into; the same as <see cref="Cell"/> between steps.</summary>
@@ -30,12 +34,18 @@ namespace HoldIt.Characters
         Direction Facing { get; }
 
         /// <summary>
-        /// The cells being walked: the path while Walking, the way back while Returning; null while Idle. The character is
+        /// The cells being walked: the path while Walking, the way back while Returning; null otherwise. The character is
         /// on <c>Route[RouteIndex]</c>.
         /// </summary>
         CellPath Route { get; }
 
         /// <summary>Where on <see cref="Route"/> the character's <see cref="Cell"/> is.</summary>
         int RouteIndex { get; }
+
+        /// <summary>The stall it is walking into while InStall; null before.</summary>
+        StallVisit Visit { get; }
+
+        /// <summary>How far along <see cref="Visit"/>'s line it has walked, in world units.</summary>
+        float VisitDistance { get; }
     }
 }

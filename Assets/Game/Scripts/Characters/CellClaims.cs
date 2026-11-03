@@ -46,14 +46,14 @@ namespace HoldIt.Characters
             return true;
         }
 
-        /// <summary>Drops every reservation of the character.</summary>
+        /// <summary>Drops every reservation of the character, and the character with them until it reserves again.</summary>
         public void UnreserveAll(CharacterId id)
         {
             if (!_reservedBy.TryGetValue(id, out var cells))
                 return;
             foreach (var cell in cells)
                 _reservations.Remove(cell);
-            cells.Clear();
+            _reservedBy.Remove(id);
         }
 
         /// <summary>True when nobody holds or reserved the cell.</summary>

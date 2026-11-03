@@ -1,0 +1,24 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b96693205f98d4a40b4d1f167727357e, type: 3}
+  m_Name: RestroomConfig
+  m_EditorClassIdentifier: Game::HoldIt.Restrooms.RestroomConfig
+  _stallSeconds: 4.5
+  _geometry:
+    _stallDepth: 1.8
+    _doorWidth: 0.9
+    _wallThickness: 0.14
+    _sideRoom: 0.3
+    _entryStep: 0.8
+    _approach: 0.4
+    _pass: 0.15
+    _insideDepth: 0.95

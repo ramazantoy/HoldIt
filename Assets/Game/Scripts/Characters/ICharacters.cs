@@ -6,19 +6,21 @@ namespace HoldIt.Characters
 {
     /// <summary>
     /// The characters on the board. Changes are announced after they are made: <see cref="CharacterSpawned"/>,
-    /// <see cref="CharacterStateChanged"/> and <see cref="StepRefused"/>. Positions change every frame and are read from
-    /// <see cref="ICharacter"/>. No two characters ever share a cell, and no two are sent to end on the same one.
+    /// <see cref="CharacterStateChanged"/>, <see cref="StepRefused"/> and <see cref="CharacterRemoved"/>. Positions change
+    /// every frame and are read from <see cref="ICharacter"/>. No two characters ever share a cell, and no two are sent to
+    /// end on the same one. A character that reaches its restroom's door goes into a free stall (InStall) or waits on the
+    /// door (Queued); once in the stall it is removed.
     /// </summary>
     public interface ICharacters
     {
-        /// <summary>In the order they came.</summary>
+        /// <summary>In the order they came; a removed character is no longer here.</summary>
         IReadOnlyList<ICharacter> All { get; }
 
         bool TryGet(CharacterId id, out ICharacter character);
 
         /// <summary>
-        /// Adds an Idle character on a walkable cell, walking at its size's speed. Throws for a cell that is not walkable or
-        /// not <see cref="IsFree"/>.
+        /// Adds an Idle character on a walkable cell, walking at its size's speed. Throws for a cell that is not walkable,
+        /// is a door, or is not <see cref="IsFree"/>.
         /// </summary>
         CharacterId Spawn(Gender gender, BodySize size, Cell cell);
 

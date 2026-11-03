@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using HoldIt.Board;
 using HoldIt.Characters;
 using HoldIt.Paths;
+using HoldIt.Restrooms;
 using MessagePipe;
 using NUnit.Framework;
 using UnityEngine;
@@ -20,12 +21,15 @@ namespace HoldIt.Tests
         private ITileGrid _grid;
         private CharacterConfig _config;
         private FakeClock _clock;
+        private FakeRestrooms _restrooms;
         private CharacterSystem _system;
         private List<CharacterSpawned> _spawned;
         private List<CharacterStateChanged> _changed;
         private List<CharacterState> _stateWhenAnnounced;
         private List<StepRefused> _refused;
         private List<CharacterState> _stateWhenRefused;
+        private List<CharacterId> _removed;
+        private List<bool> _goneWhenRemoved;
         private IDisposable _subscriptions;
 
         [SetUp]
@@ -36,19 +40,24 @@ namespace HoldIt.Tests
             builder.RegisterMessageBroker<CharacterSpawned>(messagePipe);
             builder.RegisterMessageBroker<CharacterStateChanged>(messagePipe);
             builder.RegisterMessageBroker<StepRefused>(messagePipe);
+            builder.RegisterMessageBroker<CharacterRemoved>(messagePipe);
             _container = builder.Build();
 
             _grid = MapParser.Parse(TestMaps.Lobby);
             _config = ScriptableObject.CreateInstance<CharacterConfig>();
             _clock = new FakeClock();
-            _system = new CharacterSystem(_grid, _config, _clock, _container.Resolve<IPublisher<CharacterSpawned>>(),
-                _container.Resolve<IPublisher<CharacterStateChanged>>(), _container.Resolve<IPublisher<StepRefused>>());
+            _restrooms = new FakeRestrooms();
+            _system = new CharacterSystem(_grid, _config, _restrooms, _clock,
+                _container.Resolve<IPublisher<CharacterSpawned>>(), _container.Resolve<IPublisher<CharacterStateChanged>>(),
+                _container.Resolve<IPublisher<StepRefused>>(), _container.Resolve<IPublisher<CharacterRemoved>>());
 
             _spawned = new List<CharacterSpawned>();
             _changed = new List<CharacterStateChanged>();
             _stateWhenAnnounced = new List<CharacterState>();
             _refused = new List<StepRefused>();
             _stateWhenRefused = new List<CharacterState>();
+            _removed = new List<CharacterId>();
+            _goneWhenRemoved = new List<bool>();
             var bag = DisposableBag.CreateBuilder();
             _container.Resolve<ISubscriber<CharacterSpawned>>().Subscribe(_spawned.Add).AddTo(bag);
             _container.Resolve<ISubscriber<CharacterStateChanged>>().Subscribe(message =>
@@ -62,6 +71,11 @@ namespace HoldIt.Tests
                 _refused.Add(message);
                 _system.TryGet(message.Id, out var character);
                 _stateWhenRefused.Add(character.State);
+            }).AddTo(bag);
+            _container.Resolve<ISubscriber<CharacterRemoved>>().Subscribe(message =>
+            {
+                _removed.Add(message.Id);
+                _goneWhenRemoved.Add(!_system.TryGet(message.Id, out _));
             }).AddTo(bag);
             _subscriptions = bag.Build();
         }
@@ -118,6 +132,13 @@ namespace HoldIt.Tests
         public void Spawn_OnAWall_Throws()
         {
             Assert.Throws<ArgumentException>(() => _system.Spawn(Gender.Male, BodySize.Normal, new Cell(1, 5)));
+            Assert.AreEqual(0, _spawned.Count);
+        }
+
+        [Test]
+        public void Spawn_OnADoor_Throws()
+        {
+            Assert.Throws<ArgumentException>(() => _system.Spawn(Gender.Male, BodySize.Normal, _maleDoor));
             Assert.AreEqual(0, _spawned.Count);
         }
 
@@ -344,14 +365,198 @@ namespace HoldIt.Tests
         }
 
         [Test]
+        public void Tick_AtItsDoorWithAFreeStall_GoesInWithoutStoppingFirst()
+        {
+            var id = WalkToMaleDoor(new Cell(2, 4));
+
+            Assert.AreEqual(CharacterState.InStall, Character(id).State);
+            Assert.AreEqual(0, Character(id).Visit.Stall);
+            Assert.AreEqual(StallState.Taken, _restrooms.StateOf(Gender.Male, 0));
+            CollectionAssert.AreEqual(new[] { CharacterState.Walking, CharacterState.InStall }, States());
+            CollectionAssert.AreEqual(States(), _stateWhenAnnounced);
+        }
+
+        [Test]
+        public void Tick_WalkingIn_HoldsTheDoorUntilItHasSteppedOffIt()
+        {
+            var id = WalkToMaleDoor(new Cell(2, 4));
+
+            _clock.DeltaTime = 0.4f / _config.StallWalkSpeed;
+            _system.Tick();
+            Assert.IsFalse(_system.IsFree(_maleDoor));
+
+            _clock.DeltaTime = 0.2f / _config.StallWalkSpeed;
+            _system.Tick();
+            Assert.IsTrue(_system.IsFree(_maleDoor));
+            Assert.AreEqual(CharacterState.InStall, Character(id).State);
+        }
+
+        [Test]
+        public void Tick_OnceInside_ShutsTheStallAndRemovesTheCharacter()
+        {
+            var id = WalkToMaleDoor(new Cell(2, 4));
+
+            _clock.DeltaTime = _restrooms.LineLength / _config.StallWalkSpeed + 0.01f;
+            _system.Tick();
+
+            CollectionAssert.AreEqual(new[] { (Gender.Male, 0) }, _restrooms.Shuts);
+            CollectionAssert.AreEqual(new[] { id }, _removed);
+            Assert.IsTrue(_goneWhenRemoved[0], "It is gone before it is announced.");
+            Assert.IsFalse(_system.TryGet(id, out _));
+            Assert.AreEqual(0, _system.All.Count);
+            Assert.IsTrue(_system.IsFree(_maleDoor));
+        }
+
+        [Test]
+        public void Tick_InsideBeforeSteppingOffTheDoor_StillLetsGoOfIt()
+        {
+            _restrooms.LineLength = 0.3f;
+            WalkToMaleDoor(new Cell(2, 4));
+
+            _clock.DeltaTime = 1f;
+            _system.Tick();
+
+            Assert.AreEqual(1, _removed.Count);
+            Assert.IsTrue(_system.IsFree(_maleDoor));
+        }
+
+        [Test]
+        public void Tick_AfterTheRemoval_LeavesTheStallAlone()
+        {
+            WalkToMaleDoor(new Cell(2, 4));
+            _clock.DeltaTime = 10f;
+
+            for (var i = 0; i < 3; i++)
+                _system.Tick();
+
+            Assert.AreEqual(1, _restrooms.Shuts.Count);
+            Assert.AreEqual(1, _removed.Count);
+        }
+
+        [Test]
+        public void Tick_WithTheRealRestrooms_WalksInAndShutsItsStall()
+        {
+            // Brokers of its own: the set-up's subscribers look characters up in the other system.
+            var builder = new ContainerBuilder();
+            var messagePipe = builder.RegisterMessagePipe();
+            builder.RegisterMessageBroker<StallStateChanged>(messagePipe);
+            builder.RegisterMessageBroker<CharacterSpawned>(messagePipe);
+            builder.RegisterMessageBroker<CharacterStateChanged>(messagePipe);
+            builder.RegisterMessageBroker<StepRefused>(messagePipe);
+            builder.RegisterMessageBroker<CharacterRemoved>(messagePipe);
+            using var container = builder.Build();
+            var restroomConfig = ScriptableObject.CreateInstance<RestroomConfig>();
+            try
+            {
+                var restrooms = new RestroomSystem(_grid, restroomConfig, 2, _clock,
+                    container.Resolve<IPublisher<StallStateChanged>>());
+                var system = new CharacterSystem(_grid, _config, restrooms, _clock,
+                    container.Resolve<IPublisher<CharacterSpawned>>(),
+                    container.Resolve<IPublisher<CharacterStateChanged>>(),
+                    container.Resolve<IPublisher<StepRefused>>(), container.Resolve<IPublisher<CharacterRemoved>>());
+                var id = system.Spawn(Gender.Female, BodySize.Fat, new Cell(7, 4));
+                system.TryWalk(id, new CellPath(new[] { new Cell(7, 4), new Cell(7, 3) }));
+
+                _clock.DeltaTime = 0.05f;
+                var doorFreedWhileIn = false;
+                for (var frame = 0; frame < 200 && system.All.Count > 0; frame++)
+                {
+                    system.Tick();
+                    doorFreedWhileIn |= system.All.Count > 0 && system.IsFree(new Cell(7, 3));
+                }
+
+                Assert.AreEqual(0, system.All.Count);
+                Assert.IsTrue(doorFreedWhileIn, "It lets go of the door on the way in.");
+                Assert.AreEqual(StallState.Shut, restrooms.StateOf(Gender.Female, 0));
+                Assert.AreEqual(StallState.Free, restrooms.StateOf(Gender.Female, 1));
+            }
+            finally
+            {
+                UnityEngine.Object.DestroyImmediate(restroomConfig);
+            }
+        }
+
+        [Test]
+        public void Tick_AtItsDoorWithEveryStallBusy_QueuesThereAndHoldsTheDoor()
+        {
+            _restrooms.Fill(Gender.Male);
+            var id = WalkToMaleDoor(new Cell(2, 4));
+
+            Assert.AreEqual(CharacterState.Queued, Character(id).State);
+            Assert.AreEqual(_maleDoor, Character(id).Cell);
+            CollectionAssert.AreEqual(new[] { CharacterState.Walking, CharacterState.Queued }, States());
+            Assert.IsFalse(_system.IsFree(_maleDoor));
+
+            _clock.DeltaTime = 10f;
+            _system.Tick();
+            Assert.AreEqual(CharacterState.Queued, Character(id).State);
+            Assert.AreEqual(0, _removed.Count);
+        }
+
+        [Test]
+        public void Tick_ToADoorSomeoneQueuesOn_WaitsThenStopsBlocked()
+        {
+            _restrooms.Fill(Gender.Male);
+            WalkToMaleDoor(new Cell(2, 4));
+            var second = _system.Spawn(Gender.Male, BodySize.Normal, new Cell(1, 4));
+            _system.TryWalk(second, Path((1, 4), (2, 4), (2, 3)));
+
+            _clock.DeltaTime = 1f / _config.WalkSpeed(BodySize.Normal) + 0.01f;
+            _system.Tick();
+            Assert.AreEqual(new Cell(2, 4), Character(second).Cell);
+            _clock.DeltaTime = _config.BlockedWaitSeconds;
+            _system.Tick();
+
+            Assert.AreEqual(CharacterState.Idle, Character(second).State);
+            Assert.AreEqual(new Cell(2, 4), Character(second).Cell);
+            Assert.AreEqual(StepRefusal.Blocked, _refused[_refused.Count - 1].Reason);
+        }
+
+        [Test]
+        public void Tick_QueuedWhenAStallFrees_GoesIntoIt()
+        {
+            _restrooms.Fill(Gender.Male);
+            var id = WalkToMaleDoor(new Cell(2, 4));
+            _restrooms.Free(Gender.Male, 1);
+
+            _clock.DeltaTime = 0.01f;
+            _system.Tick();
+
+            Assert.AreEqual(CharacterState.InStall, Character(id).State);
+            Assert.AreEqual(1, Character(id).Visit.Stall);
+            Assert.AreEqual(CharacterState.InStall, _changed[_changed.Count - 1].State);
+        }
+
+        [Test]
+        public void Tick_TheOtherRestroomsStallsBeingBusy_DoesNotQueue()
+        {
+            _restrooms.Fill(Gender.Female);
+            var id = WalkToMaleDoor(new Cell(2, 4));
+
+            Assert.AreEqual(CharacterState.InStall, Character(id).State);
+        }
+
+        [Test]
         public void TryEnter_WalkingBack_SkipsTheTileRules()
         {
             IStepGate gate = _system;
-            var femaleStep = new Character(new CharacterId(50), Gender.Female, BodySize.Fat, new Cell(2, 4), 1f, 1f, 1f);
+            var femaleStep = new Character(new CharacterId(50), Gender.Female, BodySize.Fat, new Cell(2, 4), 1f, 1f, 1f, 1f);
 
             Assert.AreEqual(StepVerdict.WrongDoor, gate.TryEnter(new Walker(femaleStep, CharacterState.Walking), _maleDoor));
             Assert.AreEqual(StepVerdict.Enter, gate.TryEnter(new Walker(femaleStep, CharacterState.Returning), _maleDoor));
         }
+
+        /// <summary>A Normal man walks from <paramref name="from"/>, next to the men's door, onto it.</summary>
+        private CharacterId WalkToMaleDoor(Cell from)
+        {
+            var id = _system.Spawn(Gender.Male, BodySize.Normal, from);
+            Assert.IsTrue(_system.TryWalk(id, new CellPath(new[] { from, _maleDoor })));
+            _clock.DeltaTime = 1f / _config.WalkSpeed(BodySize.Normal) + 0.01f;
+            _system.Tick();
+            return id;
+        }
+
+        private List<CharacterState> States() => _changed.ConvertAll(message => message.State);
 
         private ICharacter Character(CharacterId id)
         {
@@ -402,6 +607,8 @@ namespace HoldIt.Tests
             public Direction Facing => _character.Facing;
             public CellPath Route => _character.Route;
             public int RouteIndex => _character.RouteIndex;
+            public StallVisit Visit => _character.Visit;
+            public float VisitDistance => _character.VisitDistance;
         }
     }
 }

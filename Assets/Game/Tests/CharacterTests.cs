@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using HoldIt.Board;
 using HoldIt.Characters;
 using HoldIt.Paths;
+using HoldIt.Restrooms;
 using NUnit.Framework;
+using UnityEngine;
 
 namespace HoldIt.Tests
 {
@@ -11,6 +13,7 @@ namespace HoldIt.Tests
     {
         private const float BlockedWait = 0.6f;
         private const float ReturnFactor = 1.2f;
+        private const float StallSpeed = 2f;
         private static readonly Cell _start = new Cell(0, 10);
 
         /// <summary>Two tiles a second, so a quarter second is half a step.</summary>
@@ -22,7 +25,7 @@ namespace HoldIt.Tests
         public void CreateCharacter()
         {
             _character = new Character(new CharacterId(1), Gender.Female, BodySize.Normal, _start, 2f, BlockedWait,
-                ReturnFactor);
+                ReturnFactor, StallSpeed);
             _gate = new ScriptedGate();
         }
 
@@ -41,11 +44,13 @@ namespace HoldIt.Tests
         public void New_WithoutSpeedOrWithANegativeWait_Throws()
         {
             Assert.Throws<ArgumentOutOfRangeException>(() =>
-                new Character(new CharacterId(1), Gender.Male, BodySize.Fat, _start, 0f, BlockedWait, ReturnFactor));
+                new Character(new CharacterId(1), Gender.Male, BodySize.Fat, _start, 0f, BlockedWait, ReturnFactor, StallSpeed));
             Assert.Throws<ArgumentOutOfRangeException>(() =>
-                new Character(new CharacterId(1), Gender.Male, BodySize.Fat, _start, 2f, -1f, ReturnFactor));
+                new Character(new CharacterId(1), Gender.Male, BodySize.Fat, _start, 2f, -1f, ReturnFactor, StallSpeed));
             Assert.Throws<ArgumentOutOfRangeException>(() =>
-                new Character(new CharacterId(1), Gender.Male, BodySize.Fat, _start, 2f, BlockedWait, 0f));
+                new Character(new CharacterId(1), Gender.Male, BodySize.Fat, _start, 2f, BlockedWait, 0f, StallSpeed));
+            Assert.Throws<ArgumentOutOfRangeException>(() =>
+                new Character(new CharacterId(1), Gender.Male, BodySize.Fat, _start, 2f, BlockedWait, ReturnFactor, 0f));
         }
 
         [Test]
@@ -308,6 +313,108 @@ namespace HoldIt.Tests
             Assert.AreEqual(CharacterState.Idle, _character.State);
             Assert.AreEqual(new Cell(2, 10), _character.Cell);
         }
+
+        [Test]
+        public void Queue_WhenIdle_WaitsWhereItIs()
+        {
+            _character.Queue();
+
+            Assert.AreEqual(CharacterState.Queued, _character.State);
+            Assert.AreEqual(StepRefusal.None, _character.Advance(5f, _gate));
+            Assert.AreEqual(CharacterState.Queued, _character.State);
+            Assert.AreEqual(_start, _character.Cell);
+            Assert.AreEqual(0, _gate.Asked.Count);
+        }
+
+        [Test]
+        public void Queue_UnlessIdle_Throws()
+        {
+            _character.TryWalk(East(3));
+
+            Assert.Throws<InvalidOperationException>(() => _character.Queue());
+            Assert.AreEqual(CharacterState.Walking, _character.State);
+        }
+
+        [Test]
+        public void Queue_Twice_Throws()
+        {
+            _character.Queue();
+
+            Assert.Throws<InvalidOperationException>(() => _character.Queue());
+        }
+
+        [Test]
+        public void TryWalk_QueuedOrInAStall_IsRefused()
+        {
+            _character.Queue();
+            Assert.IsFalse(_character.TryWalk(East(3)));
+            Assert.AreEqual(CharacterState.Queued, _character.State);
+
+            _character.EnterStall(Visit(3f));
+            Assert.IsFalse(_character.TryWalk(East(3)));
+            Assert.AreEqual(CharacterState.InStall, _character.State);
+        }
+
+        [Test]
+        public void EnterStall_WithoutAVisit_Throws()
+        {
+            Assert.Throws<ArgumentNullException>(() => _character.EnterStall(null));
+            Assert.AreEqual(CharacterState.Idle, _character.State);
+        }
+
+        [Test]
+        public void EnterStall_FromIdleOrQueued_StartsAtTheLinesStart()
+        {
+            var visit = Visit(3f);
+            _character.Queue();
+
+            _character.EnterStall(visit);
+
+            Assert.AreEqual(CharacterState.InStall, _character.State);
+            Assert.AreSame(visit, _character.Visit);
+            Assert.AreEqual(0f, _character.VisitDistance);
+            Assert.IsNull(_character.Route);
+            Assert.AreEqual(_start, _character.Cell);
+            Assert.IsFalse(_character.IsInside);
+        }
+
+        [Test]
+        public void EnterStall_WhileWalking_Throws()
+        {
+            _character.TryWalk(East(3));
+
+            Assert.Throws<InvalidOperationException>(() => _character.EnterStall(Visit(3f)));
+            Assert.IsNull(_character.Visit);
+        }
+
+        [Test]
+        public void Advance_InStall_WalksTheLineAtTheStallSpeedWithoutAskingTheGate()
+        {
+            _character.EnterStall(Visit(3f));
+
+            _character.Advance(0.5f, _gate);
+
+            Assert.AreEqual(0.5f * StallSpeed, _character.VisitDistance, 1e-5f);
+            Assert.IsFalse(_character.IsInside);
+            Assert.AreEqual(0, _gate.Asked.Count);
+            Assert.AreEqual(0, _gate.Left.Count);
+        }
+
+        [Test]
+        public void Advance_InStall_StopsAtTheLinesEndAndIsInside()
+        {
+            _character.EnterStall(Visit(3f));
+
+            _character.Advance(10f, _gate);
+
+            Assert.AreEqual(3f, _character.VisitDistance, 1e-5f);
+            Assert.IsTrue(_character.IsInside);
+            Assert.AreEqual(CharacterState.InStall, _character.State);
+        }
+
+        /// <summary>A visit to stall 0 whose way in is a straight line <paramref name="length"/> long.</summary>
+        private static StallVisit Visit(float length) =>
+            new StallVisit(Gender.Female, 0, new WalkLine(new[] { Vector3.zero, Vector3.forward * length }));
 
         /// <summary>A path east along row 10 from the start, <paramref name="count"/> cells long.</summary>
         private static CellPath East(int count)

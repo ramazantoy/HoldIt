@@ -14,8 +14,10 @@ kararları `.claude/decisions/Game.md`'de.
 (2026-11-03). Milestone'lar 2026-11-03'te yeniden sıralandı: yol çizimi M5'e gitti, eski M3–M5 birer öne kaydı
 (Game.md → Karakterler ve yol). M2 (yol modeli + karakter yürür, placeholder) Editor'da bitti (2026-11-03). M3'te
 çizimin input'u öne alındı, M5'e kare efekti kaldı (kullanıcı kararı). M3 (çizim, adım doğrulama, doluluk ve rezervasyon,
-geri dönüş, balonlar, yürüme döngüsü) Editor'da bitti (2026-11-03). Karakter modelleri ayrı oturumda üretiliyor; gelince
-M2b. Sıradaki iş M4. Milestone başlarken plan moduna geç.
+geri dönüş, balonlar, yürüme döngüsü) Editor'da bitti (2026-11-03). M4 (prototipteki gibi büyük kabinler, kabin turu ve
+ışıkları, kabine yürüyüş, kapıda kuyruk; parçalar placeholder) Editor'da bitti (2026-11-03). Karakter modelleri ayrı
+oturumda üretiliyor; gelince M2b. Kabin parçaları kitten gelecek (Game.md → Açık). Sıradaki iş M5. Milestone başlarken
+plan moduna geç.
 
 **Yapı:** framework `Assets/Framework/` (`AF.*` namespace ve asmdef'ler, modül başına `<Modül>/{Runtime,Editor,Tests}`).
 Oyun `Assets/Game/`: asmdef `Game`, namespace `HoldIt`, özellik klasörü `HoldIt.<Özellik>`.

@@ -3,7 +3,10 @@ using System.Collections.Generic;
 using AF.Core;
 using Cysharp.Threading.Tasks;
 using HoldIt.Input;
+using HoldIt.Paths;
+using HoldIt.Restrooms;
 using MessagePipe;
+using UnityEngine;
 using VContainer;
 
 namespace HoldIt.Tests
@@ -38,6 +41,55 @@ namespace HoldIt.Tests
         public float Time { get; set; }
         public float DeltaTime { get; set; }
         public float Scale { get; set; } = 1f;
+    }
+
+    /// <summary>
+    /// Restrooms whose stalls only change when told: taken by <see cref="TryTake"/> (each way in is a straight line
+    /// <see cref="LineLength"/> long), shut by <see cref="Shut"/> and freed by <see cref="Free"/>. No layout.
+    /// </summary>
+    internal sealed class FakeRestrooms : IRestrooms
+    {
+        private readonly StallState[,] _states = new StallState[2, 2];
+
+        public readonly List<(Gender Gender, int Stall)> Shuts = new List<(Gender, int)>();
+
+        public float LineLength { get; set; } = 2f;
+        public int StallCount => 2;
+
+        public StallState StateOf(Gender gender, int stall) => _states[(int)gender, stall];
+
+        public RestroomLayout LayoutOf(Gender gender) => throw new NotSupportedException();
+
+        public bool TryTake(Gender gender, out StallVisit visit)
+        {
+            for (var i = 0; i < StallCount; i++)
+            {
+                if (_states[(int)gender, i] != StallState.Free)
+                    continue;
+                _states[(int)gender, i] = StallState.Taken;
+                visit = new StallVisit(gender, i, new WalkLine(new[] { Vector3.zero, Vector3.forward * LineLength }));
+                return true;
+            }
+            visit = null;
+            return false;
+        }
+
+        public void Shut(Gender gender, int stall)
+        {
+            if (_states[(int)gender, stall] != StallState.Taken)
+                throw new InvalidOperationException($"Stall {gender} {stall} is {_states[(int)gender, stall]}.");
+            _states[(int)gender, stall] = StallState.Shut;
+            Shuts.Add((gender, stall));
+        }
+
+        /// <summary>Takes every stall of the gender, as busy visitors would.</summary>
+        public void Fill(Gender gender)
+        {
+            for (var i = 0; i < StallCount; i++)
+                _states[(int)gender, i] = StallState.Shut;
+        }
+
+        public void Free(Gender gender, int stall) => _states[(int)gender, stall] = StallState.Free;
     }
 
     /// <summary>A real MessagePipe broker for <see cref="BackPressed"/>, as the root scope registers it.</summary>

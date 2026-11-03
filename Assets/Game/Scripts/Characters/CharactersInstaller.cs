@@ -8,7 +8,7 @@ namespace HoldIt.Characters
     {
         /// <summary>
         /// Registers the characters (<see cref="ICharacters"/>), their messages and their views in a scene scope that already
-        /// has the board.
+        /// has the board and the restrooms.
         /// </summary>
         public static void UseCharacters(this IContainerBuilder builder, MessagePipeOptions messagePipe,
             CharacterConfig config, CharacterSet set)
@@ -16,6 +16,7 @@ namespace HoldIt.Characters
             builder.RegisterMessageBroker<CharacterSpawned>(messagePipe);
             builder.RegisterMessageBroker<CharacterStateChanged>(messagePipe);
             builder.RegisterMessageBroker<StepRefused>(messagePipe);
+            builder.RegisterMessageBroker<CharacterRemoved>(messagePipe);
 
             builder.RegisterInstance(config);
             builder.RegisterInstance(set);

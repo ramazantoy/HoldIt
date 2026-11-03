@@ -1,6 +1,7 @@
 using System;
 using HoldIt.Board;
 using HoldIt.Paths;
+using HoldIt.Restrooms;
 
 namespace HoldIt.Characters
 {
@@ -9,12 +10,15 @@ namespace HoldIt.Characters
     /// it asks an <see cref="IStepGate"/>: a refused step (wrong door, too narrow) turns it back along the cells it walked
     /// (Returning); a held cell makes it wait, and a wait past <c>blockedWait</c> seconds stops it where it is. It turns to
     /// each cell before asking for it, so a refused or waiting character faces where it wanted to go. It is Idle again at
-    /// its path's end, back where it began, or where it stopped, and keeps facing the way it last turned.
+    /// its path's end, back where it began, or where it stopped, and keeps facing the way it last turned. At its restroom's
+    /// door it is told to queue (Queued, standing there) or to go into a stall (InStall): then it walks the stall's way in,
+    /// off the grid and asking no gate, until it <see cref="IsInside"/>.
     /// </summary>
     public sealed class Character : ICharacter
     {
         private readonly float _blockedWait;
         private readonly float _returnSpeedFactor;
+        private readonly float _stallWalkSpeed;
         private CellPath _route;
         private int _index;
         private bool _stepping;
@@ -23,8 +27,9 @@ namespace HoldIt.Characters
         /// <param name="speed">Tiles per second.</param>
         /// <param name="blockedWait">The longest wait, in seconds, before a held cell; past it the character stops.</param>
         /// <param name="returnSpeedFactor">How much faster than <paramref name="speed"/> it walks back.</param>
+        /// <param name="stallWalkSpeed">World units per second along a stall's way in.</param>
         public Character(CharacterId id, Gender gender, BodySize size, Cell cell, float speed, float blockedWait,
-            float returnSpeedFactor)
+            float returnSpeedFactor, float stallWalkSpeed)
         {
             if (speed <= 0f)
                 throw new ArgumentOutOfRangeException(nameof(speed), $"A character needs a positive speed, not {speed}.");
@@ -33,6 +38,9 @@ namespace HoldIt.Characters
             if (returnSpeedFactor <= 0f)
                 throw new ArgumentOutOfRangeException(nameof(returnSpeedFactor),
                     $"Walking back needs a positive speed factor, not {returnSpeedFactor}.");
+            if (stallWalkSpeed <= 0f)
+                throw new ArgumentOutOfRangeException(nameof(stallWalkSpeed),
+                    $"Walking into a stall needs a positive speed, not {stallWalkSpeed}.");
 
             Id = id;
             Gender = gender;
@@ -40,6 +48,7 @@ namespace HoldIt.Characters
             Speed = speed;
             _blockedWait = blockedWait;
             _returnSpeedFactor = returnSpeedFactor;
+            _stallWalkSpeed = stallWalkSpeed;
             Cell = cell;
             Next = cell;
         }
@@ -55,6 +64,11 @@ namespace HoldIt.Characters
         public Direction Facing { get; private set; } = Direction.South;
         public CellPath Route => _route;
         public int RouteIndex => _index;
+        public StallVisit Visit { get; private set; }
+        public float VisitDistance { get; private set; }
+
+        /// <summary>True once an InStall character has walked all of its stall's way in.</summary>
+        public bool IsInside => State == CharacterState.InStall && VisitDistance >= Visit.Line.Length;
 
         /// <summary>Starts walking the path. Refused (false) unless Idle and the path starts on this character's cell.</summary>
         public bool TryWalk(CellPath path)
@@ -72,10 +86,37 @@ namespace HoldIt.Characters
             return true;
         }
 
+        /// <summary>Waits at the restroom's door it stands on, holding it, until a stall is free. Throws unless Idle.</summary>
+        public void Queue()
+        {
+            if (State != CharacterState.Idle)
+                throw new InvalidOperationException($"Only an Idle character can queue; {Id} is {State}.");
+            State = CharacterState.Queued;
+        }
+
         /// <summary>
-        /// Moves along the route for <paramref name="deltaTime"/> seconds, asking <paramref name="gate"/> before every step.
-        /// One call can cross several cells; what is left of the time carries on, into a wait as well. Returns why a step
-        /// was given up during the call, or <see cref="StepRefusal.None"/>.
+        /// Starts walking the stall's way in from the door it stands on. Throws unless Idle or Queued. Its cell stays the
+        /// door; where it is from now on is on the visit's line.
+        /// </summary>
+        public void EnterStall(StallVisit visit)
+        {
+            if (visit == null)
+                throw new ArgumentNullException(nameof(visit));
+            if (State != CharacterState.Idle && State != CharacterState.Queued)
+                throw new InvalidOperationException(
+                    $"Only an Idle or queued character can go into a stall; {Id} is {State}.");
+
+            Stop();
+            Visit = visit;
+            VisitDistance = 0f;
+            State = CharacterState.InStall;
+        }
+
+        /// <summary>
+        /// Moves for <paramref name="deltaTime"/> seconds: along the route while Walking or Returning, asking
+        /// <paramref name="gate"/> before every step, or along the stall's way in while InStall. One call can cross several
+        /// cells; what is left of the time carries on, into a wait as well. Returns why a step was given up during the
+        /// call, or <see cref="StepRefusal.None"/>.
         /// </summary>
         public StepRefusal Advance(float deltaTime, IStepGate gate)
         {
@@ -84,9 +125,15 @@ namespace HoldIt.Characters
             if (gate == null)
                 throw new ArgumentNullException(nameof(gate));
 
+            if (State == CharacterState.InStall)
+            {
+                VisitDistance = Math.Min(Visit.Line.Length, VisitDistance + deltaTime * _stallWalkSpeed);
+                return StepRefusal.None;
+            }
+
             var refusal = StepRefusal.None;
             var time = deltaTime;
-            while (State != CharacterState.Idle)
+            while (State == CharacterState.Walking || State == CharacterState.Returning)
             {
                 if (!_stepping)
                 {

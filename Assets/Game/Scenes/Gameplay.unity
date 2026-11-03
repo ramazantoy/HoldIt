@@ -359,6 +359,50 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 50, y: -30, z: 0}
+--- !u!1 &645478465
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 645478467}
+  - component: {fileID: 645478466}
+  m_Layer: 0
+  m_Name: Restrooms
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &645478466
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 645478465}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 12ea5cc5b0742d6408bd9193f80b0cd3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Game::HoldIt.Restrooms.RestroomView
+--- !u!4 &645478467
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 645478465}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1084865234
 GameObject:
   m_ObjectHideFlags: 0
@@ -397,6 +441,9 @@ MonoBehaviour:
   _map: {fileID: 11400000, guid: 8cfdcd67881cfb94bb854c1873781475, type: 2}
   _board: {fileID: 1311314311}
   _boardCamera: {fileID: 1942079115}
+  _restroomView: {fileID: 645478466}
+  _restroomConfig: {fileID: 11400000, guid: 5a1d2b632d6469e47b36b31cd90bb3d0, type: 2}
+  _stallSet: {fileID: 11400000, guid: 4905eff6964942d45902c6f18781ed6f, type: 2}
   _characterConfig: {fileID: 11400000, guid: 7c33d38e5bb83c04599b455eed92b539, type: 2}
   _characterSet: {fileID: 11400000, guid: 27261a883cf2c984099464c9f0182838, type: 2}
   _drawingConfig: {fileID: 11400000, guid: 2e45c4bb1e6e0f646a5a77133bb1d802, type: 2}
@@ -714,3 +761,4 @@ SceneRoots:
   - {fileID: 486339195}
   - {fileID: 1498158691}
   - {fileID: 1311314312}
+  - {fileID: 645478467}

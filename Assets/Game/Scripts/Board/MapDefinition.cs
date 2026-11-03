@@ -14,6 +14,10 @@ namespace HoldIt.Board
         [SerializeField, Tooltip(". floor, L lobby, E entrance, # wall, n narrow passage, M/W men's/women's building, m/w their doors. Every row has the same length.")]
         private string[] _rows = Array.Empty<string>();
 
+        [SerializeField, Min(1), Tooltip("How many stalls each restroom has. They share the restroom's width; \"AF/Validate All\" reports a restroom too narrow for them.")]
+        private int _stallsPerRestroom = 2;
+
         public IReadOnlyList<string> Rows => _rows;
+        public int StallsPerRestroom => _stallsPerRestroom;
     }
 }

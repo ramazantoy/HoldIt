@@ -30,3 +30,4 @@ MonoBehaviour:
     _pop: 0.18
     _fadeAt: 1.2
     _fade: 0.3
+  _vanishSeconds: 0.2

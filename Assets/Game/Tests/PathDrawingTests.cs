@@ -34,6 +34,7 @@ namespace HoldIt.Tests
             builder.RegisterMessageBroker<CharacterSpawned>(messagePipe);
             builder.RegisterMessageBroker<CharacterStateChanged>(messagePipe);
             builder.RegisterMessageBroker<StepRefused>(messagePipe);
+            builder.RegisterMessageBroker<CharacterRemoved>(messagePipe);
             builder.RegisterMessageBroker<PointerDown>(messagePipe);
             builder.RegisterMessageBroker<PointerMoved>(messagePipe);
             builder.RegisterMessageBroker<PointerUp>(messagePipe);
@@ -42,9 +43,9 @@ namespace HoldIt.Tests
             _grid = MapParser.Parse(TestMaps.Lobby);
             _characterConfig = ScriptableObject.CreateInstance<CharacterConfig>();
             _drawingConfig = ScriptableObject.CreateInstance<DrawingConfig>();
-            _characters = new CharacterSystem(_grid, _characterConfig, new FakeClock(),
+            _characters = new CharacterSystem(_grid, _characterConfig, new FakeRestrooms(), new FakeClock(),
                 _container.Resolve<IPublisher<CharacterSpawned>>(), _container.Resolve<IPublisher<CharacterStateChanged>>(),
-                _container.Resolve<IPublisher<StepRefused>>());
+                _container.Resolve<IPublisher<StepRefused>>(), _container.Resolve<IPublisher<CharacterRemoved>>());
             _camera = new FakeBoardCamera(_grid);
             _drawing = new PathDrawing(_characters, _grid, _camera, _camera, _drawingConfig,
                 _container.Resolve<ISubscriber<PointerDown>>(), _container.Resolve<ISubscriber<PointerMoved>>(),

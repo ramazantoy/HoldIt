@@ -1,0 +1,25 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5eb0f595c51942b4a92bf5a7fd711d9a, type: 3}
+  m_Name: StallSet
+  m_EditorClassIdentifier: Game::HoldIt.Restrooms.StallSet
+  _partitionMale: {fileID: 1313791059817594386, guid: 2004e9478fc1ca54cacf2b128e33c627, type: 3}
+  _partitionFemale: {fileID: 4350236952644297464, guid: 43bdeb3b7cc523941a0f24275415d924, type: 3}
+  _doorMale: {fileID: 7259465411205083320, guid: 99c40dde1f9ab6942bbe68066b8e3c53, type: 3}
+  _doorFemale: {fileID: 1837782000505585072, guid: e09f516ad97f614489e15df8507275f4, type: 3}
+  _toilet: {fileID: 3546699056897509683, guid: c791d31aba8f79145bc80683be955e94, type: 3}
+  _lamp: {fileID: 4582588406747467683, guid: 00baee39d21ba614f9ccdc35db775807, type: 3}
+  _freeColor: {r: 0.18431373, g: 0.8901961, b: 0.42745098, a: 1}
+  _busyColor: {r: 1, g: 0.23137255, b: 0.23137255, a: 1}
+  _glowAlpha: 0.3
+  _doorOpenAngle: 83
+  _doorRate: 9
