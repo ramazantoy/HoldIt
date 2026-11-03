@@ -3,7 +3,9 @@ using HoldIt.Board;
 using HoldIt.Characters;
 using HoldIt.Drawing;
 using HoldIt.Input;
+using HoldIt.Levels;
 using HoldIt.Restrooms;
+using HoldIt.Spawning;
 using MessagePipe;
 using UnityEngine;
 using VContainer;
@@ -12,16 +14,15 @@ using VContainer.Unity;
 namespace HoldIt.Gameplay
 {
     /// <summary>
-    /// The gameplay scene's scope: pointer input, the board, the restrooms, the characters, path drawing, the HUD, and for
-    /// now a log of the presses. Editor and development builds also get debug characters, on the lobby and coming in (until spawning).
+    /// The gameplay scene's scope. It plays the root's current level (<see cref="ILevelCursor"/>): its map's board and
+    /// restrooms, the characters it brings in, the run that keeps its score, path drawing, the HUD, the pause and result
+    /// screens, and for now a log of the presses.
     /// </summary>
     public sealed class GameplayScope : SceneScope
     {
         [SerializeField, Required] private GameplayHudView _hud;
-
-        [SerializeField, Required, Tooltip("The map played in this scene, until there is a level choice.")]
-        private MapDefinition _map;
-
+        [SerializeField, Required] private PauseView _pauseScreen;
+        [SerializeField, Required] private LevelResultView _resultScreen;
         [SerializeField, Required] private BoardView _board;
         [SerializeField, Required] private BoardCamera _boardCamera;
         [SerializeField, Required] private RestroomView _restroomView;
@@ -29,22 +30,29 @@ namespace HoldIt.Gameplay
         [SerializeField, Required] private StallSet _stallSet;
         [SerializeField, Required] private CharacterConfig _characterConfig;
         [SerializeField, Required] private CharacterSet _characterSet;
+        [SerializeField, Required] private RunConfig _runConfig;
+        [SerializeField, Required] private SpawnConfig _spawnConfig;
         [SerializeField, Required] private DrawingConfig _drawingConfig;
 
         protected override void ConfigureScene(IContainerBuilder builder, MessagePipeOptions messagePipe)
         {
+            // The root scope is built before any scene's, and outlives it.
+            var level = Parent.Container.Resolve<ILevelCursor>().Current;
+
             builder.UsePointerInput(messagePipe);
-            builder.UseBoard(_map, _board, _boardCamera);
-            builder.UseRestrooms(messagePipe, _restroomConfig, _stallSet, _map.StallsPerRestroom, _restroomView);
+            builder.UseBoard(level.Map, _board, _boardCamera);
+            builder.UseRestrooms(messagePipe, _restroomConfig, _stallSet, level.Map.StallsPerRestroom, _restroomView);
             builder.UseCharacters(messagePipe, _characterConfig, _characterSet);
+            builder.UseLevelRun(messagePipe, _runConfig, level);
+            builder.UseSpawning(_spawnConfig);
             builder.UseDrawing(_drawingConfig);
             builder.RegisterComponent(_hud).As<IGameplayHudView, IBoardInsets>();
+            builder.RegisterComponent(_pauseScreen).As<IPauseView>();
+            builder.RegisterComponent(_resultScreen).As<ILevelResultView>();
+            builder.RegisterEntryPoint<HudPresenter>();
             builder.RegisterEntryPoint<GameplayFlow>();
+            builder.RegisterEntryPoint<LevelEndFlow>();
             builder.RegisterEntryPoint<TouchLog>();
-#if UNITY_EDITOR || DEVELOPMENT_BUILD
-            builder.RegisterEntryPoint<DebugCrowd>();
-            builder.RegisterEntryPoint<DebugArrivals>();
-#endif
         }
     }
 }

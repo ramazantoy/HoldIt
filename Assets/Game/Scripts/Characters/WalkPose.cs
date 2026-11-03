@@ -3,7 +3,7 @@ using UnityEngine;
 namespace HoldIt.Characters
 {
     /// <summary>
-    /// The limbs' offsets from their rest pose at one moment of the walk cycle. The legs and arms swing about X, the body
+    /// The limbs' offsets from their rest pose at one moment of the walk cycle, or seated (<see cref="Sitting"/>). The legs and arms swing about X, the body
     /// rises and rocks about Z. The three peaks fall at different moments: the stride at a quarter cycle, the rise while
     /// the legs pass each other, the rock in between.
     /// </summary>
@@ -47,6 +47,16 @@ namespace HoldIt.Characters
             var rise = (Mathf.Cos(2f * angle) + 1f) * 0.5f * style.Bob * blend;
             var rock = Mathf.Sin(angle + Mathf.PI * 0.25f) * style.Sway * blend;
             return new WalkPose(legs, -legs, -arms, arms, rise, rock);
+        }
+
+        /// <summary>
+        /// Seated: both legs swung forward by the style's angle, arms and body at rest. <paramref name="blend"/> 0 is the rest
+        /// pose, 1 fully seated.
+        /// </summary>
+        public static WalkPose Sitting(float blend, SitStyle style)
+        {
+            var legs = style.LegAngle * Mathf.Clamp01(blend);
+            return new WalkPose(legs, legs, 0f, 0f, 0f, 0f);
         }
     }
 }

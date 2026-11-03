@@ -255,6 +255,7 @@ GameObject:
   - component: {fileID: 7171718678733844196}
   - component: {fileID: 9221355685774895540}
   - component: {fileID: 8464808400580860897}
+  - component: {fileID: 176075944393866018}
   m_Layer: 0
   m_Name: Man_Thin
   m_TagString: Untagged
@@ -312,6 +313,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 061179f11bebf8040a911b8e03461acf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Game::HoldIt.Characters.CharacterView
+  _rig: {fileID: 9221355685774895540}
+  _bubble: {fileID: 3329285522573935076}
+  _bar: {fileID: 1661774518626213871}
+  _exit: {fileID: 176075944393866018}
+--- !u!114 &176075944393866018
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2533795136348177669}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 94b227812afd6aa49ba4dcda87520364, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Game::HoldIt.Characters.CharacterExit
   _rig: {fileID: 9221355685774895540}
   _bubble: {fileID: 3329285522573935076}
 --- !u!1 &2632938210353735139
@@ -500,6 +517,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
+  - {fileID: 5144207247199512212}
   - {fileID: 4095421100492154688}
   m_Father: {fileID: 7171718678733844196}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -1666,6 +1684,79 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!1001 &2737733599224209581
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 7158503929453561605}
+    m_Modifications:
+    - target: {fileID: 6675078264975041666, guid: 03e3aff7e866bdb44b769c7a51813918, type: 3}
+      propertyPath: m_Name
+      value: PatienceBar
+      objectReference: {fileID: 0}
+    - target: {fileID: 7105984257557268025, guid: 03e3aff7e866bdb44b769c7a51813918, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7105984257557268025, guid: 03e3aff7e866bdb44b769c7a51813918, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7105984257557268025, guid: 03e3aff7e866bdb44b769c7a51813918, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7105984257557268025, guid: 03e3aff7e866bdb44b769c7a51813918, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7105984257557268025, guid: 03e3aff7e866bdb44b769c7a51813918, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7105984257557268025, guid: 03e3aff7e866bdb44b769c7a51813918, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7105984257557268025, guid: 03e3aff7e866bdb44b769c7a51813918, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7105984257557268025, guid: 03e3aff7e866bdb44b769c7a51813918, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7105984257557268025, guid: 03e3aff7e866bdb44b769c7a51813918, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7105984257557268025, guid: 03e3aff7e866bdb44b769c7a51813918, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 03e3aff7e866bdb44b769c7a51813918, type: 3}
+--- !u!114 &1661774518626213871 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 3670905570554806082, guid: 03e3aff7e866bdb44b769c7a51813918, type: 3}
+  m_PrefabInstance: {fileID: 2737733599224209581}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d8aada755f5b4d545820be2d79b85be5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Game::HoldIt.Characters.PatienceBar
+--- !u!4 &5144207247199512212 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 7105984257557268025, guid: 03e3aff7e866bdb44b769c7a51813918, type: 3}
+  m_PrefabInstance: {fileID: 2737733599224209581}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &7313577882629984530
 PrefabInstance:
   m_ObjectHideFlags: 0

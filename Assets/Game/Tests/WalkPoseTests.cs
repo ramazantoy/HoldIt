@@ -78,5 +78,30 @@ namespace HoldIt.Tests
             Assert.AreEqual(WalkPose.At(0.25f, 1f, _style).LegLeft, WalkPose.At(0.25f, 3f, _style).LegLeft, Tolerance);
             Assert.AreEqual(0f, WalkPose.At(0.25f, -1f, _style).LegLeft, Tolerance);
         }
+
+        [Test]
+        public void Sitting_SwingsBothLegsForwardAndLeavesTheRestAlone()
+        {
+            var style = new SitStyle(0.3f, 0.1f, 80f, 0.25f);
+
+            var pose = WalkPose.Sitting(1f, style);
+
+            Assert.AreEqual(80f, pose.LegLeft);
+            Assert.AreEqual(80f, pose.LegRight);
+            Assert.AreEqual(0f, pose.ArmLeft);
+            Assert.AreEqual(0f, pose.ArmRight);
+            Assert.AreEqual(0f, pose.BodyRise);
+            Assert.AreEqual(0f, pose.BodyRock);
+        }
+
+        [Test]
+        public void Sitting_Blend_GoesFromStandingToSeated()
+        {
+            var style = new SitStyle(0.3f, 0.1f, 80f, 0.25f);
+
+            Assert.AreEqual(0f, WalkPose.Sitting(0f, style).LegLeft);
+            Assert.AreEqual(40f, WalkPose.Sitting(0.5f, style).LegLeft, 1e-4f);
+            Assert.AreEqual(80f, WalkPose.Sitting(2f, style).LegRight);
+        }
     }
 }

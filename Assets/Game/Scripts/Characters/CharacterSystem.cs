@@ -14,7 +14,8 @@ namespace HoldIt.Characters
     /// advances them each frame with game time, so they stop while the game is paused. It is also their step gate: the
     /// tile rules (<see cref="StepRules"/>), then the cell claims (<see cref="CellClaims"/>). At
     /// its restroom's door a character takes a free stall and walks in, or queues on the door until one frees; once in
-    /// the stall it leaves the board.
+    /// the stall it leaves the board. Everyone else loses patience by the frame; one that runs out has an accident and
+    /// leaves the board where it is.
     /// </summary>
     internal sealed class CharacterSystem : ICharacters, ITickable, IStepGate
     {
@@ -24,6 +25,7 @@ namespace HoldIt.Characters
         private readonly List<Character> _characters = new List<Character>();
         private readonly Dictionary<CharacterId, Character> _byId = new Dictionary<CharacterId, Character>();
         private readonly List<Character> _inside = new List<Character>();
+        private readonly List<Character> _accidents = new List<Character>();
         private readonly CellClaims _claims = new CellClaims();
         private readonly ITileGrid _grid;
         private readonly CharacterConfig _config;
@@ -98,12 +100,14 @@ namespace HoldIt.Characters
         public void Tick()
         {
             var deltaTime = _clock.DeltaTime;
+            var patienceLost = deltaTime / _config.PatienceSeconds;
             for (var i = 0; i < _characters.Count; i++)
             {
                 var character = _characters[i];
                 var before = character.State;
                 var refusal = character.Advance(deltaTime, this);
                 AtTheDoor(character);
+                character.LosePatience(patienceLost);
                 if (character.State != before)
                 {
                     // Only a walker keeps a reservation, and nobody starts walking here.
@@ -114,16 +118,21 @@ namespace HoldIt.Characters
                     _refused.Publish(new StepRefused(character.Id, refusal));
                 if (character.IsInside)
                     _inside.Add(character);
+                else if (character.IsOutOfPatience)
+                    _accidents.Add(character);
             }
 
             try
             {
                 foreach (var character in _inside)
-                    Remove(character);
+                    Remove(character, RemovalReason.EnteredStall);
+                foreach (var character in _accidents)
+                    Remove(character, RemovalReason.Accident);
             }
             finally
             {
                 _inside.Clear();
+                _accidents.Clear();
             }
         }
 
@@ -167,18 +176,21 @@ namespace HoldIt.Characters
         }
 
         /// <summary>
-        /// The visitor is in: it leaves the board, letting go of everything it held, and then its stall shuts, so whoever
-        /// hears of either sees both done. Once only: a character already gone is skipped.
+        /// The character leaves the board, letting go of everything it held, the cell it was stepping into as well; a visitor
+        /// that is in then shuts its stall, so whoever hears of either sees both done. Once only: a character already gone is
+        /// skipped.
         /// </summary>
-        private void Remove(Character character)
+        private void Remove(Character character, RemovalReason reason)
         {
             if (!_byId.Remove(character.Id))
                 return;
             _characters.Remove(character);
             _claims.Vacate(character.Cell, character.Id);
+            _claims.Vacate(character.Next, character.Id);
             _claims.UnreserveAll(character.Id);
-            _restrooms.Shut(character.Visit.Gender, character.Visit.Stall);
-            _removed.Publish(new CharacterRemoved(character.Id));
+            if (reason == RemovalReason.EnteredStall)
+                _restrooms.Shut(character.Visit.Gender, character.Visit.Stall);
+            _removed.Publish(new CharacterRemoved(character.Id, reason));
         }
 
         private bool IsDoor(Cell cell) => _grid.At(cell).Type == TileType.Door;

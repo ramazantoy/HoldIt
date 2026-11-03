@@ -2,7 +2,9 @@ using UnityEngine;
 
 namespace HoldIt.Characters
 {
-    /// <summary>How characters move. Speeds are in tiles per second, which on the grid are world units too.</summary>
+    /// <summary>
+    /// How characters move and how long they can wait. Speeds are in tiles per second, which on the grid are world units too.
+    /// </summary>
     [CreateAssetMenu(menuName = "HoldIt/Characters/Character Config", fileName = "CharacterConfig")]
     public sealed class CharacterConfig : ScriptableObject
     {
@@ -21,8 +23,12 @@ namespace HoldIt.Characters
         [SerializeField, Min(0.1f), Tooltip("How fast every character walks from its restroom's door into a stall, in world units per second.")]
         private float _stallWalkSpeed = 2.4f;
 
+        [SerializeField, Min(1f), Tooltip("How long a character can hold it, in seconds from when it comes in until its stall; then it has an accident.")]
+        private float _patienceSeconds = 30f;
+
         public float BlockedWaitSeconds => _blockedWaitSeconds;
         public float StallWalkSpeed => _stallWalkSpeed;
+        public float PatienceSeconds => _patienceSeconds;
 
         public float WalkSpeed(BodySize size) => size switch
         {

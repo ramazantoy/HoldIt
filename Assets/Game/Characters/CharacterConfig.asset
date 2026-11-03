@@ -17,3 +17,4 @@ MonoBehaviour:
   _fatSpeed: 2
   _blockedWaitSeconds: 0.6
   _stallWalkSpeed: 2.4
+  _patienceSeconds: 30

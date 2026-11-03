@@ -6,6 +6,7 @@ using AF.Platform;
 using AF.Save;
 using AF.Settings;
 using HoldIt.Input;
+using HoldIt.Levels;
 using MessagePipe;
 using UnityEngine;
 using UnityEngine.Audio;
@@ -27,6 +28,9 @@ namespace HoldIt
         [SerializeField, Required, Tooltip("The game's mixer. Its groups and volume parameters are listed in AudioChannels.")]
         private AudioMixer _audioMixer;
 
+        [SerializeField, Required, Tooltip("Every level, in the order they are played.")]
+        private LevelList _levels;
+
         protected override void ConfigureGame(IContainerBuilder builder, MessagePipeOptions messagePipe)
         {
             // First: its boot step loads the global and device data; the settings are applied as they load.
@@ -41,6 +45,7 @@ namespace HoldIt
             builder.UsePlatform(messagePipe);
             // After UseSave, UseAudio and UseInput: display settings, and saving the channel volumes.
             builder.UseSettings(messagePipe);
+            builder.UseLevels(_levels);
         }
     }
 }

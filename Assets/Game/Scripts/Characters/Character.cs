@@ -12,7 +12,7 @@ namespace HoldIt.Characters
     /// refused or waiting character faces where it wanted to go. It is Idle again at its path's end or where it stopped,
     /// and keeps facing the way it last turned. At its restroom's door it is told to queue (Queued, standing there) or to
     /// go into a stall (InStall): then it walks the stall's way in, off the grid and asking no gate, until it
-    /// <see cref="IsInside"/>.
+    /// <see cref="IsInside"/>. All along its patience runs out (<see cref="LosePatience"/>), except in the stall.
     /// </summary>
     public sealed class Character : ICharacter
     {
@@ -60,6 +60,10 @@ namespace HoldIt.Characters
         public int RouteIndex => _index;
         public StallVisit Visit { get; private set; }
         public float VisitDistance { get; private set; }
+        public float Patience { get; private set; }
+
+        /// <summary>True once its patience has run out: an accident, unless it is already in a stall.</summary>
+        public bool IsOutOfPatience => State != CharacterState.InStall && Patience >= 1f;
 
         /// <summary>True once an InStall character has walked all of its stall's way in.</summary>
         public bool IsInside => State == CharacterState.InStall && VisitDistance >= Visit.Line.Length;
@@ -104,6 +108,18 @@ namespace HoldIt.Characters
             Visit = visit;
             VisitDistance = 0f;
             State = CharacterState.InStall;
+        }
+
+        /// <summary>
+        /// Uses up <paramref name="share"/> of its patience, a share of the whole; it stops at 1. Nothing happens InStall:
+        /// a character in its stall waits no more.
+        /// </summary>
+        public void LosePatience(float share)
+        {
+            if (share < 0f)
+                throw new ArgumentOutOfRangeException(nameof(share), $"Patience does not come back ({share}).");
+            if (State != CharacterState.InStall)
+                Patience = Math.Min(1f, Patience + share);
         }
 
         /// <summary>

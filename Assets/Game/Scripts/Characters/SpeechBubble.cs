@@ -8,10 +8,13 @@ using VContainer;
 namespace HoldIt.Characters
 {
     /// <summary>
-    /// The bubble over a character's head that says why it gave up a step. It faces the camera, pops up, stays a moment and
-    /// fades (<see cref="BubbleCurve"/>) on game time, so it waits while the game is paused. Part of the character prefab,
-    /// under Anchor_Top; hidden whenever the character is spawned.
+    /// The bubble over a character's head that says why it gave up a step, that it is relieved, or that it had an accident
+    /// (<see cref="BubbleLine"/>). It faces the camera, pops up, stays a moment and fades (<see cref="BubbleCurve"/>) on
+    /// game time, so it waits while the game is paused. Part of the character prefab, under Anchor_Top; hidden whenever the
+    /// character is spawned. It turns after the character's view has (execution order), so a spinning character's bubble
+    /// still faces the camera.
     /// </summary>
+    [DefaultExecutionOrder(100)]
     public sealed class SpeechBubble : MonoBehaviour, IPoolable
     {
         [SerializeField, Required] private GameObject _visual;
@@ -24,6 +27,8 @@ namespace HoldIt.Characters
         [SerializeField] private LocalizedString _wrongDoor;
         [SerializeField] private LocalizedString _tooWide;
         [SerializeField] private LocalizedString _blocked;
+        [SerializeField] private LocalizedString _relieved;
+        [SerializeField] private LocalizedString _accident;
 
         private IGameClock _clock;
         private IBoardProjection _projection;
@@ -39,10 +44,13 @@ namespace HoldIt.Characters
             _set = set;
         }
 
-        /// <summary>Shows the reason's line, starting the bubble over if it was already up.</summary>
-        public void Show(StepRefusal reason)
+        /// <summary>True from <see cref="Show"/> until the bubble has faded.</summary>
+        public bool IsShowing => _showing;
+
+        /// <summary>Shows the line, starting the bubble over if it was already up.</summary>
+        public void Show(BubbleLine bubbleLine)
         {
-            var line = LineFor(reason);
+            var line = LineFor(bubbleLine);
             if (line == null || line.IsEmpty)
             {
                 Hide();
@@ -91,11 +99,13 @@ namespace HoldIt.Characters
             _visual.SetActive(false);
         }
 
-        private LocalizedString LineFor(StepRefusal reason) => reason switch
+        private LocalizedString LineFor(BubbleLine line) => line switch
         {
-            StepRefusal.WrongDoor => _wrongDoor,
-            StepRefusal.TooWide => _tooWide,
-            StepRefusal.Blocked => _blocked,
+            BubbleLine.WrongDoor => _wrongDoor,
+            BubbleLine.CantFit => _tooWide,
+            BubbleLine.Blocked => _blocked,
+            BubbleLine.Relieved => _relieved,
+            BubbleLine.Accident => _accident,
             _ => null,
         };
     }

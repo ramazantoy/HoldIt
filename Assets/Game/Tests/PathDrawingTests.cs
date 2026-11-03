@@ -25,6 +25,7 @@ namespace HoldIt.Tests
         private CharacterSystem _characters;
         private PathDrawing _drawing;
         private FakeBoardCamera _camera;
+        private FakeClock _clock;
 
         [SetUp]
         public void CreateDrawing()
@@ -43,13 +44,14 @@ namespace HoldIt.Tests
             _grid = MapParser.Parse(TestMaps.Lobby);
             _characterConfig = ScriptableObject.CreateInstance<CharacterConfig>();
             _drawingConfig = ScriptableObject.CreateInstance<DrawingConfig>();
-            _characters = new CharacterSystem(_grid, _characterConfig, new FakeRestrooms(), new FakeClock(),
+            _clock = new FakeClock();
+            _characters = new CharacterSystem(_grid, _characterConfig, new FakeRestrooms(), _clock,
                 _container.Resolve<IPublisher<CharacterSpawned>>(), _container.Resolve<IPublisher<CharacterStateChanged>>(),
                 _container.Resolve<IPublisher<StepRefused>>(), _container.Resolve<IPublisher<CharacterRemoved>>());
             _camera = new FakeBoardCamera(_grid);
             _drawing = new PathDrawing(_characters, _grid, _camera, _camera, _drawingConfig,
                 _container.Resolve<ISubscriber<PointerDown>>(), _container.Resolve<ISubscriber<PointerMoved>>(),
-                _container.Resolve<ISubscriber<PointerUp>>());
+                _container.Resolve<ISubscriber<PointerUp>>(), _container.Resolve<ISubscriber<CharacterRemoved>>());
             _drawing.Initialize();
         }
 
@@ -72,6 +74,35 @@ namespace HoldIt.Tests
             Assert.IsTrue(_drawing.IsDrawing);
             Assert.AreEqual(id, _drawing.Drawer);
             CollectionAssert.AreEqual(new[] { _start }, _drawing.Cells);
+        }
+
+        [Test]
+        public void TheDrawerHasAnAccident_EndsTheDrawing()
+        {
+            _characters.Spawn(Gender.Male, BodySize.Normal, _start);
+            Down(_camera.ScreenOf(_start, 0.5f));
+            Move(_camera.ScreenOf(new Cell(0, 8), 0f));
+
+            _clock.DeltaTime = _characterConfig.PatienceSeconds;
+            _characters.Tick();
+
+            Assert.IsFalse(_drawing.IsDrawing);
+            Assert.AreEqual(0, _drawing.Cells.Count);
+        }
+
+        [Test]
+        public void SomeoneElseHasAnAccident_KeepsTheDrawing()
+        {
+            _characters.Spawn(Gender.Male, BodySize.Normal, _start);
+            _clock.DeltaTime = _characterConfig.PatienceSeconds * 0.5f;
+            _characters.Tick();
+            _characters.Spawn(Gender.Female, BodySize.Normal, new Cell(3, 10));
+            Down(_camera.ScreenOf(new Cell(3, 10), 0.5f));
+
+            _characters.Tick();
+
+            Assert.AreEqual(1, _characters.All.Count);
+            Assert.IsTrue(_drawing.IsDrawing);
         }
 
         [Test]

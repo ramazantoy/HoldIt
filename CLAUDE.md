@@ -16,8 +16,10 @@ kararları `.claude/decisions/Game.md`'de.
 çizimin input'u öne alındı, M5'e kare efekti kaldı (kullanıcı kararı). M3 (çizim, adım doğrulama, doluluk ve rezervasyon,
 geri dönüş, balonlar, yürüme döngüsü) Editor'da bitti (2026-11-03). M4 (prototipteki gibi büyük kabinler, kabin turu ve
 ışıkları, kabine yürüyüş, kapıda kuyruk; parçalar placeholder) Editor'da bitti (2026-11-03). Karakter modelleri ayrı
-oturumda üretiliyor; gelince M2b. Kabin parçaları kitten gelecek (Game.md → Açık). Sıradaki iş M5. Milestone başlarken
-plan moduna geç.
+oturumda üretiliyor; gelince M2b. Kabin parçaları kitten gelecek (Game.md → Açık). M6, M5'ten önce yapıldı
+(2026-11-03): M5'in bitti şartı cihaz istiyor, kare efekti de tam döngüde oynanarak daha iyi seçilir. M6 (SO seviyeler,
+spawn, sabır, kaza, can, yetişen, seviye sonu, pause; kabin anı sade) Editor'da bitti (2026-11-03). Sıradaki iş M5 ya da
+M7 (kullanıcı seçer). Milestone başlarken plan moduna geç.
 
 **Yapı:** framework `Assets/Framework/` (`AF.*` namespace ve asmdef'ler, modül başına `<Modül>/{Runtime,Editor,Tests}`).
 Oyun `Assets/Game/`: asmdef `Game`, namespace `HoldIt`, özellik klasörü `HoldIt.<Özellik>`.
@@ -62,9 +64,9 @@ cherry-pick'ler çakışmasın diye.
 | M3 | Yol çizimi (input + geçici kare işaretleri) + adım doğrulama + doluluk ve rezervasyon + geri dönüş + balonlar + yürüme döngüsü. Debug: tıkla-yürü kalkar, girişten gelen karakterler eklenir | Editor'da karakter çizilen yolu yürür; yanlış kapı, dar geçit ve dolu kare çalışır; iki karakter aynı karede durmaz, ayrılmış kareye çizilemez |
 | M4 | Tuvaletler, kabinler, kuyruk | Doğru giriş, meşgul ışıkları, kapı tıkama |
 | M5 | Kare efektleri: M3'ün geçici işaretlerinin yerine oynanarak seçilen görsel (LineRenderer'dan vazgeçildi) | Cihazda çizilir ve geri alınır; efekt seçildi |
-| M6 | Spawn, sabır, kaza, can, skor | Tam döngü oynanır, oyun sonu |
-| M7 | Harita seçimi, ayarlar (ses, haptik, dil), en iyi skor kaydı | Tam oyun akışı |
-| M8 | Harita 2 ve 3, tuning turu | Bütün haritalar baştan sona oynanır |
+| M6 | SO seviyeler (ilk 30'u üreticiyle, elle ayarlanır), spawn, sabır, kaza, can (3), skor (yetişen), seviye sonu (yıldız), pause. M5'ten önce yapıldı | Tam döngü oynanır, seviye kazanılır ya da kaybedilir |
+| M7 | Seviye seçimi, ayarlar (ses, haptik, dil), seviye başına en iyi yıldız ve açılan seviye kaydı | Tam oyun akışı |
+| M8 | Harita 2 ve 3, seviyelerin haritalara dağıtımı, tuning turu | Bütün haritalar baştan sona oynanır |
 | M9 | Juice: PrimeTween animasyonları, sesler, haptik | Cihazda iyi hissettirir |
 | M10 | Eksik kalan testler, README EN/TR (GIF + diyagram), Release APK GitHub Releases'te (APK git'e girmez) | Public repo hazır |
 

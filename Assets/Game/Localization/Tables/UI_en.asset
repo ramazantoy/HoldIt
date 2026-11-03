@@ -58,6 +58,50 @@ MonoBehaviour:
     m_Localized: Blocked!
     m_Metadata:
       m_Items: []
+  - m_Id: 819958906630144
+    m_Localized: Phew!
+    m_Metadata:
+      m_Items: []
+  - m_Id: 819959191842816
+    m_Localized: Oops!
+    m_Metadata:
+      m_Items: []
+  - m_Id: 819959196037120
+    m_Localized: Level {0}
+    m_Metadata:
+      m_Items: []
+  - m_Id: 819959196037121
+    m_Localized: Paused
+    m_Metadata:
+      m_Items: []
+  - m_Id: 819959196037122
+    m_Localized: Resume
+    m_Metadata:
+      m_Items: []
+  - m_Id: 819959196037123
+    m_Localized: Level {0} complete!
+    m_Metadata:
+      m_Items: []
+  - m_Id: 819959196037124
+    m_Localized: You beat every level!
+    m_Metadata:
+      m_Items: []
+  - m_Id: 819959196037125
+    m_Localized: Oh no!
+    m_Metadata:
+      m_Items: []
+  - m_Id: 819959196037126
+    m_Localized: 'Made it: {0}/{1}'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 819959196037127
+    m_Localized: Next level
+    m_Metadata:
+      m_Items: []
+  - m_Id: 819959196037128
+    m_Localized: Try again
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

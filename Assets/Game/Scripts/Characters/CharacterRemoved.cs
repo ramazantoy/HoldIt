@@ -1,10 +1,15 @@
 namespace HoldIt.Characters
 {
-    /// <summary>A character left the board (into a stall); <see cref="ICharacters"/> no longer has it.</summary>
+    /// <summary>A character left the board, into its stall or after an accident; <see cref="ICharacters"/> no longer has it.</summary>
     public readonly struct CharacterRemoved
     {
         public readonly CharacterId Id;
+        public readonly RemovalReason Reason;
 
-        public CharacterRemoved(CharacterId id) => Id = id;
+        public CharacterRemoved(CharacterId id, RemovalReason reason)
+        {
+            Id = id;
+            Reason = reason;
+        }
     }
 }

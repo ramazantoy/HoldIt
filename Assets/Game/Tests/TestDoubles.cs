@@ -1,8 +1,10 @@
 using System;
 using System.Collections.Generic;
 using AF.Core;
+using AF.Input;
 using Cysharp.Threading.Tasks;
 using HoldIt.Input;
+using HoldIt.Levels;
 using HoldIt.Paths;
 using HoldIt.Restrooms;
 using MessagePipe;
@@ -111,5 +113,113 @@ namespace HoldIt.Tests
         public void Press() => _container.Resolve<IPublisher<BackPressed>>().Publish(new BackPressed());
 
         public void Dispose() => _container.Dispose();
+    }
+
+    /// <summary>A real MessagePipe broker for one message type, as a scope registers it.</summary>
+    internal sealed class Broker<T> : IDisposable
+    {
+        private readonly IObjectResolver _container;
+
+        public Broker()
+        {
+            var builder = new ContainerBuilder();
+            var messagePipe = builder.RegisterMessagePipe();
+            builder.RegisterMessageBroker<T>(messagePipe);
+            _container = builder.Build();
+            Subscriber = _container.Resolve<ISubscriber<T>>();
+            Publisher = _container.Resolve<IPublisher<T>>();
+        }
+
+        public ISubscriber<T> Subscriber { get; }
+        public IPublisher<T> Publisher { get; }
+
+        public void Publish(T message) => Publisher.Publish(message);
+
+        public void Dispose() => _container.Dispose();
+    }
+
+    /// <summary>Pause requests, kept until their handles are disposed.</summary>
+    internal sealed class FakePause : IPauseService
+    {
+        private readonly List<string> _reasons = new List<string>();
+
+        public bool IsPaused => _reasons.Count > 0;
+        public IReadOnlyList<string> ActiveReasons => _reasons;
+
+        public IDisposable Request(string reason)
+        {
+            _reasons.Add(reason);
+            return new Handle(() => _reasons.Remove(reason));
+        }
+
+        private sealed class Handle : IDisposable
+        {
+            private Action _release;
+
+            public Handle(Action release) => _release = release;
+
+            public void Dispose()
+            {
+                _release?.Invoke();
+                _release = null;
+            }
+        }
+    }
+
+    /// <summary>Input mode requests, kept until their handles are disposed; the newest is current.</summary>
+    internal sealed class FakeInputModes : IInputModeService
+    {
+        private readonly List<InputMode> _requests = new List<InputMode>();
+
+        public InputMode Current => _requests.Count > 0 ? _requests[_requests.Count - 1] : InputModes.Gameplay;
+        public IReadOnlyList<InputMode> Requests => _requests;
+        public bool ConfineCursor { get; set; }
+
+        public IDisposable Request(InputMode mode)
+        {
+            _requests.Add(mode);
+            return new Release(() => _requests.Remove(mode));
+        }
+
+        private sealed class Release : IDisposable
+        {
+            private Action _release;
+
+            public Release(Action release) => _release = release;
+
+            public void Dispose()
+            {
+                _release?.Invoke();
+                _release = null;
+            }
+        }
+    }
+
+    /// <summary>A level run the test sets by hand.</summary>
+    internal sealed class FakeLevelRun : ILevelRun
+    {
+        public int Crowd { get; set; } = 10;
+        public int Served { get; set; }
+        public int Lives { get; set; } = 3;
+        public int MaxLives { get; set; } = 3;
+        public LevelOutcome Outcome { get; set; } = LevelOutcome.Playing;
+        public int Stars { get; set; }
+    }
+
+    /// <summary>A cursor over <see cref="Count"/> levels without definitions.</summary>
+    internal sealed class FakeLevelCursor : ILevelCursor
+    {
+        public int Index { get; set; }
+        public int Number => Index + 1;
+        public int Count { get; set; } = 3;
+        public LevelDefinition Current => null;
+        public bool HasNext => Index < Count - 1;
+
+        public void Next()
+        {
+            if (!HasNext)
+                throw new InvalidOperationException("No next level.");
+            Index++;
+        }
     }
 }

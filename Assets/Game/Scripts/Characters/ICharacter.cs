@@ -44,5 +44,11 @@ namespace HoldIt.Characters
 
         /// <summary>How far along <see cref="Visit"/>'s line it has walked, in world units.</summary>
         float VisitDistance { get; }
+
+        /// <summary>
+        /// How much of its patience is used up, from 0 when it came in to 1, an accident. It stops filling once the
+        /// character is InStall.
+        /// </summary>
+        float Patience { get; }
     }
 }

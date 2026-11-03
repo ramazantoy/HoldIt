@@ -30,4 +30,30 @@ MonoBehaviour:
     _pop: 0.18
     _fadeAt: 1.2
     _fade: 0.3
-  _vanishSeconds: 0.2
+  _patience:
+    _calmHue: 0.33
+    _saturation: 0.85
+    _lightness: 0.5
+    _shakeFrom: 0.7
+    _shakeAmplitude: 0.03
+    _shakeFrequency: 47
+  _sit:
+    _seatOffset: 0.3
+    _drop: 0.12
+    _legAngle: 85
+    _settleSeconds: 0.25
+  _exit:
+    _puffSeconds: 0.3
+    _puffPeak: 1.15
+    _puffPeakAt: 0.33
+    _accidentSeconds: 0.5
+    _accidentSpin: 690
+  _puddle: {fileID: 2201336296750765583, guid: a08669eff3f5b9149a5135a8b7e95f13, type: 3}
+  _puddleLook:
+    _seconds: 12
+    _growSeconds: 0.5
+    _growFrom: 0.3
+    _fadeSeconds: 3
+    _minSize: 0.56
+    _maxSize: 0.88
+    _color: {r: 0.9490196, g: 0.8392157, b: 0.25490198, a: 0.85}

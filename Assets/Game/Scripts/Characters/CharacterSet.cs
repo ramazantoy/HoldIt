@@ -4,7 +4,8 @@ using UnityEngine;
 namespace HoldIt.Characters
 {
     /// <summary>
-    /// The prefab of every gender and size, and how their views move. Swapping a prefab here restyles that character.
+    /// The prefab of every gender and size, how their views move, show their patience and leave, and the puddle an accident
+    /// leaves. Swapping a prefab here restyles that character.
     /// </summary>
     [CreateAssetMenu(menuName = "HoldIt/Characters/Character Set", fileName = "CharacterSet")]
     public sealed class CharacterSet : ScriptableObject
@@ -25,13 +26,29 @@ namespace HoldIt.Characters
         [SerializeField, Tooltip("How speech bubbles pop up and fade.")]
         private BubbleTiming _bubble = BubbleTiming.Default;
 
-        [SerializeField, Min(0f), Tooltip("How long a character that leaves the board (into a stall) takes to shrink away, in seconds.")]
-        private float _vanishSeconds = 0.2f;
+        [SerializeField, Tooltip("How the patience bar colours and when a character starts to shake.")]
+        private PatienceLook _patience = PatienceLook.Default;
+
+        [SerializeField, Tooltip("How a character in its stall sits until the stall frees.")]
+        private SitStyle _sit = SitStyle.Default;
+
+        [SerializeField, Tooltip("How a character goes: in a puff once relieved, spinning after an accident.")]
+        private ExitLook _exit = ExitLook.Default;
+
+        [SerializeField, Required, Tooltip("What an accident leaves on the floor.")]
+        private PuddleView _puddle;
+
+        [SerializeField, Tooltip("How the puddle spreads, stays and fades.")]
+        private PuddleLook _puddleLook = PuddleLook.Default;
 
         public float TurnRate => _turnRate;
         public WalkStyle Walk => _walk;
         public BubbleTiming Bubble => _bubble;
-        public float VanishSeconds => _vanishSeconds;
+        public PatienceLook Patience => _patience;
+        public SitStyle Sit => _sit;
+        public ExitLook Exit => _exit;
+        public PuddleView Puddle => _puddle;
+        public PuddleLook PuddleLook => _puddleLook;
 
         public CharacterView Prefab(Gender gender, BodySize size) => gender == Gender.Male
             ? size switch { BodySize.Thin => _manThin, BodySize.Normal => _manNormal, _ => _manFat }

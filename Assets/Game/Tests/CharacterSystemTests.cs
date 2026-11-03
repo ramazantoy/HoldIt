@@ -29,6 +29,7 @@ namespace HoldIt.Tests
         private List<StepRefused> _refused;
         private List<CharacterState> _stateWhenRefused;
         private List<CharacterId> _removed;
+        private List<RemovalReason> _removedFor;
         private List<bool> _goneWhenRemoved;
         private IDisposable _subscriptions;
 
@@ -57,6 +58,7 @@ namespace HoldIt.Tests
             _refused = new List<StepRefused>();
             _stateWhenRefused = new List<CharacterState>();
             _removed = new List<CharacterId>();
+            _removedFor = new List<RemovalReason>();
             _goneWhenRemoved = new List<bool>();
             var bag = DisposableBag.CreateBuilder();
             _container.Resolve<ISubscriber<CharacterSpawned>>().Subscribe(_spawned.Add).AddTo(bag);
@@ -75,6 +77,7 @@ namespace HoldIt.Tests
             _container.Resolve<ISubscriber<CharacterRemoved>>().Subscribe(message =>
             {
                 _removed.Add(message.Id);
+                _removedFor.Add(message.Reason);
                 _goneWhenRemoved.Add(!_system.TryGet(message.Id, out _));
             }).AddTo(bag);
             _subscriptions = bag.Build();
@@ -398,6 +401,7 @@ namespace HoldIt.Tests
 
             CollectionAssert.AreEqual(new[] { (Gender.Male, 0) }, _restrooms.Shuts);
             CollectionAssert.AreEqual(new[] { id }, _removed);
+            CollectionAssert.AreEqual(new[] { RemovalReason.EnteredStall }, _removedFor);
             Assert.IsTrue(_goneWhenRemoved[0], "It is gone before it is announced.");
             Assert.IsFalse(_system.TryGet(id, out _));
             Assert.AreEqual(0, _system.All.Count);
@@ -531,6 +535,106 @@ namespace HoldIt.Tests
             var id = WalkToMaleDoor(new Cell(2, 4));
 
             Assert.AreEqual(CharacterState.InStall, Character(id).State);
+        }
+
+        [Test]
+        public void Tick_UsesUpPatienceByTheClock()
+        {
+            var id = _system.Spawn(Gender.Male, BodySize.Normal, _lobby);
+
+            _clock.DeltaTime = _config.PatienceSeconds * 0.25f;
+            _system.Tick();
+
+            Assert.AreEqual(0.25f, Character(id).Patience, 1e-5f);
+        }
+
+        [Test]
+        public void Tick_PatienceOut_IsAnAccidentThatLeavesTheBoardWhereItStood()
+        {
+            var id = _system.Spawn(Gender.Male, BodySize.Normal, _lobby);
+
+            _clock.DeltaTime = _config.PatienceSeconds;
+            _system.Tick();
+
+            CollectionAssert.AreEqual(new[] { id }, _removed);
+            CollectionAssert.AreEqual(new[] { RemovalReason.Accident }, _removedFor);
+            Assert.IsTrue(_goneWhenRemoved[0], "It is gone before it is announced.");
+            Assert.AreEqual(0, _system.All.Count);
+            Assert.IsTrue(_system.IsFree(_lobby));
+            Assert.AreEqual(0, _restrooms.Shuts.Count);
+        }
+
+        [Test]
+        public void Tick_AnAccidentMidStep_LetsGoOfBothCellsAndTheEnd()
+        {
+            var id = _system.Spawn(Gender.Male, BodySize.Normal, _lobby);
+            var halfStep = 0.5f / _config.WalkSpeed(BodySize.Normal);
+            _clock.DeltaTime = _config.PatienceSeconds - halfStep / 2f;
+            _system.Tick();
+            _system.TryWalk(id, North(3));
+
+            _clock.DeltaTime = halfStep;
+            _system.Tick();
+
+            Assert.AreEqual(1, _removed.Count, "Its patience ran out half a step out of the lobby.");
+            Assert.IsTrue(_system.IsFree(_lobby));
+            Assert.IsTrue(_system.IsFree(new Cell(0, 9)));
+            Assert.IsTrue(_system.IsFree(new Cell(0, 8)));
+        }
+
+        [Test]
+        public void Tick_AnAccidentInTheQueue_LetsGoOfTheDoor()
+        {
+            _restrooms.Fill(Gender.Male);
+            WalkToMaleDoor(new Cell(2, 4));
+            Assert.IsFalse(_system.IsFree(_maleDoor));
+
+            _clock.DeltaTime = _config.PatienceSeconds;
+            _system.Tick();
+
+            Assert.AreEqual(RemovalReason.Accident, _removedFor[0]);
+            Assert.IsTrue(_system.IsFree(_maleDoor));
+        }
+
+        [Test]
+        public void Tick_InTheStall_PatienceStopsAndNoAccidentComes()
+        {
+            _restrooms.LineLength = 1000f;
+            var id = WalkToMaleDoor(new Cell(2, 4));
+            var patience = Character(id).Patience;
+
+            _clock.DeltaTime = _config.PatienceSeconds * 2f;
+            _system.Tick();
+
+            Assert.AreEqual(patience, Character(id).Patience);
+            Assert.AreEqual(0, _removed.Count);
+        }
+
+        [Test]
+        public void Tick_GoingInJustAsPatienceRunsOut_GoesIn()
+        {
+            _restrooms.Fill(Gender.Male);
+            var id = WalkToMaleDoor(new Cell(2, 4));
+            _restrooms.Free(Gender.Male, 0);
+
+            _clock.DeltaTime = _config.PatienceSeconds;
+            _system.Tick();
+
+            Assert.AreEqual(CharacterState.InStall, Character(id).State);
+            Assert.AreEqual(0, _removed.Count);
+        }
+
+        [Test]
+        public void Tick_TwoAccidentsInOneFrame_RemovesBoth()
+        {
+            _system.Spawn(Gender.Male, BodySize.Normal, _lobby);
+            _system.Spawn(Gender.Female, BodySize.Fat, new Cell(1, 10));
+
+            _clock.DeltaTime = _config.PatienceSeconds;
+            _system.Tick();
+
+            Assert.AreEqual(2, _removed.Count);
+            Assert.AreEqual(0, _system.All.Count);
         }
 
         /// <summary>A Normal man walks from <paramref name="from"/>, next to the men's door, onto it.</summary>

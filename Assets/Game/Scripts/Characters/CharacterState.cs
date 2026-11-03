@@ -1,6 +1,9 @@
 namespace HoldIt.Characters
 {
-    /// <summary>What a character is doing. Accident (M6) joins with its milestone.</summary>
+    /// <summary>
+    /// What a character is doing. An accident is no state: the character leaves the board there and then
+    /// (<see cref="RemovalReason.Accident"/>).
+    /// </summary>
     public enum CharacterState
     {
         /// <summary>Standing on its cell; a path can be given to it.</summary>

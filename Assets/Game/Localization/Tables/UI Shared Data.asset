@@ -40,7 +40,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 182436472041474
-    m_Key: hud.menu
+    m_Key: common.menu
     m_Metadata:
       m_Items: []
   - m_Id: 585092608831488
@@ -53,6 +53,50 @@ MonoBehaviour:
       m_Items: []
   - m_Id: 585092663357441
     m_Key: bubble.blocked
+    m_Metadata:
+      m_Items: []
+  - m_Id: 819958906630144
+    m_Key: bubble.relieved
+    m_Metadata:
+      m_Items: []
+  - m_Id: 819959191842816
+    m_Key: bubble.accident
+    m_Metadata:
+      m_Items: []
+  - m_Id: 819959196037120
+    m_Key: hud.level
+    m_Metadata:
+      m_Items: []
+  - m_Id: 819959196037121
+    m_Key: pause.title
+    m_Metadata:
+      m_Items: []
+  - m_Id: 819959196037122
+    m_Key: pause.resume
+    m_Metadata:
+      m_Items: []
+  - m_Id: 819959196037123
+    m_Key: result.won
+    m_Metadata:
+      m_Items: []
+  - m_Id: 819959196037124
+    m_Key: result.game_done
+    m_Metadata:
+      m_Items: []
+  - m_Id: 819959196037125
+    m_Key: result.lost
+    m_Metadata:
+      m_Items: []
+  - m_Id: 819959196037126
+    m_Key: result.served
+    m_Metadata:
+      m_Items: []
+  - m_Id: 819959196037127
+    m_Key: result.next
+    m_Metadata:
+      m_Items: []
+  - m_Id: 819959196037128
+    m_Key: result.retry
     m_Metadata:
       m_Items: []
   m_Metadata:

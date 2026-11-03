@@ -15,7 +15,8 @@ namespace HoldIt.Drawing
     /// The player's finger draws paths. A press on or near an Idle character (<see cref="CharacterPick"/>) starts a path
     /// from its cell; dragging extends and cuts it (<see cref="PathDraft"/>); letting go cuts it back to the last cell the
     /// character can end on, which someone else may stand on or have reserved, and sends the character if two or more
-    /// cells are left. The path may cross other characters: the step rules deal with them on the way.
+    /// cells are left. The path may cross other characters: the step rules deal with them on the way. A character that
+    /// leaves the board while its path is drawn (an accident) ends the drawing.
     /// </summary>
     internal sealed class PathDrawing : IPathDrawing, IInitializable, IDisposable
     {
@@ -30,11 +31,13 @@ namespace HoldIt.Drawing
         private readonly ISubscriber<PointerDown> _down;
         private readonly ISubscriber<PointerMoved> _moved;
         private readonly ISubscriber<PointerUp> _up;
+        private readonly ISubscriber<CharacterRemoved> _removed;
         private readonly PathDraft _draft;
         private IDisposable _subscriptions;
 
         public PathDrawing(ICharacters characters, ITileGrid grid, IBoardPicker picker, IBoardProjection projection,
-            DrawingConfig config, ISubscriber<PointerDown> down, ISubscriber<PointerMoved> moved, ISubscriber<PointerUp> up)
+            DrawingConfig config, ISubscriber<PointerDown> down, ISubscriber<PointerMoved> moved, ISubscriber<PointerUp> up,
+            ISubscriber<CharacterRemoved> removed)
         {
             _characters = characters;
             _grid = grid;
@@ -44,6 +47,7 @@ namespace HoldIt.Drawing
             _down = down;
             _moved = moved;
             _up = up;
+            _removed = removed;
             _draft = new PathDraft(grid);
         }
 
@@ -58,6 +62,7 @@ namespace HoldIt.Drawing
             _down.Subscribe(message => Begin(message.Position)).AddTo(bag);
             _moved.Subscribe(message => Extend(message.Position)).AddTo(bag);
             _up.Subscribe(message => Finish(message.Position)).AddTo(bag);
+            _removed.Subscribe(message => Drop(message.Id)).AddTo(bag);
             _subscriptions = bag.Build();
         }
 
@@ -91,6 +96,12 @@ namespace HoldIt.Drawing
             _draft.TrimEnd(cell => _characters.CanEndOn(Drawer, cell));
             if (_draft.CanCommit && !_characters.TryWalk(Drawer, _draft.ToPath()))
                 Log.Info($"{Drawer} did not take the path {_draft.ToPath()}.");
+        }
+
+        private void Drop(CharacterId id)
+        {
+            if (IsDrawing && id == Drawer)
+                IsDrawing = false;
         }
 
         /// <summary>Every Idle character, as a line from its feet to its head on the screen.</summary>

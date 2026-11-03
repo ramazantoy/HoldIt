@@ -51,6 +51,36 @@ namespace HoldIt.Tests
         }
 
         [Test]
+        public void LosePatience_AddsUpToOneAndThenItIsOut()
+        {
+            _character.LosePatience(0.4f);
+            Assert.AreEqual(0.4f, _character.Patience, 1e-5f);
+            Assert.IsFalse(_character.IsOutOfPatience);
+
+            _character.LosePatience(0.7f);
+            Assert.AreEqual(1f, _character.Patience);
+            Assert.IsTrue(_character.IsOutOfPatience);
+        }
+
+        [Test]
+        public void LosePatience_InTheStall_DoesNothing()
+        {
+            _character.LosePatience(0.5f);
+            _character.EnterStall(new StallVisit(Gender.Female, 0, new WalkLine(new[] { Vector3.zero, Vector3.forward })));
+
+            _character.LosePatience(1f);
+
+            Assert.AreEqual(0.5f, _character.Patience, 1e-5f);
+            Assert.IsFalse(_character.IsOutOfPatience);
+        }
+
+        [Test]
+        public void LosePatience_Negative_Throws()
+        {
+            Assert.Throws<ArgumentOutOfRangeException>(() => _character.LosePatience(-0.1f));
+        }
+
+        [Test]
         public void TryWalk_APathFromItsCell_StartsWalking()
         {
             var path = East(3);
