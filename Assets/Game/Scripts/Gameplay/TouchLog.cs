@@ -9,7 +9,7 @@ using VContainer.Unity;
 namespace HoldIt.Gameplay
 {
     /// <summary>
-    /// Logs the gameplay presses and the tile under them (adb logcat in a Development build) until path drawing (M2) takes
+    /// Logs the gameplay presses and the tile under them (adb logcat in a Development build) until path drawing (M5) takes
     /// them. Presses that start on the HUD never reach it.
     /// </summary>
     internal sealed class TouchLog : IInitializable, IDisposable

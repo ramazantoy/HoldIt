@@ -32,6 +32,14 @@ namespace HoldIt.Tests
         public UniTask UnloadAdditive(string scene) => throw new NotSupportedException();
     }
 
+    /// <summary>Game time the test sets by hand.</summary>
+    internal sealed class FakeClock : IGameClock
+    {
+        public float Time { get; set; }
+        public float DeltaTime { get; set; }
+        public float Scale { get; set; } = 1f;
+    }
+
     /// <summary>A real MessagePipe broker for <see cref="BackPressed"/>, as the root scope registers it.</summary>
     internal sealed class BackBroker : IDisposable
     {

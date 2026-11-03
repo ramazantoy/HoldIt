@@ -397,6 +397,8 @@ MonoBehaviour:
   _map: {fileID: 11400000, guid: 8cfdcd67881cfb94bb854c1873781475, type: 2}
   _board: {fileID: 1311314311}
   _boardCamera: {fileID: 1942079115}
+  _characterConfig: {fileID: 11400000, guid: 7c33d38e5bb83c04599b455eed92b539, type: 2}
+  _characterSet: {fileID: 11400000, guid: 27261a883cf2c984099464c9f0182838, type: 2}
 --- !u!4 &1084865236
 Transform:
   m_ObjectHideFlags: 0

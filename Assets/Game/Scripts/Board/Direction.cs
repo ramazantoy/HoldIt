@@ -21,7 +21,8 @@ namespace HoldIt.Board
             new[] { Direction.North, Direction.East, Direction.South, Direction.West };
 
         /// <summary>
-        /// Rotation about Y that turns a piece modelled on its tile's north edge to this edge (0, 90, 180 or 270 degrees).
+        /// Rotation about Y that turns a piece modelled on its tile's north edge to this edge (0, 90, 180 or 270 degrees),
+        /// or a character modelled facing +Z (north) to face this way.
         /// </summary>
         public static Quaternion Rotation(this Direction direction) => Quaternion.Euler(0f, 90f * (int)direction, 0f);
 

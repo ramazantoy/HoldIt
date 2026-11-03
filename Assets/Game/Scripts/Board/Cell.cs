@@ -23,6 +23,25 @@ namespace HoldIt.Board
             _ => new Cell(Col - 1, Row),
         };
 
+        /// <summary>True when the other cell shares a side with this one (not a corner, not the cell itself).</summary>
+        public bool IsNeighbour(Cell other) => Math.Abs(Col - other.Col) + Math.Abs(Row - other.Row) == 1;
+
+        /// <summary>The side of this cell the neighbour is on. False when <paramref name="neighbour"/> is not a neighbour.</summary>
+        public bool TryDirectionTo(Cell neighbour, out Direction direction)
+        {
+            foreach (var candidate in Directions.All)
+            {
+                if (Step(candidate) == neighbour)
+                {
+                    direction = candidate;
+                    return true;
+                }
+            }
+
+            direction = default;
+            return false;
+        }
+
         public bool Equals(Cell other) => Col == other.Col && Row == other.Row;
         public override bool Equals(object obj) => obj is Cell other && Equals(other);
         public override int GetHashCode() => (Col * 397) ^ Row;
