@@ -20,7 +20,9 @@ oturumda üretiliyor; gelince M2b. Kabin parçaları kitten gelecek (Game.md →
 (2026-11-03): M5'in bitti şartı cihaz istiyor, kare efekti de tam döngüde oynanarak daha iyi seçilir. M6 (SO seviyeler,
 spawn, sabır, kaza, can, yetişen, seviye sonu, pause; kabin anı sade) Editor'da bitti (2026-11-03). M7 (seviye seçimi,
 Global'de ilerleme kaydı, ayarlar ekranı: ses, haptik ayarı, dil; pause'tan ayarlar) Editor'da bitti (2026-11-04); cihaz
-kısmı Game.md → Açık → Cihaz testi'nde. Sıradaki iş M5 ya da M8 (kullanıcı seçer). Milestone başlarken plan moduna geç.
+kısmı Game.md → Açık → Cihaz testi'nde. M8 (her seviyeye üreticiden kendi haritası, harita editor aracı, başsız simülasyonla
+tuning) Editor'da bitti (2026-11-04); gerçek oyunla kalibrasyon Game.md → Açık'ta. Sıradaki iş M5 ya da M9 (kullanıcı seçer).
+Milestone başlarken plan moduna geç.
 
 **Yapı:** framework `Assets/Framework/` (`AF.*` namespace ve asmdef'ler, modül başına `<Modül>/{Runtime,Editor,Tests}`).
 Oyun `Assets/Game/`: asmdef `Game`, namespace `HoldIt`, özellik klasörü `HoldIt.<Özellik>`.
@@ -67,7 +69,7 @@ cherry-pick'ler çakışmasın diye.
 | M5 | Kare efektleri: M3'ün geçici işaretlerinin yerine oynanarak seçilen görsel (LineRenderer'dan vazgeçildi) | Cihazda çizilir ve geri alınır; efekt seçildi |
 | M6 | SO seviyeler (ilk 30'u üreticiyle, elle ayarlanır), spawn, sabır, kaza, can (3), skor (yetişen), seviye sonu (yıldız), pause. M5'ten önce yapıldı | Tam döngü oynanır, seviye kazanılır ya da kaybedilir |
 | M7 | Seviye seçimi, ayarlar (ses, haptik, dil), seviye başına en iyi yıldız ve açılan seviye kaydı | Tam oyun akışı |
-| M8 | Her seviyenin kendi haritası (30 harita, Lobby seviye 1'in), aynı haritayı paylaşan seviyeyi raporlayan validator, harita ve sayılarla tuning turu | Bütün seviyeler kendi haritalarıyla baştan sona oynanır |
+| M8 | Her seviyenin kendi haritası (30 harita, Lobby seviye 1'in): prosedürel harita üreticisi (bantlı tarifler) + harita editor aracı (inspector), aynı haritayı paylaşan seviyeyi raporlayan validator, başsız simülasyon (bot) ile harita ve sayılarla tuning turu | Bütün seviyeler kendi haritalarıyla baştan sona oynanır |
 | M9 | Juice: PrimeTween animasyonları, sesler, haptik | Cihazda iyi hissettirir |
 | M10 | Eksik kalan testler, README EN/TR (GIF + diyagram), Release APK GitHub Releases'te (APK git'e girmez) | Public repo hazır |
 

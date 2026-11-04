@@ -2,6 +2,7 @@ using System.Linq;
 using AF.Core.Editor;
 using HoldIt.Board;
 using HoldIt.Editor;
+using HoldIt.Editor.Maps;
 using HoldIt.Restrooms;
 using NUnit.Framework;
 using UnityEditor;
@@ -71,7 +72,31 @@ namespace HoldIt.Tests
             Assert.IsTrue(report.Issues.All(issue => issue.Message.Contains("4 stalls need")));
         }
 
-        private ValidationReport Check(params string[] rows)
+        [Test]
+        public void MapBeyondTheLimits_IsAWarningOnly()
+        {
+            var limits = new MapLimits(TestMaps.Lobby[0].Length - 1, TestMaps.Lobby.Length - 1);
+
+            var report = Check(limits, TestMaps.Lobby);
+
+            Assert.AreEqual(0, report.ErrorCount, report.ToString());
+            Assert.AreEqual(2, report.WarningCount, report.ToString());
+            Assert.IsTrue(report.Issues.Any(issue => issue.Message.Contains("10 tiles wide")));
+            Assert.IsTrue(report.Issues.Any(issue => issue.Message.Contains("14 tiles tall")));
+            Assert.AreSame(_map, report.Issues[0].Context);
+        }
+
+        [Test]
+        public void MapAtTheLimits_IsNotWarned()
+        {
+            var report = Check(new MapLimits(TestMaps.Lobby[0].Length, TestMaps.Lobby.Length), TestMaps.Lobby);
+
+            Assert.AreEqual(0, report.WarningCount, report.ToString());
+        }
+
+        private ValidationReport Check(params string[] rows) => Check(MapLimits.Default, rows);
+
+        private ValidationReport Check(MapLimits limits, params string[] rows)
         {
             var serialized = new SerializedObject(_map);
             var property = serialized.FindProperty("_rows");
@@ -81,7 +106,7 @@ namespace HoldIt.Tests
             serialized.ApplyModifiedPropertiesWithoutUndo();
 
             var report = new ValidationReport();
-            MapValidator.Check(_map, StallGeometry.Default, report);
+            MapValidator.Check(_map, StallGeometry.Default, limits, report);
             return report;
         }
     }

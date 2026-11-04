@@ -6,10 +6,11 @@ using UnityEditor;
 namespace HoldIt.Editor
 {
     /// <summary>
-    /// "HoldIt/Levels/Generate": writes the levels from the project's <see cref="LevelCurve"/> as Level_01, Level_02... in
-    /// Assets/Game/Levels and lists them, in order, in the level list there. A level that exists already gets the curve's
-    /// numbers but keeps its map, so a level moved to another map stays there; it asks before overwriting. Levels past the
-    /// curve's count are left as they are, out of the list.
+    /// "HoldIt/Levels/Generate": writes the levels' numbers from the project's <see cref="LevelCurve"/> as Level_01,
+    /// Level_02... in Assets/Game/Levels and lists them, in order, in the level list there. It never touches a level's map: a
+    /// new level is written without one ("AF/Validate All" reports it) and gets its map from "HoldIt/Maps/Generate" or by
+    /// hand. It asks before overwriting existing levels' numbers. Levels past the curve's count are left as they are, out of
+    /// the list.
     /// </summary>
     public static class LevelGenerator
     {
@@ -30,7 +31,8 @@ namespace HoldIt.Editor
 
             var existing = CountExisting(curve.Count);
             if (existing > 0 && !EditorUtility.DisplayDialog("Generate levels",
-                    $"{existing} of the {curve.Count} levels exist already. Overwrite their numbers? Their maps stay.",
+                    $"{existing} of the {curve.Count} levels exist already. Overwrite their numbers? Their maps stay; " +
+                    "hand-tuned numbers are lost.",
                     "Overwrite", "Cancel"))
                 return;
 
@@ -45,7 +47,7 @@ namespace HoldIt.Editor
 
             var levels = new LevelDefinition[curve.Count];
             for (var i = 0; i < curve.Count; i++)
-                levels[i] = Write(PathOf(i), curve.Ramp.At(i, curve.Count), curve);
+                levels[i] = Write(PathOf(i), curve.Ramp.At(i, curve.Count));
 
             var list = LoadOrCreate<LevelList>(LIST_PATH);
             var serialized = new SerializedObject(list);
@@ -62,13 +64,23 @@ namespace HoldIt.Editor
 
         public static string PathOf(int index) => $"{FOLDER}/Level_{index + 1:00}.asset";
 
-        private static LevelDefinition Write(string path, LevelNumbers numbers, LevelCurve curve)
+        /// <summary>
+        /// Sets a level's first and last gap between arrivals and the most characters on its board; an asset still has to
+        /// be saved by the caller.
+        /// </summary>
+        public static void WriteNumbers(LevelDefinition level, float spawnStart, float spawnEnd, int maxCharacters)
+        {
+            var serialized = new SerializedObject(level);
+            serialized.FindProperty("_spawnStart").floatValue = spawnStart;
+            serialized.FindProperty("_spawnEnd").floatValue = spawnEnd;
+            serialized.FindProperty("_maxCharacters").intValue = maxCharacters;
+            serialized.ApplyModifiedPropertiesWithoutUndo();
+        }
+
+        private static LevelDefinition Write(string path, LevelNumbers numbers)
         {
             var level = LoadOrCreate<LevelDefinition>(path);
             var serialized = new SerializedObject(level);
-            var map = serialized.FindProperty("_map");
-            if (map.objectReferenceValue == null)
-                map.objectReferenceValue = curve.Map;
             serialized.FindProperty("_crowd").intValue = numbers.Crowd;
             serialized.FindProperty("_spawnStart").floatValue = numbers.SpawnStart;
             serialized.FindProperty("_spawnEnd").floatValue = numbers.SpawnEnd;

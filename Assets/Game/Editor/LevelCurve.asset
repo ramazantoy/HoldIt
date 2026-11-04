@@ -13,7 +13,6 @@ MonoBehaviour:
   m_Name: LevelCurve
   m_EditorClassIdentifier: Game.Editor::HoldIt.Editor.LevelCurve
   _count: 30
-  _map: {fileID: 11400000, guid: 8cfdcd67881cfb94bb854c1873781475, type: 2}
   _ramp:
     _crowd: {x: 6, y: 36}
     _spawnStart: {x: 4.6, y: 2.6}

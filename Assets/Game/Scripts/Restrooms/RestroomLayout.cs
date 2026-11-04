@@ -101,17 +101,24 @@ namespace HoldIt.Restrooms
                 return problems;
             }
 
-            var needed = stallCount * geometry.MinStallWidth;
+            var needed = MinWidth(stallCount, geometry);
             if (frame.Width + 1e-4f < needed)
                 problems.Add($"The {Name(gender)} restroom is {Number(frame.Width)} tiles across: {stallCount} " +
                              $"stalls need {Number(needed)}.");
 
-            var deepest = geometry.StallDepth + geometry.Approach + geometry.EntryStep + HalfTile;
+            var deepest = MinDepth(geometry);
             if (frame.Depth + 1e-4f < deepest)
                 problems.Add($"The {Name(gender)} restroom is {Number(frame.Depth)} tiles deep from its door: the way " +
                              $"into its stalls needs {Number(deepest)}.");
             return problems;
         }
+
+        /// <summary>How many tiles across a restroom must be, along its back wall, to hold that many stalls.</summary>
+        public static float MinWidth(int stallCount, StallGeometry geometry) => stallCount * geometry.MinStallWidth;
+
+        /// <summary>How many tiles deep a restroom must be, from its door to its back wall's outer face, door tile included.</summary>
+        public static float MinDepth(StallGeometry geometry) =>
+            geometry.StallDepth + geometry.Approach + geometry.EntryStep + HalfTile;
 
         private static PartitionPlan Across(Frame frame, float from, float to, float depth) =>
             new PartitionPlan(frame.At((from + to) * 0.5f, depth), Quaternion.LookRotation(frame.Across), to - from);

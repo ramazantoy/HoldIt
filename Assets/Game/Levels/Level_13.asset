@@ -12,11 +12,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7d81ac4db105dfb4c8b41f8557f61cc6, type: 3}
   m_Name: Level_13
   m_EditorClassIdentifier: Game::HoldIt.Levels.LevelDefinition
-  _map: {fileID: 11400000, guid: 8cfdcd67881cfb94bb854c1873781475, type: 2}
+  _map: {fileID: 11400000, guid: 6777ba1847aa3a24880c2d9588f0cdb2, type: 2}
   _crowd: 18
-  _spawnStart: 3.77
-  _spawnEnd: 2.61
-  _maxCharacters: 10
+  _spawnStart: 3.51
+  _spawnEnd: 2.43
+  _maxCharacters: 11
   _sizes:
     _thin: 0.3
     _normal: 0.48

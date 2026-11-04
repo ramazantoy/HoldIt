@@ -5,9 +5,9 @@ using UnityEngine;
 namespace HoldIt.Levels
 {
     /// <summary>
-    /// One level: the map it is played on and how busy it gets. Several levels can share a map. The levels' order is
+    /// One level: the map it is played on and how busy it gets. Every level has its own map. The levels' order is
     /// <see cref="LevelList"/>'s; "HoldIt/Levels/Generate" writes a first set from a curve, then each is tuned by hand.
-    /// "AF/Validate All" reports a level that cannot be played.
+    /// "AF/Validate All" reports a level that cannot be played, and two levels on the same map.
     /// </summary>
     [CreateAssetMenu(menuName = "HoldIt/Levels/Level", fileName = "Level")]
     public sealed class LevelDefinition : ScriptableObject

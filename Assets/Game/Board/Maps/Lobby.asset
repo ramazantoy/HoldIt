@@ -28,3 +28,4 @@ MonoBehaviour:
   - '#LLLLLLLL#'
   - '####EE####'
   _stallsPerRestroom: 2
+  _handMade: 1

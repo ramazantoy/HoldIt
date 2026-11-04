@@ -1,4 +1,7 @@
+using System.Collections.Generic;
+using System.Linq;
 using AF.Core.Editor;
+using HoldIt.Board;
 using HoldIt.Levels;
 using UnityEditor;
 
@@ -6,7 +9,8 @@ namespace HoldIt.Editor
 {
     /// <summary>
     /// Reports level lists that are empty or miss a level, and levels that cannot be played: no map, nobody coming, no room
-    /// on the board, gaps that are not positive or grow over the level, or no body size to pick.
+    /// on the board, gaps that are not positive or grow over the level, or no body size to pick. Every level has its own
+    /// map; two levels on the same map are reported too.
     /// </summary>
     public sealed class LevelValidator : IValidator
     {
@@ -16,8 +20,38 @@ namespace HoldIt.Editor
         {
             foreach (var list in Load<LevelList>())
                 CheckList(list, report);
-            foreach (var level in Load<LevelDefinition>())
+            var levels = Load<LevelDefinition>().ToList();
+            foreach (var level in levels)
                 CheckLevel(level, report);
+            CheckSharedMaps(levels, report);
+        }
+
+        /// <summary>One error per map that more than one of <paramref name="levels"/> is played on, naming them.</summary>
+        internal static void CheckSharedMaps(IEnumerable<LevelDefinition> levels, ValidationReport report)
+        {
+            var byMap = new Dictionary<MapDefinition, List<LevelDefinition>>();
+            var order = new List<MapDefinition>();
+            foreach (var level in levels)
+            {
+                if (level == null || level.Map == null)
+                    continue;
+                if (!byMap.TryGetValue(level.Map, out var users))
+                {
+                    users = new List<LevelDefinition>();
+                    byMap.Add(level.Map, users);
+                    order.Add(level.Map);
+                }
+                users.Add(level);
+            }
+
+            foreach (var map in order)
+            {
+                var users = byMap[map];
+                if (users.Count < 2)
+                    continue;
+                var names = string.Join(", ", users.Select(level => $"'{level.name}'").OrderBy(name => name));
+                report.Error($"Map '{map.name}' is used by {users.Count} levels ({names}); every level has its own map.", map);
+            }
         }
 
         internal static void CheckList(LevelList list, ValidationReport report)
@@ -51,7 +85,7 @@ namespace HoldIt.Editor
                 report.Error($"Level '{level.name}': every body size weight is 0.", level);
         }
 
-        private static System.Collections.Generic.IEnumerable<T> Load<T>() where T : UnityEngine.Object
+        private static IEnumerable<T> Load<T>() where T : UnityEngine.Object
         {
             foreach (var guid in AssetDatabase.FindAssets($"t:{typeof(T).Name}", new[] { ASSETS_FOLDER }))
             {

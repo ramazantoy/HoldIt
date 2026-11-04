@@ -98,6 +98,64 @@ namespace HoldIt.Tests
             StringAssert.Contains("level 2", report.Issues[0].Message);
         }
 
+        [Test]
+        public void TwoLevelsOnOneMap_AreReportedOnceOnTheMap()
+        {
+            var first = Keep(TestLevels.Level(8, map: _map));
+            first.name = "Level_A";
+            var second = Keep(TestLevels.Level(8, map: _map));
+            second.name = "Level_B";
+            var report = new ValidationReport();
+
+            LevelValidator.CheckSharedMaps(new[] { first, second }, report);
+
+            Assert.AreEqual(1, report.ErrorCount, report.ToString());
+            StringAssert.Contains("'Level_A'", report.Issues[0].Message);
+            StringAssert.Contains("'Level_B'", report.Issues[0].Message);
+            Assert.AreSame(_map, report.Issues[0].Context);
+        }
+
+        [Test]
+        public void ThreeLevelsOnOneMap_AreOneError()
+        {
+            var levels = new[]
+            {
+                Keep(TestLevels.Level(8, map: _map)), Keep(TestLevels.Level(8, map: _map)),
+                Keep(TestLevels.Level(8, map: _map)),
+            };
+            var report = new ValidationReport();
+
+            LevelValidator.CheckSharedMaps(levels, report);
+
+            Assert.AreEqual(1, report.ErrorCount, report.ToString());
+            StringAssert.Contains("3 levels", report.Issues[0].Message);
+        }
+
+        [Test]
+        public void LevelsOnTheirOwnMaps_AreNotReported()
+        {
+            // Two maps with the same rows and name are still two maps.
+            var other = Keep(TestLevels.Map(TestMaps.Lobby));
+            other.name = _map.name;
+            var levels = new[] { Keep(TestLevels.Level(8, map: _map)), Keep(TestLevels.Level(8, map: other)) };
+            var report = new ValidationReport();
+
+            LevelValidator.CheckSharedMaps(levels, report);
+
+            Assert.AreEqual(0, report.ErrorCount, report.ToString());
+        }
+
+        [Test]
+        public void LevelsWithoutAMap_DoNotShareOne()
+        {
+            var levels = new[] { Keep(TestLevels.Level(8)), Keep(TestLevels.Level(8)) };
+            var report = new ValidationReport();
+
+            LevelValidator.CheckSharedMaps(levels, report);
+
+            Assert.AreEqual(0, report.ErrorCount, report.ToString());
+        }
+
         private ValidationReport CheckLevel(LevelDefinition level)
         {
             var report = new ValidationReport();

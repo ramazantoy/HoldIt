@@ -1,0 +1,28 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0d15880f3a504d8468c911b5f75aca71, type: 3}
+  m_Name: LevelSimConfig
+  m_EditorClassIdentifier: Game.Editor::HoldIt.Editor.Simulation.LevelSimConfig
+  _seeds: 12
+  _timeStep: 0.05
+  _timeLimit: 600
+  _winShare: 0.8
+  _referencePace: 1.5
+  _paceRange: {x: 0.4, y: 6}
+  _paceSteps: 12
+  _refineSteps: 3
+  _targetHeadroom: {x: 1.8, y: 1.1}
+  _easedLevels: 030000000400000006000000090000000c00000010000000150000001a000000
+  _ease: 0.15
+  _targetTolerance: 0.1
+  _pressureRange: {x: 0.5, y: 4}
+  _pressureSteps: 8
