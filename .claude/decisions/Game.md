@@ -277,7 +277,7 @@ UI Toolkit'le yapılan denemenin sonuçları; HoldIt sonra Canvas'a döndü ("UI
   vazgeçildi ("dummy hissettirdi"); kare efektleri düşünülüyor, oynayınca seçilecek. ~~Yol modeli (saf C#, hücre listesi +
   kurallar) önce yapılabilir, M3 onu girdi olarak alır. Milestone tablosu (M2'nin tanımı ve sırası) sıradaki planda
   güncellenir. Çizim en geç M6'dan önce gelir (M6'nın "tam döngü" şartı)~~ Yol modeli M2'de yapıldı
-  (`PathDraft`), çizim M5'te ("Karakterler ve yol" → Milestone sırası). Kare efekti M5'te oynanarak seçilir. Çizimin input'u M3'te yapıldı, geçici kare işaretleriyle ("Karakterler ve yol" → Çizim); M5'e yalnız efekt kaldı
+  (`PathDraft`), çizim M5'te ("Karakterler ve yol" → Milestone sırası). Kare efekti M5'te oynanarak seçilir. Çizimin input'u M3'te yapıldı, geçici kare işaretleriyle ("Karakterler ve yol" → Çizim); ~~M5'e yalnız efekt kaldı~~ M5 M9'a katıldı (kullanıcı kararı): M3'ün kare işaretleri (`PathMarkers`) kalır, M9'da cilalanır (yuvarlak köşeli karo, ekleme ve geri almada pop); efekt ses ve haptikle birlikte ayarlanır
 - **Kitin kabin parçaları** (M4): kabinler prototipteki gibi kareye hizalanmıyor. Ön bölme parçalarının
   uzunluğu bina genişliğine ve kabin sayısına bağlı (Lobby'de 0.66 ve 1.6, ayırıcı 1.59). Kit SPEC'inin "Sonra" listesi
   kenar parçası varsayıyordu. Kitin seçeneği: Z'de esneyen düz bölme (dokusu ve pahı bozulmadan) ya da uç + gövde

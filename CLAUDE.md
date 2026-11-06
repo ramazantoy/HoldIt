@@ -9,8 +9,8 @@ Localization, Platform, Build. Framework kararları `.claude/decisions/`'ta (ind
 kararları `.claude/decisions/Game.md`'de.
 
 **Durum:** template'ten fork `a949bbd` (framework geçmişi `.claude/decisions/README.md` → "Fazlar"). M0–M8 Editor'da bitti
-(M5 hariç); ayrıntı git'te ve Game.md'de. Bekleyenler Game.md → Açık'ta: cihaz testleri ve M0b (Android cihaz yok), M2b
-(karakter modelleri), kitin kabin parçaları, kalibrasyon. Sıradaki iş M5 ya da M9 (kullanıcı seçer). Milestone başlarken
+(M5 M9'a katıldı); ayrıntı git'te ve Game.md'de. Bekleyenler Game.md → Açık'ta: cihaz testleri ve M0b (Android cihaz yok), M2b
+(karakter modelleri), kitin kabin parçaları, kalibrasyon. Sıradaki iş M9. Milestone başlarken
 plan moduna geç.
 
 **Yapı:** framework `Assets/Framework/` (`AF.*` namespace ve asmdef'ler, modül başına `<Modül>/{Runtime,Editor,Tests}`).
@@ -58,11 +58,11 @@ cherry-pick'ler çakışmasın diye.
 | M2b | Karakter modelleri gelince (zamanı modele bağlı): FBX import ayarları, 6 prefab'ın içi, UV renk/ifade varyantı (ofset hesabı saf C# + test), parça animasyonlarının gerçek modelle ayarı | 6 varyant gerçek modelle yürür; M2'nin kontrolleri yine geçer |
 | M3 | Çizim input'u, adım doğrulama, doluluk ve rezervasyon, geri dönüş, balonlar | Bitti |
 | M4 | Tuvaletler, kabinler, ışıklar, kapıda kuyruk (parçalar placeholder) | Bitti |
-| M5 | Kare efektleri: M3'ün geçici işaretlerinin yerine oynanarak seçilen görsel (LineRenderer'dan vazgeçildi) | Cihazda çizilir ve geri alınır; efekt seçildi |
+| M5 | M9'a katıldı: M3'ün kare işaretleri kalır, cilası M9'da | — |
 | M6 | SO seviyeler, spawn, sabır, kaza, can, seviye sonu, pause | Bitti |
 | M7 | Seviye seçimi, ayarlar, ilerleme kaydı | Bitti; cihaz kısmı Game.md → Açık |
 | M8 | Seviye başına harita, üretici, harita aracı, simülasyonla tuning | Bitti; kalibrasyon Game.md → Açık |
-| M9 | Juice: PrimeTween animasyonları, sesler, haptik | Cihazda iyi hissettirir |
+| M9 | Juice: PrimeTween animasyonları, kare işaretlerinin cilası (eski M5), sesler, haptik | Editor'da oynanır ve iyi hissettirir; haptik ve his kontrolü cihazda (Game.md → Açık → Cihaz testi) |
 | M10 | Eksik kalan testler, README EN/TR (GIF + diyagram), Release APK GitHub Releases'te (APK git'e girmez) | Public repo hazır |
 
 ## Çalışma şekli
