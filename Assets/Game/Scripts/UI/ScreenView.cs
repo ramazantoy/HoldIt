@@ -15,7 +15,6 @@ namespace HoldIt.UI
     public abstract class ScreenView : MonoBehaviour
     {
         [SerializeField, Required] private ScreenTransitionConfig _transition;
-        [SerializeField, Required] private Canvas _canvas;
         [SerializeField, Required] private CanvasGroup _group;
 
         [SerializeField, Required, Tooltip("What the screen shows (its safe area); it swells in as the screen fades in.")]
@@ -49,9 +48,7 @@ namespace HoldIt.UI
             _group.interactable = visible;
             _group.blocksRaycasts = visible;
             var alpha = visible ? 1f : 0f;
-
-            if (visible)
-                _canvas.enabled = true;
+            
             if (!_initialized || _transition.FadeSeconds <= 0f)
             {
                 _group.alpha = alpha;
@@ -70,9 +67,7 @@ namespace HoldIt.UI
                 await Tween.Alpha(_group, alpha, _transition.FadeSeconds, useUnscaledTime: true).ToUniTask(cancellation);
             }
             _initialized = true;
-
-            if (!visible)
-                _canvas.enabled = false;
+            
         }
     }
 }
