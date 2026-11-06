@@ -18,6 +18,9 @@ namespace HoldIt.UI
         [SerializeField, Required] private Canvas _canvas;
         [SerializeField, Required] private CanvasGroup _group;
 
+        [SerializeField, Required, Tooltip("What the screen shows (its safe area); it swells in as the screen fades in.")]
+        private RectTransform _content;
+
         private CancellationTokenSource _fade;
         private bool _initialized;
 
@@ -50,9 +53,22 @@ namespace HoldIt.UI
             if (visible)
                 _canvas.enabled = true;
             if (!_initialized || _transition.FadeSeconds <= 0f)
+            {
                 _group.alpha = alpha;
+                _content.localScale = Vector3.one;
+            }
             else if (!Mathf.Approximately(_group.alpha, alpha))
+            {
+                // The content swells in a little as the screen fades in; it stays put on the way out.
+                if (visible)
+                {
+                    var from = Vector3.one * _transition.PopScale;
+                    _content.localScale = from;
+                    _ = Tween.Scale(_content, from, Vector3.one, _transition.FadeSeconds, Ease.OutBack, useUnscaledTime: true)
+                        .SetCancellationToken(cancellation);
+                }
                 await Tween.Alpha(_group, alpha, _transition.FadeSeconds, useUnscaledTime: true).ToUniTask(cancellation);
+            }
             _initialized = true;
 
             if (!visible)

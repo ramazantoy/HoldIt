@@ -510,12 +510,14 @@ MonoBehaviour:
   parentReference:
     TypeName: 
   autoRun: 1
-  autoInjectGameObjects: []
+  autoInjectGameObjects:
+  - {fileID: 117673905}
   _bootTarget: 0
   _mainMenu: {fileID: 1267969248}
   _levelSelect: {fileID: 1937721930}
   _settings: {fileID: 1849173604}
   _runConfig: {fileID: 11400000, guid: 44f063e3e266fba409666e24845fc733, type: 2}
+  _music: {fileID: 0}
 --- !u!4 &896228342
 Transform:
   m_ObjectHideFlags: 0

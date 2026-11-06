@@ -52,6 +52,8 @@ MonoBehaviour:
   _inputActions: {fileID: -944628639613478452, guid: d888f29cedf3bb1448da19b23af9daa6, type: 3}
   _audioMixer: {fileID: 24100000, guid: 36ef3796a4d428e45acb0db9a9774cfe, type: 2}
   _levels: {fileID: 11400000, guid: 32b10185a49e9ee41b7042549c522416, type: 2}
+  _haptics: {fileID: 11400000, guid: 7c16aaf8fcecbd641abc81a6047470ea, type: 2}
+  _feedback: {fileID: 11400000, guid: d8e84571c0fba974494f481c4836bec6, type: 2}
 --- !u!1 &7598658697932928154
 GameObject:
   m_ObjectHideFlags: 0

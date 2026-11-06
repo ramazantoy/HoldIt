@@ -23,6 +23,12 @@ namespace HoldIt.Characters
         [SerializeField, Tooltip("How walking characters swing their limbs.")]
         private WalkStyle _walk = WalkStyle.Default;
 
+        [SerializeField, Tooltip("How a character waiting at a taken stall's door knocks.")]
+        private KnockStyle _knock = KnockStyle.Default;
+
+        [SerializeField, Min(0.01f), Tooltip("How long a new character takes to pop in, in seconds.")]
+        private float _spawnPopSeconds = 0.28f;
+
         [SerializeField, Tooltip("How speech bubbles pop up and fade.")]
         private BubbleTiming _bubble = BubbleTiming.Default;
 
@@ -41,8 +47,38 @@ namespace HoldIt.Characters
         [SerializeField, Tooltip("How the puddle spreads, stays and fades.")]
         private PuddleLook _puddleLook = PuddleLook.Default;
 
+        [SerializeField, Required, Tooltip("The cloud that bursts where a relieved character goes.")]
+        private PuffView _puff;
+
+        [SerializeField, Min(0.1f), Tooltip("How long a puff stays before it goes back to its pool, in seconds; at least its particles' life.")]
+        private float _puffSeconds = 0.7f;
+
+        [SerializeField, Tooltip("How high above the character's feet the puff bursts, in tiles.")]
+        private float _puffHeight = 0.5f;
+
+        [SerializeField, Required, Tooltip("The text that rises over a character when it is served.")]
+        private FloatTextView _floatText;
+
+        [SerializeField, Min(0.1f), Tooltip("How long that text rises and fades, in seconds.")]
+        private float _floatSeconds = 1f;
+
+        [SerializeField, Min(0f), Tooltip("How far it rises, in tiles.")]
+        private float _floatRise = 0.9f;
+
+        [SerializeField, Min(0f), Tooltip("How far above a character's head anchor it starts, in tiles.")]
+        private float _floatStartHeight = 0.3f;
+
+        public PuffView Puff => _puff;
+        public float PuffSeconds => _puffSeconds;
+        public float PuffHeight => _puffHeight;
+        public FloatTextView FloatText => _floatText;
+        public float FloatSeconds => _floatSeconds;
+        public float FloatRise => _floatRise;
+        public float FloatStartHeight => _floatStartHeight;
         public float TurnRate => _turnRate;
         public WalkStyle Walk => _walk;
+        public KnockStyle Knock => _knock;
+        public float SpawnPopSeconds => _spawnPopSeconds;
         public BubbleTiming Bubble => _bubble;
         public PatienceLook Patience => _patience;
         public SitStyle Sit => _sit;

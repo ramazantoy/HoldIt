@@ -17,3 +17,8 @@ MonoBehaviour:
   _pickHeight: 1.1
   _walkedMarkHeight: 0.02
   _drawnMarkHeight: 0.03
+  _popSeconds: 0.18
+  _vanishSeconds: 0.14
+  _shakeSeconds: 0.3
+  _shakeStrength: 0.08
+  _shakeFrequency: 14

@@ -1,10 +1,13 @@
 using System;
 using AF.Core;
+using HoldIt.Feedback;
 using HoldIt.UI;
+using PrimeTween;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Localization;
 using UnityEngine.UI;
+using VContainer;
 
 namespace HoldIt.Gameplay
 {
@@ -39,9 +42,14 @@ namespace HoldIt.Gameplay
         [SerializeField, Required] private Button _retry;
         [SerializeField, Required] private Button _menu;
 
+        private IFeedback _feedback;
+
         public event Action NextClicked;
         public event Action RetryClicked;
         public event Action MenuClicked;
+
+        [Inject]
+        public void Construct(IFeedback feedback) => _feedback = feedback;
 
         public void Show(LevelResult result)
         {
@@ -49,8 +57,13 @@ namespace HoldIt.Gameplay
             _served.text = _servedLabel.GetLocalizedString(result.Served, result.Crowd);
             for (var i = 0; i < _stars.Length; i++)
             {
-                _stars[i].gameObject.SetActive(i < result.MaxStars);
-                _stars[i].color = i < result.Stars ? _style.StarEarned : _style.StarMissed;
+                var star = _stars[i];
+                var earned = i < result.Stars;
+                star.gameObject.SetActive(i < result.MaxStars);
+                star.color = earned ? _style.StarEarned : _style.StarMissed;
+                star.rectTransform.localScale = Vector3.one;
+                if (earned && star.gameObject.activeInHierarchy)
+                    PopStar(star.rectTransform, i);
             }
             _next.gameObject.SetActive(result.NextOpen);
             ShowScreen();
@@ -63,6 +76,18 @@ namespace HoldIt.Gameplay
             _next.onClick.AddListener(() => NextClicked?.Invoke());
             _retry.onClick.AddListener(() => RetryClicked?.Invoke());
             _menu.onClick.AddListener(() => MenuClicked?.Invoke());
+        }
+
+        /// <summary>An earned star pops in one after another once the screen has faded in. Unscaled: the game is paused here.</summary>
+        private void PopStar(RectTransform star, int index)
+        {
+            var delay = _style.StarPopDelay + index * _style.StarPopGap;
+            star.localScale = Vector3.zero;
+            Tween.Scale(star, Vector3.zero, Vector3.one, _style.StarPopSeconds, Ease.OutBack, startDelay: delay,
+                    useUnscaledTime: true)
+                .SetCancellationToken(destroyCancellationToken);
+            Tween.Delay(delay, () => _feedback.Play(FeedbackKind.StarPop), useUnscaledTime: true)
+                .SetCancellationToken(destroyCancellationToken);
         }
 
         private LocalizedString TitleOf(LevelResult result)

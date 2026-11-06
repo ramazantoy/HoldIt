@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using AF.Core;
 using HoldIt.Board;
+using HoldIt.Feedback;
 using HoldIt.Restrooms;
 using MessagePipe;
 using UnityEngine;
@@ -22,23 +23,27 @@ namespace HoldIt.Characters
         private readonly IPools _pools;
         private readonly CharacterSet _set;
         private readonly ITileGrid _grid;
+        private readonly IFeedback _feedback;
         private readonly ISubscriber<CharacterSpawned> _spawned;
         private readonly ISubscriber<StepRefused> _refused;
         private readonly ISubscriber<CharacterRemoved> _removed;
         private readonly ISubscriber<StallStateChanged> _stallChanged;
+        private readonly ISubscriber<CharacterStateChanged> _stateChanged;
         private IDisposable _subscriptions;
 
-        public CharacterViews(IPools pools, CharacterSet set, ITileGrid grid, ISubscriber<CharacterSpawned> spawned,
-            ISubscriber<StepRefused> refused, ISubscriber<CharacterRemoved> removed,
-            ISubscriber<StallStateChanged> stallChanged)
+        public CharacterViews(IPools pools, CharacterSet set, ITileGrid grid, IFeedback feedback,
+            ISubscriber<CharacterSpawned> spawned, ISubscriber<StepRefused> refused, ISubscriber<CharacterRemoved> removed,
+            ISubscriber<StallStateChanged> stallChanged, ISubscriber<CharacterStateChanged> stateChanged)
         {
             _pools = pools;
             _set = set;
             _grid = grid;
+            _feedback = feedback;
             _spawned = spawned;
             _refused = refused;
             _removed = removed;
             _stallChanged = stallChanged;
+            _stateChanged = stateChanged;
         }
 
         public void Initialize()
@@ -48,6 +53,7 @@ namespace HoldIt.Characters
             _refused.Subscribe(Say).AddTo(bag);
             _removed.Subscribe(Remove).AddTo(bag);
             _stallChanged.Subscribe(StallChanged).AddTo(bag);
+            _stateChanged.Subscribe(StateChanged).AddTo(bag);
             _subscriptions = bag.Build();
         }
 
@@ -81,19 +87,43 @@ namespace HoldIt.Characters
             }
 
             if (!view.TrySit(out var visit))
+            {
+                Puff(view.transform.position);
                 return;
+            }
             var stall = (visit.Gender, visit.Stall);
             // A stall holds one visitor at a time; one still sitting there would already have been told it freed.
             if (_seated.Remove(stall, out var earlier) && earlier.IsAlive())
+            {
+                Puff(earlier.transform.position);
                 earlier.Relieve();
+            }
             _seated[stall] = view;
         }
 
         private void StallChanged(StallStateChanged message)
         {
-            if (message.State == StallState.Free && _seated.Remove((message.Gender, message.Stall), out var view) &&
-                view.IsAlive())
-                view.Relieve();
+            if (message.State != StallState.Free || !_seated.Remove((message.Gender, message.Stall), out var view) ||
+                !view.IsAlive())
+                return;
+            Puff(view.transform.position);
+            view.Relieve();
+        }
+
+        /// <summary>A visitor who got into a stall is served: "+1" rises over its head.</summary>
+        private void StateChanged(CharacterStateChanged message)
+        {
+            if (message.State != CharacterState.InStall || !_views.TryGetValue(message.Id, out var view) || !view.IsAlive())
+                return;
+            var at = view.HeadPosition + Vector3.up * _set.FloatStartHeight;
+            _pools.For(_set.FloatText).Spawn().Show("+1", at);
+        }
+
+        /// <summary>A visitor is relieved and goes: a puff where it stood, and the sound of it.</summary>
+        private void Puff(Vector3 at)
+        {
+            _pools.For(_set.Puff).Spawn(at + Vector3.up * _set.PuffHeight, Quaternion.identity);
+            _feedback.Play(FeedbackKind.Relieved);
         }
 
         private void LeavePuddle(Vector3 at)

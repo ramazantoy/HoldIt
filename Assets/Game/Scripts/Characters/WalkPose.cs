@@ -49,6 +49,9 @@ namespace HoldIt.Characters
             return new WalkPose(legs, -legs, -arms, arms, rise, rock);
         }
 
+        /// <summary>The same pose with the right arm at <paramref name="degrees"/> instead (positive swings the hand forward).</summary>
+        public WalkPose WithArmRight(float degrees) => new WalkPose(LegLeft, LegRight, ArmLeft, degrees, BodyRise, BodyRock);
+
         /// <summary>
         /// Seated: both legs swung forward by the style's angle, arms and body at rest. <paramref name="blend"/> 0 is the rest
         /// pose, 1 fully seated.

@@ -32,6 +32,14 @@ namespace HoldIt.Restrooms
         [SerializeField, Min(0.1f), Tooltip("How quickly a stall door swings: an exponential rate per second, the larger the sharper.")]
         private float _doorRate = 9f;
 
+        [SerializeField, Min(0f), Tooltip("How much the lamp's bulb swells when its stall changes state (a fraction of its size).")]
+        private float _lampPunch = 0.35f;
+
+        [SerializeField, Min(0.01f), Tooltip("How long the bulb's pulse lasts, in seconds.")]
+        private float _lampPunchSeconds = 0.25f;
+
+        public float LampPunch => _lampPunch;
+        public float LampPunchSeconds => _lampPunchSeconds;
         public GameObject Toilet => _toilet;
         public StallLampView Lamp => _lamp;
         public Color FreeColor => _freeColor;

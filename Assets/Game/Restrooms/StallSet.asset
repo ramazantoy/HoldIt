@@ -23,3 +23,5 @@ MonoBehaviour:
   _glowAlpha: 0.3
   _doorOpenAngle: 83
   _doorRate: 9
+  _lampPunch: 0.35
+  _lampPunchSeconds: 0.25

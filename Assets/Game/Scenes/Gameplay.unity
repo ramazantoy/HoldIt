@@ -661,7 +661,8 @@ MonoBehaviour:
   parentReference:
     TypeName: 
   autoRun: 1
-  autoInjectGameObjects: []
+  autoInjectGameObjects:
+  - {fileID: 1498158687}
   _bootTarget: 1
   _hud: {fileID: 96653229}
   _pauseScreen: {fileID: 438340529}
@@ -677,6 +678,7 @@ MonoBehaviour:
   _runConfig: {fileID: 11400000, guid: 44f063e3e266fba409666e24845fc733, type: 2}
   _spawnConfig: {fileID: 11400000, guid: e1699dc0161278e439c354b1e1f48415, type: 2}
   _drawingConfig: {fileID: 11400000, guid: 2e45c4bb1e6e0f646a5a77133bb1d802, type: 2}
+  _music: {fileID: 0}
 --- !u!4 &1084865236
 Transform:
   m_ObjectHideFlags: 0

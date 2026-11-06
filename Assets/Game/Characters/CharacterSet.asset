@@ -26,6 +26,15 @@ MonoBehaviour:
     _bob: 0.04
     _sway: 4
     _blendRate: 10
+  _knock:
+    _raise: 75
+    _pullBack: 18
+    _beats: 3
+    _beatSeconds: 0.16
+    _pauseSeconds: 1.1
+    _lowerSeconds: 0.2
+    _blendRate: 10
+  _spawnPopSeconds: 0.28
   _bubble:
     _pop: 0.18
     _fadeAt: 1.2
@@ -57,3 +66,10 @@ MonoBehaviour:
     _minSize: 0.56
     _maxSize: 0.88
     _color: {r: 0.9490196, g: 0.8392157, b: 0.25490198, a: 0.85}
+  _puff: {fileID: 6767410487687505362, guid: d0a3a11e83e786545916c0c0b8611e2d, type: 3}
+  _puffSeconds: 0.7
+  _puffHeight: 0.5
+  _floatText: {fileID: 4344728423439599507, guid: 5bcd6117c334ac245b03f09ae22073af, type: 3}
+  _floatSeconds: 1
+  _floatRise: 0.9
+  _floatStartHeight: 0.3

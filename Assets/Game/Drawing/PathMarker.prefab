@@ -46,6 +46,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Game::HoldIt.Drawing.PathMarker
   _renderer: {fileID: 6472198034284439838}
+  _visual: {fileID: 3911957957410808829}
   _male: {fileID: 2100000, guid: 0ad6456c93aeea741b8e809ff77ccfb5, type: 2}
   _female: {fileID: 2100000, guid: 6e0cb01ceee7ad54c9cd0f6d7d559066, type: 2}
   _blocked: {fileID: 2100000, guid: 56918634af4bba449b80bfbc47b389c7, type: 2}

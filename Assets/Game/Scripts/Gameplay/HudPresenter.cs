@@ -31,16 +31,16 @@ namespace HoldIt.Gameplay
         public void Initialize()
         {
             var bag = DisposableBag.CreateBuilder();
-            _servedChanged.Subscribe(message => _hud.ShowServed(message.Served, _run.Crowd)).AddTo(bag);
-            _livesChanged.Subscribe(message => _hud.ShowLives(message.Lives, _run.MaxLives)).AddTo(bag);
+            _servedChanged.Subscribe(message => _hud.ShowServed(message.Served, _run.Crowd, true)).AddTo(bag);
+            _livesChanged.Subscribe(message => _hud.ShowLives(message.Lives, _run.MaxLives, true)).AddTo(bag);
             _subscriptions = bag.Build();
         }
 
         public void Start()
         {
             _hud.ShowLevel(_cursor.Number);
-            _hud.ShowServed(_run.Served, _run.Crowd);
-            _hud.ShowLives(_run.Lives, _run.MaxLives);
+            _hud.ShowServed(_run.Served, _run.Crowd, false);
+            _hud.ShowLives(_run.Lives, _run.MaxLives, false);
         }
 
         public void Dispose() => _subscriptions?.Dispose();

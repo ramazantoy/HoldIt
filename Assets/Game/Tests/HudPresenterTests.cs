@@ -57,6 +57,27 @@ namespace HoldIt.Tests
         }
 
         [Test]
+        public void Start_ShowsTheFirstReadingWithoutAnimation()
+        {
+            _presenter.Start();
+
+            Assert.IsFalse(_hud.ServedAnimated);
+            Assert.IsFalse(_hud.LivesAnimated);
+        }
+
+        [Test]
+        public void Changes_AreAnimated()
+        {
+            _presenter.Start();
+
+            _served.Publish(new ServedChanged(1));
+            _lives.Publish(new LivesChanged(2));
+
+            Assert.IsTrue(_hud.ServedAnimated);
+            Assert.IsTrue(_hud.LivesAnimated);
+        }
+
+        [Test]
         public void Dispose_StopsFollowing()
         {
             _presenter.Start();
@@ -78,10 +99,22 @@ namespace HoldIt.Tests
             public int Level { get; private set; }
             public (int, int) Served { get; private set; }
             public (int, int) Lives { get; private set; }
+            public bool ServedAnimated { get; private set; }
+            public bool LivesAnimated { get; private set; }
 
             public void ShowLevel(int number) => Level = number;
-            public void ShowServed(int served, int crowd) => Served = (served, crowd);
-            public void ShowLives(int lives, int maxLives) => Lives = (lives, maxLives);
+
+            public void ShowServed(int served, int crowd, bool animate)
+            {
+                Served = (served, crowd);
+                ServedAnimated = animate;
+            }
+
+            public void ShowLives(int lives, int maxLives, bool animate)
+            {
+                Lives = (lives, maxLives);
+                LivesAnimated = animate;
+            }
         }
     }
 }

@@ -234,6 +234,24 @@ UI Toolkit'le yapılan denemenin sonuçları; HoldIt sonra Canvas'a döndü ("UI
 | 29 | Map_29 (tohum 8129, elle) | 9×18 | 2 | 3 | 35 | 3.78–2.22 | 10 | ×0.71 | 1.30 / 1.12 | 2.18 | %83, 2.4 |
 | 30 | Map_30 | 9×17 | 2 | 3 | 36 | 3.43–1.98 | 11 | ×0.76 | 1.17 / 1.10 | 2.18 | %92, 2.5 |
 
+## Juice (M9)
+| Konu | Karar | Gerekçe |
+|---|---|---|
+| Kullanıcı kararları | Müzik var: menü ve oyun için birer loop (`IMusic`). Ses dosyalarını kullanıcı bulur ve Unity'de cue'ları kurar; kod yalnız altyapıyı ve ses listesini verir, cue'su boş olay sessiz kalır. Titreşim oyunda yazılır. Harita önizlemesi M9'da | Kullanıcı kararı. Dosya seçimi ve cue ayarı kulakla yapılır; kod bunu beklemeden bitebilir |
+| Kare işaretleri | `PathMarkers` karoları (`MarkerKey` = karakter + kare) her karede `MarkerDiff` (saf, testli) ile karşılaştırır: yeni karo `PathMarker.PopIn` (ölçek 0 → 1, OutBack, 0.18 sn), kalkan `Vanish` (InBack, 0.14 sn) ve oyun saatiyle dolunca havuza döner, kırmızıya dönen ya da kırmızı gelen `Shake` (0.3 sn, 0.08, 14 Hz). Çizilen yol bırakılınca yürüme yoluna aynı anahtarlarla geçer: karolar yeniden pop etmez, yalnız karakterin kendi karesi küçülür. Tween'ler `Mesh` çocuğunda, `life.Token`'a bağlı. Doku `Drawing/PathMarkerTile.png` (128², yuvarlak köşeli, kodla üretildi), üç materyalin `_BaseMap`'i. Sayılar `DrawingConfig`'te | Karonun kökü `Place`'te kalır, tween'ler çocukla çakışmaz. Anahtar karakter + kare olduğu için çizimden yürümeye geçiş fark yaratmaz |
+| Karakter | Doğan karakter kökünde `Tween.Scale` 0 → 1, OutBack, `CharacterSet._spawnPopSeconds` 0.28 (prototipin `easeOutBack`'i). `CharacterViews` `CharacterStateChanged(InStall)`'da başın üstünde "+1" çıkarır: `FloatTextView` (havuz, TMP, kameraya döner; `Tween.PositionY` + `Tween.Custom` alfa, 1 sn, 0.9 yükselir; oyun saatiyle gider). Kabin boşalınca (`Relieve`, her iki yolda) `PuffView` (havuz, 10 parçacıklı burst, `Puff.png` + `Puff.mat` URP Particles/Unlit) çıkar. Hepsi `CharacterSet`'te | Prototipin "+1"i ve pop'u. Puf, küçülen karakterle aynı anda patlar |
+| Kapı tıklatma | **Tween değil saf poz**: `KnockPose.Arm(time, KnockStyle)` ve `Hits(from, to, style)`. Üç vuruş 0.16 sn arayla, 1.1 sn ara; kol 75° kalkar, vuruşlar arasında 18° geri çekilir, aranın başında iner ve bitmeden tekrar kalkar. `CharacterView` Queued'da sağ kolu `WalkPose.WithArmRight` ile ekler, bekleme bitince 10/sn ile söner. Vuruş anı `Hits`'ten gelir ve `Knock` feedback'ini çalar; zaman yalnız kuyruktayken işler, ilk vuruş karakter varır varmaz düşer | Kol her karede `RestPose` ile yazılıyor, tween onunla çakışırdı; yürüme döngüsü gibi saf poz test edilebilir. Game.md'nin eski "PrimeTween" notundan bilerek ayrıldı |
+| Lamba | `StallLampView.Show(state, instantly)`: durum değişince ampul `Tween.PunchScale` (0.35, 0.25 sn). Kurulumdaki ilk okuma nabız vermez | Kabin durumunun değiştiği gözle yakalanır |
+| HUD | `IGameplayHudView.ShowServed/ShowLives(…, bool animate)`: ilk okuma `false`, mesajla gelen `true`. Can kaybında ekran flaşı (`Flash` Image, #e84855, alfa 0.32 → 0, 0.6 sn), can pill'inde ve yetişen pill'inde `PunchScale` (0.18, 0.35 sn), kalp renk ve ölçeğe 0.3 sn tween (prototipin `bump` ve `flash`'ı). Hepsi unscaled, `destroyCancellationToken`'a bağlı. Sayılar `GameplayUiStyle`'da | Seviye sonu pause'u 0.7 sn sonra gelir; tween yarıda donmasın |
+| Ekranlar | `ScreenView` içeriği (`_content`, her ekranda `SafeArea`) gösterilirken `ScreenTransitionConfig._popScale` (0.94) → 1, OutBack, fade süresince; çıkışta ölçek oynamaz; ilk çağrı fade'siz olduğu için ölçeksiz. `ButtonPress` (her `Button`'da; 0.94'e küçülür, 0.08 sn, unscaled; basılamayan düğme oynamaz). `LevelResultView` kazanılan yıldızları sırayla pop eder (0.25 sn sonra, 0.12 sn arayla, OutBack). Sayılar `ScreenTransitionConfig` ve `GameplayUiStyle`'da | Prototipin ekran geçişleri; yıldızların sırayla açılması sonucu okutur |
+| Feedback | `HoldIt.Feedback`: `IFeedback.Play(FeedbackKind)`. `FeedbackSet` (SO, `Assets/Game/Audio/FeedbackSet.asset`) tür başına tek `FeedbackEntry`: `SoundCue`, `HapticStrength`, en az aralık, "sahneyi aşar". `FeedbackTable` (saf, testli) türü bulur ve aralığa göre kısar (ilk çağrı her zaman geçer, düşen çağrı aralığı başlatmaz; aynı tür iki kez listelenirse ilki kalır ve `Log.Error`). `FeedbackPlayer` root'ta Scoped: cue'yu 2D oynatır (`ISounds`, sahneyi aşan türlerde `IGlobalSounds`) ve titreşimi `IHaptics`'e verir. `FeedbackEvents` (Gameplay) mesajları türe çevirir: `StepRefused` (WrongDoor, TooWide → Refused; Blocked → Blocked), `StallStateChanged(Shut)` → StallShut, `ServedChanged` → Served, `LivesChanged` → Accident, `CharacterSpawned` → Spawn, `LevelEnded` → LevelWon/LevelLost. Görünümün kendi gördüğü olaylar kendisinden: PathCell ve PathBlocked ve PathSent `PathMarkers`'tan (PathSent: çizim bitti ve çizen yürüyüşte), Knock `CharacterView`'dan, Relieved `CharacterViews`'tan, StarPop `LevelResultView`'dan, UiClick `ButtonPress`'ten. Varsayılan haptikler: PathBlocked ve PathSent Tick; Refused, Served, LevelWon Light; Accident, LevelLost Heavy | Oyun "ne oldu"yu söyler, sesi ve titreşimi tablo seçer: cue'lar Unity'de bağlanır, kod değişmez. Ses ve haptik aynı olaylara bağlı olduğu için tek tablo |
+| Düğme sesi | `ButtonPress` `IFeedback`'i inject ile alır; bunun için Menu ve Gameplay sahnelerinin `SceneScope.autoInjectGameObjects`'ine Canvas eklendi (`ScopeFieldAudit` buna izin verir). `LevelCell` zaten resolver'la kurulur. UiClick sahne değişimini aşar (`IGlobalSounds`) | Düğmelerin her biri için ayrı kayıt gerekmez; yeni düğmeye `ButtonPress` eklemek yeter |
+| Müzik | `SceneMusic` (`IStartable`): `IMusic.Play(clip)`; `MenuScope._music` ve `GameplayScope._music` (boş olabilir). Müzik sahne değişiminde sürer, yeni sahne crossfade eder; klibi olmayan sahne öncekini sürdürür | `IMusic` template'ten hazır. Ayarlardaki Müzik kaydırıcısı artık bir şeyi kısar |
+| Haptik | **Oyunda**, template'te değil: `HoldIt.Haptics` (`IHaptics`, `HapticPlayer`, `HapticsConfig`). `HapticPlayer` `IGameSettings.Haptics` kapalıysa, `None` ya da `MinGap`'ten (0.05 sn) sıkıysa hiçbir şey yapmaz. `IHapticDevice`: Android cihazda `AndroidHapticDevice` (`getSystemService("vibrator")`; API ≥ 29 `VibrationEffect.createPredefined` Tick → 2, Light → CLICK 0, Heavy → HEAVY_CLICK 5; 26–28 `createOneShot` config'teki süre ve şiddetle (10/60, 20/120, 40/255); daha eskide yalnız Heavy'de `Handheld.Vibrate()`, ki Unity'nin manifest'e `VIBRATE` iznini eklemesini sağlar), başka her yerde `LogHapticDevice` (Editor'da `Log.Info("Haptic: …")`). Cihaz seçimi `Application.platform`'la çalışma anında yapılır, bu yüzden sınıf Editor'da da derlenir. Java hatası bir kez loglanır ve cihaz susar | Platform modülü mağaza arka ucudur (başarım, overlay); titreşim mağazaya değil cihaza bağlı ve Steam backend'i Android'de titreşimi bilmez. Template'e sözleşme koymak her backend'e no-op yazdırırdı, Android cihazla doğrulanmamış API'yi template'e koymak "uydurulmaz" kuralına da ters. Cihazda doğrulanınca "Template'e gidenler"de öneri olarak durur |
+| Harita önizlemesi | `MapPreview.Pixels(grid, palette, pixelsPerTile)` (saf, testli): her kare tek renkli kare, haritanın üst satırı dokunun üstünde. `LevelSelectView` seviye başına `Texture2D`'yi ilk istekte kurar (Point, 4 px/kare), ekran yok olurken yok eder; haritası okunamayan seviyede `Log.Warning` ve önizleme yok. Renkler `GameplayUiStyle._mapPreview` (`MapPreviewPalette`), kilitli seviyede `_previewLocked` çarpanı. `LevelCell` 170×240: üstte numara, ortada önizleme (`AspectRatioFitter`), altta yıldızlar; ızgara hücresi buna uyar | Render texture ya da ikinci kamera gerekmez, 30 seviye için ucuz. Önizleme için ayrı presenter yazılmadı: harita `LevelList`'ten view'a inject edilir |
+| Doğrulama (Editor) | Derleme 0 hata; Validate All 0 hata 0 uyarı. Play'de (Gameplay, `SimPlayer` 1.5 sn'de bir, oyun saati ×6) seviye 1 kazanıldı 6/6, 3 yıldız: en çok 22 karo, puf ve "+1" havuzdan çıktı, console'da hata yok (`TweenLeakAudit` dahil). Sonuç ekranında yıldızlar pop etti, seviye seçiminde 30 önizleme göründü (açık ve kilitli). Yeni test dosyaları yazıldı, **koşulmadı ve bozma turu yapılmadı** (kullanıcı koşar): `MarkerDiffTests`, `KnockPoseTests`, `FeedbackTableTests`, `FeedbackEventsTests`, `HapticsTests`, `MapPreviewTests`; `HudPresenterTests` animate bayrağıyla genişledi, `GameplayFlowTests`'in sahte HUD'u yeni imzaya uydu | Testleri kullanıcı ayrı bir context'te koşar (M9 kuralı) |
+| Bilerek bırakılanlar | (1) Ses cue'ları ve klipleri yok: `FeedbackSet`'teki cue'lar boş, müzik alanları boş (Açık → Ses cue'ları). (2) Çizim sırasında karo sesi ve titreşimi yalnız `PathMarkers`'ın gördüğü eklemeye bağlı; `PathDrawing` dokunulmadı. (3) `SimPlayer` yolu `TryWalk`'la verdiği için Play smoke'unda parmakla çizim (`PathMarker` pop ve sallanma, `PathCell`, `PathBlocked`) denenmedi: kullanıcı Editor'da oynar. (4) Oturma pozunun gerçek modelle ayarı M2b'de | Doğrulama sınırı |
+
 ## Açık
 - ~~**Dil:** GDD §11 "yalnız İngilizce" diyor, template'te Localization modülü var (en/tr örneği). Mobil doğrulama listesindeki
   "System seçicisi cihaz dilini buluyor mu" maddesi tek dille anlamsız kalır. Tek dil seçilirse kontrol listesinin 13.
@@ -256,7 +274,11 @@ UI Toolkit'le yapılan denemenin sonuçları; HoldIt sonra Canvas'a döndü ("UI
   sürükleme dahil); dil adlarının cihazda görünüşü ("Türkçe"); uygulama arka plana atılıp öldürülünce ilerlemenin ve
   ayarların kalması; Android geri tuşunun seviye seçiminde ve ayarlarda o ekranı kapatması. (M8) Ayrıca: 9:16'da
   (1080 geniş) üretilen haritaların üst satır karesi 76–87 px, alt satırı 92–109 px (Lobby 79/92); üst satırda parmakla
-  çizim ve karakter seçimi rahat mı
+  çizim ve karakter seçimi rahat mı. (M9) Ayrıca: titreşimin üç gücü (Tick, Light, Heavy) ayırt ediliyor mu ve ayarda
+  Titreşim kapalıyken hiç titreşmiyor mu; Release/Development APK manifest'inde `VIBRATE` izni var mı (`Handheld.Vibrate`
+  kullanımı Unity'ye ekletir); parmak hızında yol çizerken karo sesi ve titreşiminin hissi; kaza flaşının, kalp ve
+  pill zıplamasının, ekran ve düğme animasyonlarının telefonda görünüşü; harita önizlemelerinin 170 px'lik hücrede
+  okunurluğu ve seviye listesinin kaydırması (hücre 240 px'e çıktı)
 - ~~**Telefon gölgesi** (M1b): Mobile URP asset'inin gölge ayarları: 1024 harita, tek cascade, sert gölge,
   depth/normal bias 1/1. Bunlarla gölge kenarları dalgalı çıkıyor, gölgeler kitin render'ındakinden ince, içlerinde yer
   yer ışık noktaları var. Shader ve kit doğru: gölgesiz yüzlerde fark ≤ 1/255. Önerim: Mobile_RPAsset'te çözünürlük 2048,
@@ -277,16 +299,28 @@ UI Toolkit'le yapılan denemenin sonuçları; HoldIt sonra Canvas'a döndü ("UI
   vazgeçildi ("dummy hissettirdi"); kare efektleri düşünülüyor, oynayınca seçilecek. ~~Yol modeli (saf C#, hücre listesi +
   kurallar) önce yapılabilir, M3 onu girdi olarak alır. Milestone tablosu (M2'nin tanımı ve sırası) sıradaki planda
   güncellenir. Çizim en geç M6'dan önce gelir (M6'nın "tam döngü" şartı)~~ Yol modeli M2'de yapıldı
-  (`PathDraft`), çizim M5'te ("Karakterler ve yol" → Milestone sırası). Kare efekti M5'te oynanarak seçilir. Çizimin input'u M3'te yapıldı, geçici kare işaretleriyle ("Karakterler ve yol" → Çizim); ~~M5'e yalnız efekt kaldı~~ M5 M9'a katıldı (kullanıcı kararı): M3'ün kare işaretleri (`PathMarkers`) kalır, M9'da cilalanır (yuvarlak köşeli karo, ekleme ve geri almada pop); efekt ses ve haptikle birlikte ayarlanır
+  (`PathDraft`), çizim M5'te ("Karakterler ve yol" → Milestone sırası). Kare efekti M5'te oynanarak seçilir. Çizimin input'u M3'te yapıldı, geçici kare işaretleriyle ("Karakterler ve yol" → Çizim); ~~M5'e yalnız efekt kaldı~~ M5 M9'a katıldı (kullanıcı kararı): M3'ün kare işaretleri (`PathMarkers`) kalır, M9'da cilalanır (yuvarlak köşeli karo, ekleme ve geri almada pop); efekt ses ve haptikle birlikte ayarlanır. (M9) Yapıldı: karo, pop, küçülme, sallanma ve feedback ("Juice (M9)" → Kare işaretleri)
 - **Kitin kabin parçaları** (M4): kabinler prototipteki gibi kareye hizalanmıyor. Ön bölme parçalarının
   uzunluğu bina genişliğine ve kabin sayısına bağlı (Lobby'de 0.66 ve 1.6, ayırıcı 1.59). Kit SPEC'inin "Sonra" listesi
   kenar parçası varsayıyordu. Kitin seçeneği: Z'de esneyen düz bölme (dokusu ve pahı bozulmadan) ya da uç + gövde
   parçaları. Ayrıca kapı (pivot menteşede, panel local −X'te, +Y dönüşü dışarı açar), lamba (ampul ve parıltı ayrı
   renderer, renk MPB `_BaseColor`'dan) ve klozet. Kit oturumuna brief kullanıcı onayıyla gider
-- **Kapı tıklatma** (M9): kuyruktaki karakter kapıda yalnız bekliyor; kapıyı tıklatma animasyonu juice turunda
-- **M6'dan M9'a kalanlar**: kabin anının parçacığı, sesi ve tween'i; kazada ekran flaşı ve kalbin
-  zıplaması (prototip); yetişende "+1" yazısı ve sayacın zıplaması (prototip); oturma pozunun gerçek modelle ayarı
-  (M2b); ekranların cilası
+- ~~**Kapı tıklatma** (M9): kuyruktaki karakter kapıda yalnız bekliyor; kapıyı tıklatma animasyonu juice turunda~~
+  (M9: saf poz, `KnockPose` → "Juice (M9)" → Kapı tıklatma)
+- **M6'dan M9'a kalanlar**: ~~kabin anının parçacığı, sesi ve tween'i; kazada ekran flaşı ve kalbin
+  zıplaması (prototip); yetişende "+1" yazısı ve sayacın zıplaması (prototip); ekranların cilası~~ (M9: "Juice (M9)").
+  Kalan: oturma pozunun gerçek modelle ayarı (M2b)
+- **Ses cue'ları ve müzik** (M9): kod hazır (`FeedbackSet`, `SceneMusic`), cue'lar ve klipler yok; kullanıcı CC0 ses
+  bulur (Kenney "Interface Sounds", "Impact Sounds", "Music Jingles" gibi), `Assets/Game/Audio/Clips/`'e koyar,
+  yanına `License.txt` (kaynak, yazar, CC0) yazar, `Assets/Game/Audio/Cues/`'te Create / AF / Sound Cue ile cue'ları
+  kurar ve `FeedbackSet`'te türlerine bağlar. Liste (kanal, not): UiClick (UI, kısa tık; Play While Paused);
+  PathCell (SFX, çok kısa yumuşak tık, pitch 0.95–1.1); PathBlocked (SFX, kısa "bonk"); PathSent (SFX, yumuşak
+  "whoosh" ya da pop); Refused (SFX, ters "buzz": yanlış kapı ve sığmama); Blocked (SFX, kısa "hmm"); Knock (SFX,
+  tahta kapıya vuruş); StallShut (SFX, kapı kapanma); Relieved (SFX, sifon ya da "oh"); Served (SFX, parlak "ding");
+  Accident (SFX, "splash"); Spawn (SFX, çok hafif pop); StarPop (UI, "pling"; Play While Paused); LevelWon (UI, kısa
+  jingle; Play While Paused); LevelLost (UI, kısa üzgün jingle; Play While Paused). Müzik: menü için bir loop
+  (`MenuScope._music`), oyun için bir loop (`GameplayScope._music`), Music kanalı. En az aralık ve haptik
+  `FeedbackSet`'te hazır, kulakla ayarlanır
 - **Kitin su birikintisi** (M6): placeholder düz sarı disk. Kitten düz, düzensiz kenarlı bir parça
   gelecek (prototipte 12 köşeli rastgele şekil); renk MPB `_BaseColor`'dan, alfa solmayla değişir
 - ~~**Seviye tuning** (M8): eğri bir başlangıç; seviyeler oynanarak elle ayarlanır, her biri kendi haritasıyla. Harita ve sayılar birlikte ayarlanır: zorluk haritadan da gelir (dar geçitler, yol uzunluğu,
@@ -297,13 +331,15 @@ UI Toolkit'le yapılan denemenin sonuçları; HoldIt sonra Canvas'a döndü ("UI
   karşılaştırılır; referans tempo (`LevelSimConfig._referencePace`) ya da hedefler değişirse `HoldIt/Levels/Fit to Targets`
   yeniden koşulur. Karakter hızlarına ("Karakterler ve yol" → Hız) ve kalabalığı küçük, her baskıda kazanılan ("≥ 4")
   seviyelere de o zaman bakılır
-- **Harita önizlemesi** (M9): seviye seçiminde haritanın küçük önizlemesi (kullanıcı kararı: M9'a kalır)
+- ~~**Harita önizlemesi** (M9): seviye seçiminde haritanın küçük önizlemesi (kullanıcı kararı: M9'a kalır)~~
+  (M9: "Juice (M9)" → Harita önizlemesi)
 - **Harita aracının görsel kontrolü** (M8): `MapDefinitionEditor` (palet, boyama, boyut, kopyala/yapıştır,
   sorunlar, metrikler, Simulate, Generate) odaksız Editor'da yeniden çizilmediği için görsel olarak denenmedi; doğru
   editor tipinin seçildiği ve saf kısmı (`MapRows`) testli. Kullanıcı bir haritayı açıp boyar, boyut değiştirir, Undo'ya bakar
-- **Haptik** (GDD §7'deki ayar, M9): template'te yok. Açma/kapama oyunun kendi Global savable'ında durur. Titreşimin
+- ~~**Haptik** (GDD §7'deki ayar, M9): template'te yok. Açma/kapama oyunun kendi Global savable'ında durur. Titreşimin
   kendisinin oyunda mı template'te mi (Platform sözleşmesi olarak) yazılacağı → M9. (M7) Ayar geldi
-  (`IGameSettings.Haptics`, Global `game.settings`, ayarlar ekranında Titreşim); titreşim M9'da bu ayarı okur
+  (`IGameSettings.Haptics`, Global `game.settings`, ayarlar ekranında Titreşim); titreşim M9'da bu ayarı okur~~
+  (M9: oyunda, `HoldIt.Haptics`; cihaz kontrolü Cihaz testi'nde; template'e taşıma önerisi "Template'e gidenler"de)
 - ~~**En iyi skor** (harita başına): template'in Save'i slot odaklı. HoldIt slot kullanmaz, skor Global savable'da tutulur
   → M7'de teyit~~ ~~(M6) **Seviye kaydı:** seviye başına en iyi yıldız ve açılan son seviye; HoldIt slot
   kullanmaz, Global savable'da tutulur → M7~~ (`LevelProgress`, Global `game.progress` → "Seviye seçimi,
@@ -346,3 +382,4 @@ Burada bulunup template'te düzeltilen framework sorunları.
 | Slot kullanmayan oyun (ilerlemesi Global savable'da): `SaveLifecycle` Gameplay'e her girişte dev oturumu açar ve `SaveService.StartDevSession` build'de (Development ve Release) `Log.Error` basar ("gameplay started without a slot … Open a slot with LoadSlot or NewSlot"). HoldIt'in APK'sında her seviye başında yanlış alarm olur. Öneri: `SaveOptions`'a slotsuz oyun seçeneği (ör. `UsesSlots = false`: dev oturumu ve hata yok, slot işlemleri fırlatır); dokümana "slotsuz oyun" bölümü. Kod okumayla doğrulandı (`SaveService.cs` `StartDevSession`), Editor'da `Log.Info` olarak görüldü | — | — |
 | CLAUDE.md iş akışı: EditMode test koşusu açık sahne kirliyse "Scene(s) Have Been Modified" modal'ında bekler, CLI zaman aşımına düşer (M8'de iki kez; kirlilik UI düzeninin yeniden hesabından: ~180 RectTransform override + TMP hash). Öneri: koşudan önce `scene get_hierarchy` → `isDirty`; bilerek dokunulmadıysa kaydetmeden `EditorSceneManager.OpenScene(yol, Single)` | — | — |
 | CLAUDE.md iş akışı: odaksız Editor'da custom Inspector görsel olarak doğrulanamaz (repaint yok; `PrintWindow` boş panel verir). `CreateEditor` doğru tipi verir; görsel kontrol kullanıcıya kalır. Ayrıca `script run`'dan UniTask döndüren metodu reflection'la `Invoke` etmek hatayı yutar: doğrudan çağır + `Forget()` | — | — |
+| Haptik (M9): oyunda `HoldIt.Haptics` olarak yazıldı (`IHaptics`, Android `VibrationEffect` köprüsü, Editor'da log'layan cihaz). Template'in Platform modülü mağaza arka ucu; titreşim cihaza bağlı olduğundan orada durmaz. Android cihazda doğrulanınca ayrı bir `AF.Haptics` modülü (ya da Platform'un yanında bir sözleşme) olarak taşınabilir: Vibration ayarı, interface ve Android köprüsü hazır. Cihaz testi Açık'ta | — | — |

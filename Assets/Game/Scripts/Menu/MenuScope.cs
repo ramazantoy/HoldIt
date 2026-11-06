@@ -1,4 +1,5 @@
 using AF.Core;
+using HoldIt.Feedback;
 using HoldIt.Levels;
 using HoldIt.Settings;
 using MessagePipe;
@@ -18,6 +19,9 @@ namespace HoldIt.Menu
         [SerializeField, Required, Tooltip("The lives: the most stars a level can be won with.")]
         private RunConfig _runConfig;
 
+        [SerializeField, Tooltip("The menu's music; empty for none.")]
+        private AudioClip _music;
+
         protected override void ConfigureScene(IContainerBuilder builder, MessagePipeOptions messagePipe)
         {
             builder.RegisterComponent(_mainMenu).As<IMainMenuView>();
@@ -27,6 +31,7 @@ namespace HoldIt.Menu
             builder.UseSettingsScreen(_settings);
             builder.Register<AppExit>(Lifetime.Singleton).As<IAppExit>();
             builder.RegisterEntryPoint<MenuFlow>();
+            builder.UseSceneMusic(_music);
         }
     }
 }

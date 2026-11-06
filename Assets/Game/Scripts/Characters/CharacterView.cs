@@ -1,6 +1,8 @@
 using AF.Core;
 using HoldIt.Board;
+using HoldIt.Feedback;
 using HoldIt.Restrooms;
+using PrimeTween;
 using UnityEngine;
 using VContainer;
 
@@ -20,6 +22,9 @@ namespace HoldIt.Characters
     {
         private const float MovedEpsilon = 1e-5f;
 
+        // Just below zero, so the knock at time zero counts when the wait begins.
+        private const float NotKnocking = -1e-4f;
+
         [SerializeField, Required] private CharacterRig _rig;
         [SerializeField, Required] private SpeechBubble _bubble;
         [SerializeField, Required] private PatienceBar _bar;
@@ -28,6 +33,7 @@ namespace HoldIt.Characters
         private ICharacters _characters;
         private ITileGrid _grid;
         private IGameClock _clock;
+        private IFeedback _feedback;
         private CharacterSet _set;
         private CharacterId _id;
         private bool _following;
@@ -36,15 +42,22 @@ namespace HoldIt.Characters
         private Vector3 _lastPosition;
         private float _phase;
         private float _blend;
+        private Vector3 _restScale;
+        private float _knockTime;
+        private float _knockBlend;
 
         public CharacterId Id => _id;
 
+        /// <summary>Where the top of the character is, for things that rise over it.</summary>
+        public Vector3 HeadPosition => _rig.AnchorTop.position;
+
         [Inject]
-        public void Construct(ICharacters characters, ITileGrid grid, IGameClock clock, CharacterSet set)
+        public void Construct(ICharacters characters, ITileGrid grid, IGameClock clock, IFeedback feedback, CharacterSet set)
         {
             _characters = characters;
             _grid = grid;
             _clock = clock;
+            _feedback = feedback;
             _set = set;
         }
 
@@ -114,7 +127,12 @@ namespace HoldIt.Characters
             _visit = null;
             _phase = 0f;
             _blend = 0f;
+            _knockTime = NotKnocking;
+            _knockBlend = 0f;
             _rest.Apply(_rig, default, 0f);
+            transform.localScale = Vector3.zero;
+            Tween.Scale(transform, Vector3.zero, _restScale, _set.SpawnPopSeconds, Ease.OutBack)
+                .SetCancellationToken(life.Token);
         }
 
         public void OnDespawned()
@@ -124,7 +142,11 @@ namespace HoldIt.Characters
             _id = default;
         }
 
-        private void Awake() => _rest = RestPose.Of(_rig);
+        private void Awake()
+        {
+            _rest = RestPose.Of(_rig);
+            _restScale = transform.localScale;
+        }
 
         private void StopFollowing()
         {
@@ -153,12 +175,35 @@ namespace HoldIt.Characters
             var target = moved > MovedEpsilon ? 1f : 0f;
             _blend = Mathf.Lerp(_blend, target, 1f - Mathf.Exp(-style.BlendRate * deltaTime));
             var shake = inStall ? 0f : PatienceShake.Offset(_clock.Time, character.Patience, _set.Patience);
-            _rest.Apply(_rig, WalkPose.At(_phase, _blend, style), shake);
+            _rest.Apply(_rig, Knock(WalkPose.At(_phase, _blend, style), character.State == CharacterState.Queued, deltaTime), shake);
 
             if (inStall)
                 _bar.Hide();
             else
                 _bar.Show(character.Patience);
+        }
+
+        /// <summary>
+        /// Raises the right arm and knocks while the character is queued at a taken stall's door; the arm comes down when
+        /// the wait ends. The clock only runs while queued, so the first knock lands the moment the character arrives.
+        /// </summary>
+        private WalkPose Knock(WalkPose pose, bool queued, float deltaTime)
+        {
+            var style = _set.Knock;
+            if (queued)
+            {
+                var before = _knockTime;
+                _knockTime += deltaTime;
+                if (KnockPose.Hits(before, _knockTime, style) > 0)
+                    _feedback.Play(FeedbackKind.Knock);
+            }
+            else
+                _knockTime = NotKnocking;
+
+            _knockBlend = Mathf.Lerp(_knockBlend, queued ? 1f : 0f, 1f - Mathf.Exp(-style.BlendRate * deltaTime));
+            if (_knockBlend < MovedEpsilon)
+                return pose;
+            return pose.WithArmRight(pose.ArmRight + KnockPose.Arm(_knockTime, style) * _knockBlend);
         }
 
         private Vector3 PositionOf(ICharacter character)

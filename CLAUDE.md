@@ -8,9 +8,9 @@ denenmesi. Framework template'ten gelir: DI context, GameManager, SceneManager, 
 Localization, Platform, Build. Framework kararları `.claude/decisions/`'ta (indeks `README.md`, modül başına dosya), oyunun
 kararları `.claude/decisions/Game.md`'de.
 
-**Durum:** template'ten fork `a949bbd` (framework geçmişi `.claude/decisions/README.md` → "Fazlar"). M0–M8 Editor'da bitti
+**Durum:** template'ten fork `a949bbd` (framework geçmişi `.claude/decisions/README.md` → "Fazlar"). M0–M9 Editor'da bitti
 (M5 M9'a katıldı); ayrıntı git'te ve Game.md'de. Bekleyenler Game.md → Açık'ta: cihaz testleri ve M0b (Android cihaz yok), M2b
-(karakter modelleri), kitin kabin parçaları, kalibrasyon. Sıradaki iş M9. Milestone başlarken
+(karakter modelleri), kitin kabin parçaları, kalibrasyon, ses cue'ları. Sıradaki iş M10. Milestone başlarken
 plan moduna geç.
 
 **Yapı:** framework `Assets/Framework/` (`AF.*` namespace ve asmdef'ler, modül başına `<Modül>/{Runtime,Editor,Tests}`).
@@ -62,7 +62,7 @@ cherry-pick'ler çakışmasın diye.
 | M6 | SO seviyeler, spawn, sabır, kaza, can, seviye sonu, pause | Bitti |
 | M7 | Seviye seçimi, ayarlar, ilerleme kaydı | Bitti; cihaz kısmı Game.md → Açık |
 | M8 | Seviye başına harita, üretici, harita aracı, simülasyonla tuning | Bitti; kalibrasyon Game.md → Açık |
-| M9 | Juice: PrimeTween animasyonları, kare işaretlerinin cilası (eski M5), sesler, haptik | Editor'da oynanır ve iyi hissettirir; haptik ve his kontrolü cihazda (Game.md → Açık → Cihaz testi) |
+| M9 | Juice: PrimeTween animasyonları, kare işaretlerinin cilası (eski M5), sesler, haptik | Bitti (kod ve doğrulama Editor'da); ses cue'ları kullanıcıda (Game.md → Açık → Ses cue'ları), haptik ve his kontrolü cihazda (Game.md → Açık → Cihaz testi) |
 | M10 | Eksik kalan testler, README EN/TR (GIF + diyagram), Release APK GitHub Releases'te (APK git'e girmez) | Public repo hazır |
 
 ## Çalışma şekli

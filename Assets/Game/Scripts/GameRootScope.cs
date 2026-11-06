@@ -5,6 +5,8 @@ using AF.Localization;
 using AF.Platform;
 using AF.Save;
 using AF.Settings;
+using HoldIt.Feedback;
+using HoldIt.Haptics;
 using HoldIt.Input;
 using HoldIt.Levels;
 using HoldIt.Settings;
@@ -32,6 +34,12 @@ namespace HoldIt
         [SerializeField, Required, Tooltip("Every level, in the order they are played.")]
         private LevelList _levels;
 
+        [SerializeField, Required, Tooltip("How the phone vibrates.")]
+        private HapticsConfig _haptics;
+
+        [SerializeField, Required, Tooltip("The sound and the vibration of every event the game makes heard and felt.")]
+        private FeedbackSet _feedback;
+
         protected override void ConfigureGame(IContainerBuilder builder, MessagePipeOptions messagePipe)
         {
             // First: its boot step loads the global and device data; the settings are applied as they load.
@@ -48,6 +56,9 @@ namespace HoldIt
             builder.UseSettings(messagePipe);
             // The game's own settings (vibration), next to the language in the global data.
             builder.UseGameSettings();
+            // Vibration reads the game settings; feedback pairs a sound with a vibration and plays through the audio.
+            builder.UseHaptics(_haptics);
+            builder.UseFeedback(_feedback);
             // The levels, and the progress through them in the global data.
             builder.UseLevels(_levels);
         }

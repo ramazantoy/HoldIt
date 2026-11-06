@@ -17,6 +17,45 @@ MonoBehaviour:
   _lostHeartScale: 0.8
   _starEarned: {r: 1, g: 0.78431374, b: 0.23921569, a: 1}
   _starMissed: {r: 0.7647059, g: 0.7882353, b: 0.8156863, a: 1}
+  _flashColor: {r: 0.9098039, g: 0.28235295, b: 0.33333334, a: 1}
+  _flashAlpha: 0.32
+  _flashSeconds: 0.6
+  _bumpScale: 0.18
+  _bumpSeconds: 0.35
+  _heartSeconds: 0.3
+  _starPopDelay: 0.25
+  _starPopGap: 0.12
+  _starPopSeconds: 0.3
   _cellOpen: {r: 0.27450982, g: 0.50980395, b: 0.8627451, a: 1}
   _cellNewest: {r: 0.20392157, g: 0.7019608, b: 0.41960785, a: 1}
   _cellLocked: {r: 0.22745098, g: 0.25490198, b: 0.3137255, a: 1}
+  _mapPreview:
+    _floor:
+      serializedVersion: 2
+      rgba: 4293847268
+    _lobby:
+      serializedVersion: 2
+      rgba: 4293972921
+    _entrance:
+      serializedVersion: 2
+      rgba: 4285248308
+    _wall:
+      serializedVersion: 2
+      rgba: 4286409562
+    _narrow:
+      serializedVersion: 2
+      rgba: 4285179337
+    _buildingMale:
+      serializedVersion: 2
+      rgba: 4293835151
+    _buildingFemale:
+      serializedVersion: 2
+      rgba: 4291274227
+    _doorMale:
+      serializedVersion: 2
+      rgba: 4290273071
+    _doorFemale:
+      serializedVersion: 2
+      rgba: 4286595012
+  _previewLocked: {r: 1, g: 1, b: 1, a: 0.35}
+  _previewPixelsPerTile: 4

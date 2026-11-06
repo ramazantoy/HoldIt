@@ -50,7 +50,7 @@ namespace HoldIt.Restrooms
             if (_doors[(int)gender] == null)
                 return;
             _doors[(int)gender][stall].Show(state, instantly);
-            _lamps[(int)gender][stall].Show(state);
+            _lamps[(int)gender][stall].Show(state, instantly);
         }
 
         private void BuildPartitions(RestroomLayout layout)

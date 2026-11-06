@@ -204,11 +204,11 @@ namespace HoldIt.Tests
             {
             }
 
-            public void ShowServed(int served, int crowd)
+            public void ShowServed(int served, int crowd, bool animate)
             {
             }
 
-            public void ShowLives(int lives, int maxLives)
+            public void ShowLives(int lives, int maxLives, bool animate)
             {
             }
 

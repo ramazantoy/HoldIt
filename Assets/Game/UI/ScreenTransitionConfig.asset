@@ -13,3 +13,6 @@ MonoBehaviour:
   m_Name: ScreenTransitionConfig
   m_EditorClassIdentifier: Game::HoldIt.UI.ScreenTransitionConfig
   _fadeSeconds: 0.2
+  _popScale: 0.94
+  _pressScale: 0.94
+  _pressSeconds: 0.08

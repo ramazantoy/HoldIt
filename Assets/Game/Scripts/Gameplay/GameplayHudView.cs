@@ -1,6 +1,7 @@
 using System;
 using AF.Core;
 using HoldIt.Board;
+using PrimeTween;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Localization;
@@ -33,8 +34,19 @@ namespace HoldIt.Gameplay
 
         [SerializeField, Required] private GameplayUiStyle _style;
 
+        [SerializeField, Required, Tooltip("Covers the screen and flashes when a life is lost; no raycast target.")]
+        private Image _flash;
+
+        [SerializeField, Required, Tooltip("The pill holding the hearts.")]
+        private RectTransform _livesPill;
+
+        [SerializeField, Required, Tooltip("The pill holding the served counter.")]
+        private RectTransform _servedPill;
+
         private readonly Vector3[] _corners = new Vector3[4];
         private int _levelNumber;
+        private Tween _livesBump;
+        private Tween _servedBump;
 
         public event Action PauseClicked;
 
@@ -55,18 +67,51 @@ namespace HoldIt.Gameplay
             _levelLabel.RefreshString();
         }
 
-        public void ShowServed(int served, int crowd) => _served.text = $"{served}/{crowd}";
+        public void ShowServed(int served, int crowd, bool animate)
+        {
+            _served.text = $"{served}/{crowd}";
+            if (animate)
+                Bump(ref _servedBump, _servedPill);
+        }
 
-        public void ShowLives(int lives, int maxLives)
+        public void ShowLives(int lives, int maxLives, bool animate)
         {
             for (var i = 0; i < _hearts.Length; i++)
             {
                 var heart = _hearts[i];
                 heart.gameObject.SetActive(i < maxLives);
                 var full = i < lives;
-                heart.color = full ? _style.HeartFull : _style.HeartLost;
-                heart.rectTransform.localScale = Vector3.one * (full ? 1f : _style.LostHeartScale);
+                var color = full ? _style.HeartFull : _style.HeartLost;
+                var scale = Vector3.one * (full ? 1f : _style.LostHeartScale);
+                if (animate && heart.gameObject.activeInHierarchy)
+                {
+                    Tween.Color(heart, color, _style.HeartSeconds, useUnscaledTime: true)
+                        .SetCancellationToken(destroyCancellationToken);
+                    Tween.Scale(heart.rectTransform, scale, _style.HeartSeconds, Ease.OutBack, useUnscaledTime: true)
+                        .SetCancellationToken(destroyCancellationToken);
+                }
+                else
+                {
+                    heart.color = color;
+                    heart.rectTransform.localScale = scale;
+                }
             }
+
+            if (!animate)
+                return;
+            Bump(ref _livesBump, _livesPill);
+            _flash.color = _style.FlashColor;
+            Tween.Alpha(_flash, _style.FlashAlpha, 0f, _style.FlashSeconds, Ease.OutQuad, useUnscaledTime: true)
+                .SetCancellationToken(destroyCancellationToken);
+        }
+
+        /// <summary>A short swell of the pill; a swell still running is finished first so the pill never keeps a drift.</summary>
+        private void Bump(ref Tween running, RectTransform pill)
+        {
+            if (running.isAlive)
+                running.Complete();
+            running = Tween.PunchScale(pill, Vector3.one * _style.BumpScale, _style.BumpSeconds, frequency: 1,
+                useUnscaledTime: true).SetCancellationToken(destroyCancellationToken);
         }
 
         private void Awake() => _pause.onClick.AddListener(() => PauseClicked?.Invoke());

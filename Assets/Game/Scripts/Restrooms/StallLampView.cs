@@ -1,4 +1,5 @@
 using AF.Core;
+using PrimeTween;
 using UnityEngine;
 using VContainer;
 
@@ -17,12 +18,22 @@ namespace HoldIt.Restrooms
 
         private StallSet _set;
         private MaterialPropertyBlock _block;
+        private Tween _pulse;
 
         [Inject]
         public void Construct(StallSet set) => _set = set;
 
-        public void Show(StallState state)
+        /// <summary>Shows the state; unless <paramref name="instantly"/> the bulb also gives a pulse for the change.</summary>
+        public void Show(StallState state, bool instantly)
         {
+            if (!instantly)
+            {
+                if (_pulse.isAlive)
+                    _pulse.Complete();
+                _pulse = Tween.PunchScale(_bulb.transform, Vector3.one * _set.LampPunch, _set.LampPunchSeconds, frequency: 1)
+                    .SetCancellationToken(destroyCancellationToken);
+            }
+
             _block ??= new MaterialPropertyBlock();
             var color = state == StallState.Free ? _set.FreeColor : _set.BusyColor;
 

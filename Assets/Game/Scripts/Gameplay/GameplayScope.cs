@@ -2,6 +2,7 @@ using AF.Core;
 using HoldIt.Board;
 using HoldIt.Characters;
 using HoldIt.Drawing;
+using HoldIt.Feedback;
 using HoldIt.Input;
 using HoldIt.Levels;
 using HoldIt.Restrooms;
@@ -36,6 +37,9 @@ namespace HoldIt.Gameplay
         [SerializeField, Required] private SpawnConfig _spawnConfig;
         [SerializeField, Required] private DrawingConfig _drawingConfig;
 
+        [SerializeField, Tooltip("The music while playing; empty for none.")]
+        private AudioClip _music;
+
         protected override void ConfigureScene(IContainerBuilder builder, MessagePipeOptions messagePipe)
         {
             // The root scope is built before any scene's, and outlives it.
@@ -56,6 +60,8 @@ namespace HoldIt.Gameplay
             builder.RegisterEntryPoint<GameplayFlow>();
             builder.RegisterEntryPoint<LevelEndFlow>();
             builder.RegisterEntryPoint<TouchLog>();
+            builder.UseFeedbackEvents();
+            builder.UseSceneMusic(_music);
         }
     }
 }

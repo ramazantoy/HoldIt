@@ -10,7 +10,10 @@ namespace HoldIt.Gameplay
         /// <param name="number">From 1.</param>
         void ShowLevel(int number);
 
-        void ShowServed(int served, int crowd);
-        void ShowLives(int lives, int maxLives);
+        /// <param name="animate">True when the number just changed: the pill swells. False for the first reading.</param>
+        void ShowServed(int served, int crowd, bool animate);
+
+        /// <param name="animate">True when a life was just lost: the screen flashes, the pill swells, the heart greys.</param>
+        void ShowLives(int lives, int maxLives, bool animate);
     }
 }
