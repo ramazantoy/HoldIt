@@ -1,0 +1,9 @@
+FreeFall.ogg
+Source: "Free Fall" (Tad), OpenGameArt: https://opengameart.org/content/free-fall
+License: Creative Commons Zero (CC0 1.0): https://creativecommons.org/publicdomain/zero/1.0/
+
+Jump.ogg
+Source: "Jump" (ThePixel), OpenGameArt: https://opengameart.org/content/jump
+License: Creative Commons Zero (CC0 1.0): https://creativecommons.org/publicdomain/zero/1.0/
+
+Both pages list the track as CC0. Free for personal, educational and commercial use; no attribution needed.

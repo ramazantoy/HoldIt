@@ -1,0 +1,24 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 24048a13207b24e4e87b79e16d89fb2c, type: 3}
+  m_Name: LevelWon
+  m_EditorClassIdentifier: AF.Audio::AF.Audio.SoundCue
+  _clips:
+  - {fileID: 8300000, guid: c41d902e42a2d1140927cb9fca842ad4, type: 3}
+  _output: {fileID: 1476358527111591515, guid: 36ef3796a4d428e45acb0db9a9774cfe, type: 2}
+  _volume: 0.8
+  _pitchRange: {x: 1, y: 1}
+  _loop: 0
+  _playWhilePaused: 1
+  _minDistance: 1
+  _maxDistance: 30
+  _rolloff: 0

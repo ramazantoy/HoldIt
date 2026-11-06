@@ -11,6 +11,13 @@ namespace HoldIt
     {
         public static readonly AudioChannel Master = new AudioChannel("Master", "MasterVolume");
         public static readonly AudioChannel Music = new AudioChannel("Music", "MusicVolume");
+
+        /// <summary>
+        /// The group under Music that the tracks play through. The player never sees it: each scene sets its level
+        /// (<see cref="HoldIt.Feedback.SceneMusic"/>), so a track that is too loud is turned down here, below what the Music slider sets.
+        /// </summary>
+        public static readonly AudioChannel MusicBed = new AudioChannel("MusicBed", "MusicBedVolume");
+
         public static readonly AudioChannel Sfx = new AudioChannel("SFX", "SfxVolume");
         public static readonly AudioChannel Ui = new AudioChannel("UI", "UiVolume");
 
@@ -21,9 +28,10 @@ namespace HoldIt
         public static readonly IReadOnlyList<AudioChannel> SettingsSliders = new[] { Master, Music, Sfx };
 
         public static AudioOptions CreateOptions() =>
-            new AudioOptions { Music = Music }
+            new AudioOptions { Music = MusicBed }
                 .Add(Master)
                 .Add(Music)
+                .Add(MusicBed)
                 .Add(Sfx)
                 .Add(Ui);
     }

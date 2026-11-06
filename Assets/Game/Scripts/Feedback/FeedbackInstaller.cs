@@ -19,8 +19,11 @@ namespace HoldIt.Feedback
         /// <summary>In a gameplay scene scope that has the messages: feedback for what happens on the board and in the run.</summary>
         public static void UseFeedbackEvents(this IContainerBuilder builder) => builder.RegisterEntryPoint<FeedbackEvents>();
 
-        /// <summary>In a scene scope: plays <paramref name="clip"/> as the music when the scene starts; null leaves the music as it is.</summary>
-        public static void UseSceneMusic(this IContainerBuilder builder, AudioClip clip) =>
-            builder.RegisterEntryPoint<SceneMusic>().WithParameter<AudioClip>(clip);
+        /// <summary>
+        /// In a scene scope: plays <paramref name="clip"/> as the music when the scene starts, at <paramref name="level"/>
+        /// (0 to 1, under the player's music volume); null leaves the music as it is.
+        /// </summary>
+        public static void UseSceneMusic(this IContainerBuilder builder, AudioClip clip, float level) =>
+            builder.RegisterEntryPoint<SceneMusic>().WithParameter<AudioClip>(clip).WithParameter<float>(level);
     }
 }

@@ -9,12 +9,32 @@ AudioMixerGroupController:
   m_Name: Music
   m_AudioMixer: {fileID: 24100000}
   m_GroupID: d3eacd2e432fe2e46b7eebba179acc9a
-  m_Children: []
+  m_Children:
+  - {fileID: -2441458244240874882}
   m_Volume: 54d4c16e2e85e34449375fa36c6ce11d
   m_Pitch: 1cb77922387cc8d4b95ee02fc120f1b1
   m_Send: 00000000000000000000000000000000
   m_Effects:
   - {fileID: 8564761681538411221}
+  m_UserColorIndex: 0
+  m_Mute: 0
+  m_Solo: 0
+  m_BypassEffects: 0
+--- !u!243 &-2441458244240874882
+AudioMixerGroupController:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: MusicBed
+  m_AudioMixer: {fileID: 24100000}
+  m_GroupID: 8319ddd424b8cd34a8d343a7952c2304
+  m_Children: []
+  m_Volume: 09fd0c07ac23b4440870fbeb4f6e0111
+  m_Pitch: ff4a23d503bcf2f40ab4680b730b0695
+  m_Send: 00000000000000000000000000000000
+  m_Effects:
+  - {fileID: -46297922106232327}
   m_UserColorIndex: 0
   m_Mute: 0
   m_Solo: 0
@@ -29,6 +49,20 @@ AudioMixerEffectController:
   m_EffectID: d95228905cdf6b64bb9ab9eb164ec119
   m_EffectName: Attenuation
   m_MixLevel: 3cf849354bc093e4d877404b59828157
+  m_Parameters: []
+  m_SendTarget: {fileID: 0}
+  m_EnableWetMix: 0
+  m_Bypass: 0
+--- !u!244 &-46297922106232327
+AudioMixerEffectController:
+  m_ObjectHideFlags: 3
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: 
+  m_EffectID: 5d9c58be261934d47bd76df5dbb1fe0a
+  m_EffectName: Attenuation
+  m_MixLevel: 140c92465f925d64393f567bc97df40a
   m_Parameters: []
   m_SendTarget: {fileID: 0}
   m_EnableWetMix: 0
@@ -53,6 +87,8 @@ AudioMixerController:
     name: MasterVolume
   - guid: 54d4c16e2e85e34449375fa36c6ce11d
     name: MusicVolume
+  - guid: 09fd0c07ac23b4440870fbeb4f6e0111
+    name: MusicBedVolume
   - guid: f38eb890adb5fb544a1f3ae5e30bf0f8
     name: SfxVolume
   - guid: 6d297da98d457e84da178b8005909d12
@@ -62,6 +98,7 @@ AudioMixerController:
     - 56358c9aeb4ca864e9822a57d25fa032
     - d3eacd2e432fe2e46b7eebba179acc9a
     - 18bfff235a2a36547821233dadc3c667
+    - c2cc2a0b53d8a8b4b8d0d271c9cd3505
     - c2cc2a0b53d8a8b4b8d0d271c9cd3505
     name: View
   m_CurrentViewIndex: 0

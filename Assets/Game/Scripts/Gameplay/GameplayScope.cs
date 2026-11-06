@@ -40,6 +40,9 @@ namespace HoldIt.Gameplay
         [SerializeField, Tooltip("The music while playing; empty for none.")]
         private AudioClip _music;
 
+        [SerializeField, Range(0f, 1f), Tooltip("How loud the music is while playing, under the player's music volume.")]
+        private float _musicLevel = 0.5f;
+
         protected override void ConfigureScene(IContainerBuilder builder, MessagePipeOptions messagePipe)
         {
             // The root scope is built before any scene's, and outlives it.
@@ -61,7 +64,7 @@ namespace HoldIt.Gameplay
             builder.RegisterEntryPoint<LevelEndFlow>();
             builder.RegisterEntryPoint<TouchLog>();
             builder.UseFeedbackEvents();
-            builder.UseSceneMusic(_music);
+            builder.UseSceneMusic(_music, _musicLevel);
         }
     }
 }

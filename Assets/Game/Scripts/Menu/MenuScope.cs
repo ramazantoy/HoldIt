@@ -22,6 +22,9 @@ namespace HoldIt.Menu
         [SerializeField, Tooltip("The menu's music; empty for none.")]
         private AudioClip _music;
 
+        [SerializeField, Range(0f, 1f), Tooltip("How loud the menu music is, under the player's music volume.")]
+        private float _musicLevel = 0.5f;
+
         protected override void ConfigureScene(IContainerBuilder builder, MessagePipeOptions messagePipe)
         {
             builder.RegisterComponent(_mainMenu).As<IMainMenuView>();
@@ -31,7 +34,7 @@ namespace HoldIt.Menu
             builder.UseSettingsScreen(_settings);
             builder.Register<AppExit>(Lifetime.Singleton).As<IAppExit>();
             builder.RegisterEntryPoint<MenuFlow>();
-            builder.UseSceneMusic(_music);
+            builder.UseSceneMusic(_music, _musicLevel);
         }
     }
 }

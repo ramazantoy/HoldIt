@@ -1,0 +1,4 @@
+Clips: wooden_01.ogg, door_close_01.ogg, toilet_01.ogg, splash_01.ogg
+Source: "100 CC0 SFX", OpenGameArt: https://opengameart.org/content/100-cc0-sfx
+License: Creative Commons Zero (CC0 1.0): https://creativecommons.org/publicdomain/zero/1.0/
+The page lists the pack as CC0. Free for personal, educational and commercial use; no attribution needed.

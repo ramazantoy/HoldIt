@@ -390,7 +390,7 @@ MonoBehaviour:
   _levelSelect: {fileID: 1937721930}
   _settings: {fileID: 1849173604}
   _runConfig: {fileID: 11400000, guid: 44f063e3e266fba409666e24845fc733, type: 2}
-  _music: {fileID: 0}
+  _music: {fileID: 8300000, guid: 7a40fc11ea11cee488600ad170fb9c1d, type: 3}
 --- !u!4 &896228342
 Transform:
   m_ObjectHideFlags: 0

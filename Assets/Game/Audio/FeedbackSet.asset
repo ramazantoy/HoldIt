@@ -14,77 +14,77 @@ MonoBehaviour:
   m_EditorClassIdentifier: Game::HoldIt.Feedback.FeedbackSet
   _entries:
   - _kind: 0
-    _cue: {fileID: 0}
+    _cue: {fileID: 11400000, guid: a427a07b88fcdc24d8a0ce8f002dc7f3, type: 2}
     _haptic: 0
     _minInterval: 0
     _outlivesScene: 1
   - _kind: 1
-    _cue: {fileID: 0}
+    _cue: {fileID: 11400000, guid: 4112b8e56a8cc6d46b977ca579bba74b, type: 2}
     _haptic: 0
     _minInterval: 0.04
     _outlivesScene: 0
   - _kind: 2
-    _cue: {fileID: 0}
+    _cue: {fileID: 11400000, guid: 4ee299625ad97cd4ca3e1963efb718a4, type: 2}
     _haptic: 1
     _minInterval: 0.15
     _outlivesScene: 0
   - _kind: 3
-    _cue: {fileID: 0}
+    _cue: {fileID: 11400000, guid: 768cc8fe2328f17448720c02589a38c3, type: 2}
     _haptic: 1
     _minInterval: 0
     _outlivesScene: 0
   - _kind: 4
-    _cue: {fileID: 0}
+    _cue: {fileID: 11400000, guid: c4a994a1d46bbb446925f4976004a773, type: 2}
     _haptic: 2
     _minInterval: 0.2
     _outlivesScene: 0
   - _kind: 5
-    _cue: {fileID: 0}
+    _cue: {fileID: 11400000, guid: 9f7d611e00449d441b6f71f45a257a2e, type: 2}
     _haptic: 0
     _minInterval: 0.2
     _outlivesScene: 0
   - _kind: 6
-    _cue: {fileID: 0}
+    _cue: {fileID: 11400000, guid: f6d22af963eecff4fb37e3e6b5554aa1, type: 2}
     _haptic: 0
     _minInterval: 0.1
     _outlivesScene: 0
   - _kind: 7
-    _cue: {fileID: 0}
+    _cue: {fileID: 11400000, guid: fbab649735a25e24ab857a005a586144, type: 2}
     _haptic: 0
     _minInterval: 0.1
     _outlivesScene: 0
   - _kind: 8
-    _cue: {fileID: 0}
+    _cue: {fileID: 11400000, guid: 8bf89ae0d6e353845ae89285260aba19, type: 2}
     _haptic: 0
     _minInterval: 0.1
     _outlivesScene: 0
   - _kind: 9
-    _cue: {fileID: 0}
+    _cue: {fileID: 11400000, guid: c53707f335d32a44c8731b1d9133f64b, type: 2}
     _haptic: 2
     _minInterval: 0
     _outlivesScene: 0
   - _kind: 10
-    _cue: {fileID: 0}
+    _cue: {fileID: 11400000, guid: d9c9ea86ffcdcb1468c64eb558e8a419, type: 2}
     _haptic: 3
     _minInterval: 0
     _outlivesScene: 0
   - _kind: 11
-    _cue: {fileID: 0}
+    _cue: {fileID: 11400000, guid: d92f155f578a7b64d813133cfaa6f125, type: 2}
     _haptic: 0
     _minInterval: 0.15
     _outlivesScene: 0
   - _kind: 12
-    _cue: {fileID: 0}
+    _cue: {fileID: 11400000, guid: ae6d110722097254e84ea848579943b0, type: 2}
     _haptic: 0
     _minInterval: 0
     _outlivesScene: 0
   - _kind: 13
-    _cue: {fileID: 0}
+    _cue: {fileID: 11400000, guid: 956b658a43bff264aa502ffb941cf5de, type: 2}
     _haptic: 2
     _minInterval: 0
     _outlivesScene: 0
   - _kind: 14
-    _cue: {fileID: 0}
+    _cue: {fileID: 11400000, guid: 136bc51f0d518bb498e89872f8c52d2f, type: 2}
     _haptic: 3
     _minInterval: 0
     _outlivesScene: 0
