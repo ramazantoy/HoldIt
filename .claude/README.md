@@ -5,7 +5,8 @@ araçlar. İnsan için framework dokümanı `Assets/Framework/Documentation~/`'d
 
 | Yol | İçerik | Kural |
 |---|---|---|
-| `decisions/` | Karar kaydı: `README.md` indeks, çapraz kararlar, fazlar ve "Açık" listesi; modül başına dosya (kararlar, doğrulananlar, inceleme bulguları) | Önce indeks, sonra yalnız ilgili modül dosyası. Satır silinmez, üstü çizilir; tarih yazılır |
+| `decisions/` | Karar kaydı: `README.md` indeks, çapraz kararlar, fazlar ve "Açık" listesi; modül başına dosya (kararlar, doğrulananlar, inceleme bulguları) | Önce indeks, sonra yalnız ilgili modül dosyası. Satır silinmez, üstü çizilir. Game.md'de tarih yazılmaz (git tutar); framework dosyaları template'in kuralına uyar (tarih yazılır) |
+| `unity-editor.md` | Unity Editor ile çalışmanın ayrıntıları ve bilinen tuzaklar (template CLAUDE.md'sinin aynı adlı bölümü) | CLAUDE.md'de kısa özet kalır; Editor'da takılınca okunur |
 | `scripts/` | `unity command script run` ile çalışan editor betikleri ve bekleme betiği | Tekrar kullanılan iş buraya; tek seferlik betik oturumun scratchpad'inde kalır |
 | `prompts/` | Tek seferlik oturum başlangıç prompt'ları | Gitignored (geçici; template'ten açılan oyuna taşınmamalı). Tekrar kullanılan süreç CLAUDE.md'ye kural ya da `scripts/`'e betik olur |
 | `notes/` | Bir işin plan ya da handoff notu, yalnız gerektiğinde (`notes/<konu>/<konu>-plan.md`, `<konu>-handoff.md`) | Gitignored. Kalıcı karar notta kalmaz, `decisions/`'a taşınır; iş bitince not silinir |
