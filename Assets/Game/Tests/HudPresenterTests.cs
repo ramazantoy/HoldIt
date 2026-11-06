@@ -99,6 +99,10 @@ namespace HoldIt.Tests
             public int Level { get; private set; }
             public (int, int) Served { get; private set; }
             public (int, int) Lives { get; private set; }
+            public void SetPaused(bool paused)
+            {
+            }
+
             public bool ServedAnimated { get; private set; }
             public bool LivesAnimated { get; private set; }
 

@@ -4,6 +4,7 @@ using System.Threading;
 using AF.Audio;
 using AF.Localization;
 using Cysharp.Threading.Tasks;
+using HoldIt.Feedback;
 using HoldIt.Settings;
 using NUnit.Framework;
 using UnityEngine.Localization;
@@ -17,6 +18,7 @@ namespace HoldIt.Tests
         private FakeLocales _locales;
         private GameSettings _game;
         private FakeSave _save;
+        private RecordingFeedback _feedback;
         private SettingsPresenter _presenter;
         private Locale _en;
         private Locale _tr;
@@ -33,7 +35,8 @@ namespace HoldIt.Tests
             _locales = new FakeLocales(_en, _tr) { Current = _en };
             _game = new GameSettings();
             _save = new FakeSave();
-            _presenter = new SettingsPresenter(_view, _volumes, _locales, _game, _save);
+            _feedback = new RecordingFeedback(() => _game.Haptics);
+            _presenter = new SettingsPresenter(_view, _volumes, _locales, _game, _save, _feedback);
             _presenter.Closed += () => _closes++;
             _presenter.Initialize();
             _presenter.Start();
@@ -95,6 +98,18 @@ namespace HoldIt.Tests
         }
 
         [Test]
+        public void Toggle_GivesFeedbackAfterTheSettingIsWritten()
+        {
+            _presenter.Open();
+
+            _view.Toggle(false);
+            _view.Toggle(true);
+
+            CollectionAssert.AreEqual(new[] { FeedbackKind.Toggle, FeedbackKind.Toggle }, _feedback.Played);
+            CollectionAssert.AreEqual(new[] { false, true }, _feedback.HapticsWhenPlayed);
+        }
+
+        [Test]
         public void LanguageArrows_GoRoundTheLanguages()
         {
             _presenter.Open();
@@ -150,6 +165,23 @@ namespace HoldIt.Tests
             Assert.AreEqual(0, _locales.Sets.Count);
             Assert.AreEqual(0, _save.GlobalSaves);
             Assert.AreEqual(0, _closes);
+            Assert.IsEmpty(_feedback.Played);
+        }
+
+        private sealed class RecordingFeedback : IFeedback
+        {
+            private readonly Func<bool> _haptics;
+
+            public RecordingFeedback(Func<bool> haptics) => _haptics = haptics;
+
+            public List<FeedbackKind> Played { get; } = new List<FeedbackKind>();
+            public List<bool> HapticsWhenPlayed { get; } = new List<bool>();
+
+            public void Play(FeedbackKind kind)
+            {
+                Played.Add(kind);
+                HapticsWhenPlayed.Add(_haptics());
+            }
         }
 
         private sealed class FakeSettingsView : ISettingsView

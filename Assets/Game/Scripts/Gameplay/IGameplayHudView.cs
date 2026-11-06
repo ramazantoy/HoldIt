@@ -15,5 +15,8 @@ namespace HoldIt.Gameplay
 
         /// <param name="animate">True when a life was just lost: the screen flashes, the pill swells, the heart greys.</param>
         void ShowLives(int lives, int maxLives, bool animate);
+
+        /// <summary>The pause screen is up: the HUD is hidden and cannot be pressed. False brings it back.</summary>
+        void SetPaused(bool paused);
     }
 }

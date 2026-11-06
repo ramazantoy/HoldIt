@@ -50,5 +50,8 @@ namespace HoldIt.Feedback
 
         /// <summary>The level was lost.</summary>
         LevelLost,
+
+        /// <summary>A setting was switched on or off (vibration).</summary>
+        Toggle,
     }
 }

@@ -88,3 +88,8 @@ MonoBehaviour:
     _haptic: 3
     _minInterval: 0
     _outlivesScene: 0
+  - _kind: 15
+    _cue: {fileID: 11400000, guid: e5f80a4d284701c4999feefcbe93db8c, type: 2}
+    _haptic: 2
+    _minInterval: 0
+    _outlivesScene: 0

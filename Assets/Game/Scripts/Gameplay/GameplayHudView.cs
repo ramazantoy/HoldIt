@@ -43,6 +43,9 @@ namespace HoldIt.Gameplay
         [SerializeField, Required, Tooltip("The pill holding the served counter.")]
         private RectTransform _servedPill;
 
+        [SerializeField, Required, Tooltip("The HUD's group: it goes transparent and stops taking presses while the game is paused.")]
+        private CanvasGroup _group;
+
         private readonly Vector3[] _corners = new Vector3[4];
         private int _levelNumber;
         private Tween _livesBump;
@@ -65,6 +68,12 @@ namespace HoldIt.Gameplay
             _levelNumber = number;
             _levelLabel.Arguments = new object[] { number };
             _levelLabel.RefreshString();
+        }
+
+        public void SetPaused(bool paused)
+        {
+            _group.alpha = paused ? 0f : 1f;
+            _group.interactable = !paused;
         }
 
         public void ShowServed(int served, int crowd, bool animate)

@@ -4,6 +4,7 @@ using AF.Audio;
 using AF.Core;
 using AF.Localization;
 using AF.Save;
+using HoldIt.Feedback;
 using Cysharp.Threading.Tasks;
 using UnityEngine.Localization;
 using VContainer.Unity;
@@ -23,17 +24,19 @@ namespace HoldIt.Settings
         private readonly ILocaleService _locales;
         private readonly IGameSettings _game;
         private readonly ISaveService _save;
+        private readonly IFeedback _feedback;
         private readonly IReadOnlyList<AudioChannel> _channels = AudioChannels.SettingsSliders;
         private int _language;
 
         public SettingsPresenter(ISettingsView view, IAudioVolumes volumes, ILocaleService locales, IGameSettings game,
-            ISaveService save)
+            ISaveService save, IFeedback feedback)
         {
             _view = view;
             _volumes = volumes;
             _locales = locales;
             _game = game;
             _save = save;
+            _feedback = feedback;
         }
 
         public bool IsOpen { get; private set; }
@@ -96,8 +99,11 @@ namespace HoldIt.Settings
 
         private void SetHaptics(bool on)
         {
-            if (IsOpen)
-                _game.SetHaptics(on);
+            if (!IsOpen)
+                return;
+            _game.SetHaptics(on);
+            // After the setting is written: switching vibration on is felt at once, switching it off is only heard.
+            _feedback.Play(FeedbackKind.Toggle);
         }
 
         // The name changes at once; the texts follow once the language's tables are loaded. Pressed quickly, the last

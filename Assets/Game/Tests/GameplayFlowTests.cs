@@ -57,6 +57,17 @@ namespace HoldIt.Tests
         }
 
         [Test]
+        public void Pausing_HidesTheHud_AndResumingBringsItBack()
+        {
+            _hud.ClickPause();
+            Assert.IsTrue(_hud.Paused);
+
+            _view.ClickResume();
+
+            Assert.IsFalse(_hud.Paused);
+        }
+
+        [Test]
         public void PauseButton_Twice_PausesOnce()
         {
             _hud.ClickPause();
@@ -211,6 +222,10 @@ namespace HoldIt.Tests
             public void ShowLives(int lives, int maxLives, bool animate)
             {
             }
+
+            public bool Paused { get; private set; }
+
+            public void SetPaused(bool paused) => Paused = paused;
 
             public void ClickPause() => PauseClicked?.Invoke();
         }

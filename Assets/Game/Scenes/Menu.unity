@@ -391,6 +391,7 @@ MonoBehaviour:
   _settings: {fileID: 1849173604}
   _runConfig: {fileID: 11400000, guid: 44f063e3e266fba409666e24845fc733, type: 2}
   _music: {fileID: 8300000, guid: 7a40fc11ea11cee488600ad170fb9c1d, type: 3}
+  _musicLevel: 0.5
 --- !u!4 &896228342
 Transform:
   m_ObjectHideFlags: 0
@@ -448,6 +449,10 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1244054331863738139, guid: 21ad5b3a9d3bce242958ad77b19e974c, type: 3}
       propertyPath: m_AnchoredPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1323805775630771298, guid: 21ad5b3a9d3bce242958ad77b19e974c, type: 3}
+      propertyPath: m_Transition
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2785392751359678940, guid: 21ad5b3a9d3bce242958ad77b19e974c, type: 3}
@@ -600,7 +605,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3686677346331715843, guid: 21ad5b3a9d3bce242958ad77b19e974c, type: 3}
       propertyPath: m_fontColor32.rgba
-      value: 4284929791
+      value: 4294967295
       objectReference: {fileID: 0}
     - target: {fileID: 3686677346331715843, guid: 21ad5b3a9d3bce242958ad77b19e974c, type: 3}
       propertyPath: m_TextStyleHashCode
@@ -853,6 +858,18 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 471346885856393874, guid: 04d50fa3638a91845917038ae5a28e30, type: 3}
       propertyPath: m_AnchoredPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 541265784776561126, guid: 04d50fa3638a91845917038ae5a28e30, type: 3}
+      propertyPath: m_Alpha
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 541265784776561126, guid: 04d50fa3638a91845917038ae5a28e30, type: 3}
+      propertyPath: m_Interactable
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 541265784776561126, guid: 04d50fa3638a91845917038ae5a28e30, type: 3}
+      propertyPath: m_BlocksRaycasts
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1359426805337093242, guid: 04d50fa3638a91845917038ae5a28e30, type: 3}
@@ -1360,6 +1377,18 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 117673909}
     m_Modifications:
+    - target: {fileID: 541265784776561126, guid: 020e945601dcd9d41bddc2ca98400666, type: 3}
+      propertyPath: m_Alpha
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 541265784776561126, guid: 020e945601dcd9d41bddc2ca98400666, type: 3}
+      propertyPath: m_Interactable
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 541265784776561126, guid: 020e945601dcd9d41bddc2ca98400666, type: 3}
+      propertyPath: m_BlocksRaycasts
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 1306983169597035616, guid: 020e945601dcd9d41bddc2ca98400666, type: 3}
       propertyPath: m_AnchorMax.x
       value: 0
@@ -1627,14 +1656,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
   m_Material: {fileID: 0}
-  m_Color: {r: 0.1254902, g: 0.14117648, b: 0.1882353, a: 1}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 0}
+  m_Sprite: {fileID: -5409611486675845757, guid: ccff8c2391ca7924f998d35aa14d0fea, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1

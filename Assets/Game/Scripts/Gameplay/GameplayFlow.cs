@@ -85,6 +85,7 @@ namespace HoldIt.Gameplay
             if (_leaving || IsPaused || _run.Outcome != LevelOutcome.Playing)
                 return;
             _paused = _pause.Request(PAUSE_REASON);
+            _hud.SetPaused(true);
             _pauseView.Show();
         }
 
@@ -94,6 +95,7 @@ namespace HoldIt.Gameplay
                 return;
             _paused.Dispose();
             _paused = null;
+            _hud.SetPaused(false);
             _pauseView.Hide();
         }
 
