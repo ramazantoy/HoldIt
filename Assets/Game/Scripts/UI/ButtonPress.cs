@@ -9,11 +9,10 @@ using VContainer;
 namespace HoldIt.UI
 {
     /// <summary>
-    /// Makes a button give under the finger: it shrinks while pressed and comes back on release (or when the finger
-    /// slides off it). Unscaled time, so it works in the paused game. A button that cannot be pressed does not move.
+    /// Makes a button give under the finger: it shrinks when pressed and springs back (<see cref="Press"/>). Unscaled time, so it works in the paused game. A button that cannot be pressed does not move.
     /// </summary>
     [RequireComponent(typeof(Button))]
-    public sealed class ButtonPress : MonoBehaviour, IPointerDownHandler, IPointerUpHandler, IPointerExitHandler
+    public sealed class ButtonPress : MonoBehaviour, IPointerDownHandler
     {
         [SerializeField, Required] private ScreenTransitionConfig _config;
 
@@ -43,19 +42,22 @@ namespace HoldIt.UI
         {
             if (!_button.IsInteractable())
                 return;
-            ScaleTo(_config.PressScale);
+            Press();
             _feedback?.Play(FeedbackKind.UiClick);
         }
 
-        public void OnPointerUp(PointerEventData eventData) => ScaleTo(1f);
-
-        public void OnPointerExit(PointerEventData eventData) => ScaleTo(1f);
-
-        private void ScaleTo(float share)
+        /// <summary>
+        /// One press is one round trip: rest size to the pressed size and back (yoyo), started from the rest size every
+        /// time. It needs no release event and no callback, and a press that lands on a running one restarts it, so the
+        /// tween never starts at the value it ends on.
+        /// </summary>
+        private void Press()
         {
             if (_tween.isAlive)
                 _tween.Stop();
-            _tween = Tween.Scale(transform, _restScale * share, _config.PressSeconds, Ease.OutQuad, useUnscaledTime: true)
+            transform.localScale = _restScale;
+            _tween = Tween.Scale(transform, _restScale, _restScale * _config.PressScale, _config.PressSeconds, Ease.OutQuad,
+                    cycles: 2, cycleMode: CycleMode.Yoyo, useUnscaledTime: true)
                 .SetCancellationToken(destroyCancellationToken);
         }
     }
