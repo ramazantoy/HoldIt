@@ -1414,7 +1414,7 @@ MonoBehaviour:
   _runConfig: {fileID: 11400000, guid: 44f063e3e266fba409666e24845fc733, type: 2}
   _spawnConfig: {fileID: 11400000, guid: e1699dc0161278e439c354b1e1f48415, type: 2}
   _drawingConfig: {fileID: 11400000, guid: 2e45c4bb1e6e0f646a5a77133bb1d802, type: 2}
-  _backdropConfig: {fileID: 0}
+  _backdropConfig: {fileID: 11400000, guid: 25a8e25e4a256ff4c8d7b99756be19a5, type: 2}
   _music: {fileID: 8300000, guid: b755e69e106138d4681a6d7be59840ea, type: 3}
   _musicLevel: 0.5
 --- !u!4 &1084865236

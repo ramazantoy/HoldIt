@@ -1,0 +1,41 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bdecac5bdcc95c64a8ffeae7508de37d, type: 3}
+  m_Name: BackdropConfig
+  m_EditorClassIdentifier: Game::HoldIt.Backdrop.BackdropConfig
+  _material: {fileID: 2100000, guid: 8f4644fa798ff1a45854b2733ff4c5b7, type: 2}
+  _start:
+    name: Start
+    top: {r: 0.42, g: 0.45, b: 0.5, a: 1}
+    bottom: {r: 0.3, g: 0.33, b: 0.38, a: 1}
+  _palettes:
+  - name: Cream
+    top: {r: 0.9529412, g: 0.9137255, b: 0.8235294, a: 1}
+    bottom: {r: 0.8862745, g: 0.827451, b: 0.7058824, a: 1}
+  - name: Mint
+    top: {r: 0.8392157, g: 0.9372549, b: 0.8862745, a: 1}
+    bottom: {r: 0.7058824, g: 0.8627451, b: 0.78431374, a: 1}
+  - name: Sky
+    top: {r: 0.827451, g: 0.9019608, b: 0.9607843, a: 1}
+    bottom: {r: 0.69411767, g: 0.8, b: 0.9019608, a: 1}
+  - name: Peach
+    top: {r: 0.972549, g: 0.8627451, b: 0.79607844, a: 1}
+    bottom: {r: 0.92941177, g: 0.7490196, b: 0.6509804, a: 1}
+  - name: Lilac
+    top: {r: 0.8901961, g: 0.85490197, b: 0.9490196, a: 1}
+    bottom: {r: 0.78431374, g: 0.73333335, b: 0.8901961, a: 1}
+  - name: Butter
+    top: {r: 0.9647059, g: 0.92941177, b: 0.72156864, a: 1}
+    bottom: {r: 0.9098039, g: 0.8509804, b: 0.56078434, a: 1}
+  _minSeconds: 1
+  _maxSeconds: 3
+  _fullDistance: 0.5

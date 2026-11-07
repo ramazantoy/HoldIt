@@ -5,6 +5,7 @@ using AF.Localization;
 using AF.Platform;
 using AF.Save;
 using AF.Settings;
+using HoldIt.Backdrop;
 using HoldIt.Feedback;
 using HoldIt.Haptics;
 using HoldIt.Input;
@@ -61,6 +62,8 @@ namespace HoldIt
             builder.UseFeedback(_feedback);
             // The levels, and the progress through them in the global data.
             builder.UseLevels(_levels);
+            // The backdrop's palette outlasts the gameplay scene, which is rebuilt for every level.
+            builder.UseBackdropMemory();
         }
     }
 }

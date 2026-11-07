@@ -1,4 +1,5 @@
 using AF.Core;
+using HoldIt.Backdrop;
 using HoldIt.Board;
 using HoldIt.Characters;
 using HoldIt.Drawing;
@@ -38,6 +39,7 @@ namespace HoldIt.Gameplay
         [SerializeField, Required] private RunConfig _runConfig;
         [SerializeField, Required] private SpawnConfig _spawnConfig;
         [SerializeField, Required] private DrawingConfig _drawingConfig;
+        [SerializeField, Required] private BackdropConfig _backdropConfig;
 
         [SerializeField, Tooltip("The music while playing; empty for none.")]
         private AudioClip _music;
@@ -51,6 +53,7 @@ namespace HoldIt.Gameplay
             var level = Parent.Container.Resolve<ILevelCursor>().Current;
 
             builder.UsePointerInput(messagePipe);
+            builder.UseBackdrop(_backdropConfig);
             builder.UseBoard(level.Map, _board, _boardCamera);
             builder.UseRestrooms(messagePipe, _restroomConfig, _stallSet, level.Map.StallsPerRestroom, _restroomView);
             builder.UseCharacters(messagePipe, _characterConfig, _characterSet);
