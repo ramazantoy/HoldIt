@@ -19,13 +19,14 @@ namespace HoldIt.Characters
         }
 
         /// <summary>
-        /// In a level's scope that has the board and the restrooms: the characters (<see cref="ICharacters"/>) and their
-        /// views. The views' pools are the level's, and go with it.
+        /// In a level's scope that has the board, the restrooms and the level's pools: the characters
+        /// (<see cref="ICharacters"/>) and their views. The views come from the root's pools and go back to them with the
+        /// level; the <see cref="CharacterSet"/> they are made with is the root's.
         /// </summary>
-        public static void UseCharacters(this IContainerBuilder builder, CharacterConfig config, CharacterSet set)
+        public static void UseCharacters(this IContainerBuilder builder, CharacterConfig config)
         {
             builder.RegisterInstance(config);
-            builder.RegisterInstance(set);
+            builder.Register<LevelViewContext>(Lifetime.Singleton);
             builder.RegisterEntryPoint<CharacterSystem>().As<ICharacters>();
             builder.RegisterEntryPoint<CharacterViews>();
         }

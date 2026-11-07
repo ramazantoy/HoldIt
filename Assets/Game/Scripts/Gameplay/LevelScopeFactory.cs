@@ -6,6 +6,7 @@ using HoldIt.Characters;
 using HoldIt.Drawing;
 using HoldIt.Feedback;
 using HoldIt.Levels;
+using HoldIt.Pooling;
 using HoldIt.Restrooms;
 using HoldIt.Spawning;
 using VContainer;
@@ -15,7 +16,7 @@ namespace HoldIt.Gameplay
 {
     /// <summary>
     /// Builds a level's scope as a child of the gameplay scene's. What outlasts a level (the views, the camera, the messages,
-    /// the feedback) stays in the parent; the level's own services and the pools they spawn from live in the child.
+    /// the feedback) stays in the parent; the level's own services and its loan of the root's pools live in the child.
     /// </summary>
     internal sealed class LevelScopeFactory : ILevelScopeFactory
     {
@@ -44,7 +45,8 @@ namespace HoldIt.Gameplay
             builder.UseBackdrop(_kit.BackdropConfig);
             builder.UseBoard(level.Map);
             builder.UseRestrooms(_kit.RestroomConfig, _kit.StallSet, level.Map.StallsPerRestroom);
-            builder.UseCharacters(_kit.CharacterConfig, _kit.CharacterSet);
+            builder.UseLevelPools();
+            builder.UseCharacters(_kit.CharacterConfig);
             builder.UseLevelRun(_kit.RunConfig, level);
             builder.UseSpawning(_kit.SpawnConfig);
             builder.UseDrawing(_kit.DrawingConfig);

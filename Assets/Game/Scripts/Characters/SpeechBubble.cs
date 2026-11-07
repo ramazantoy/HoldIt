@@ -1,5 +1,4 @@
 using AF.Core;
-using HoldIt.UI;
 using UnityEngine;
 using UnityEngine.Localization;
 using VContainer;
@@ -20,18 +19,15 @@ namespace HoldIt.Characters
         [SerializeField] private LocalizedString _relieved;
         [SerializeField] private LocalizedString _accident;
 
-        private IPools _pools;
-        private IWorldUiLayer _layer;
+        private LevelViewContext _context;
         private CharacterSet _set;
         private PoolLife _bubble;
 
         [Inject]
-        public void Construct(IPools pools, IWorldUiLayer layer, CharacterSet set)
-        {
-            _pools = pools;
-            _layer = layer;
-            _set = set;
-        }
+        public void Construct(CharacterSet set) => _set = set;
+
+        /// <summary>The level and the scene it speaks in, until it is despawned; its view hands it over.</summary>
+        public void Bind(LevelViewContext context) => _context = context;
 
         /// <summary>True from <see cref="Show"/> until the bubble has faded.</summary>
         public bool IsShowing => _bubble.IsCurrent;
@@ -44,14 +40,18 @@ namespace HoldIt.Characters
             if (line == null || line.IsEmpty)
                 return;
 
-            var bubble = _pools.For(_set.SpeechBubble).Spawn(_layer.Root);
+            var bubble = _context.Pools.For(_set.SpeechBubble).Spawn(_context.Layer.Root);
             _bubble = bubble.Life;
-            bubble.Say(line.GetLocalizedString(), transform);
+            bubble.Say(line.GetLocalizedString(), transform, _context.Layer);
         }
 
         public void OnSpawned(PoolLife life) => Hide();
 
-        public void OnDespawned() => Hide();
+        public void OnDespawned()
+        {
+            Hide();
+            _context = null;
+        }
 
         private void Hide()
         {

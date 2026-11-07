@@ -4,6 +4,7 @@ using AF.Core;
 using HoldIt.Board;
 using HoldIt.Characters;
 using HoldIt.Feedback;
+using HoldIt.Pooling;
 using UnityEngine;
 using VContainer.Unity;
 
@@ -33,7 +34,7 @@ namespace HoldIt.Drawing
         private bool _wasDrawing;
 
         public PathMarkers(IPathDrawing drawing, ICharacters characters, ITileGrid grid, DrawingConfig config, IGameClock clock,
-            IFeedback feedback, IPools pools)
+            IFeedback feedback, ILevelPools pools)
         {
             _drawing = drawing;
             _characters = characters;

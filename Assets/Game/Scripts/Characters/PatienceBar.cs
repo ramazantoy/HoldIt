@@ -31,11 +31,10 @@ namespace HoldIt.Characters
         private float _patience;
 
         [Inject]
-        public void Construct(IBoardProjection projection, CharacterSet set)
-        {
-            _projection = projection;
-            _set = set;
-        }
+        public void Construct(CharacterSet set) => _set = set;
+
+        /// <summary>The camera it faces, until it is despawned; its view hands it over.</summary>
+        public void Bind(IBoardProjection projection) => _projection = projection;
 
         /// <param name="patience">Patience used up, from 0 to 1.</param>
         public void Show(float patience)
@@ -53,7 +52,11 @@ namespace HoldIt.Characters
 
         public void OnSpawned(PoolLife life) => Hide();
 
-        public void OnDespawned() => Hide();
+        public void OnDespawned()
+        {
+            Hide();
+            _projection = null;
+        }
 
         private void LateUpdate()
         {

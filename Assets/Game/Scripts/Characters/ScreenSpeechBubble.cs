@@ -33,14 +33,14 @@ namespace HoldIt.Characters
         /// <summary>This bubble's life in its pool; dead once it has faded or been closed.</summary>
         public PoolLife Life { get; private set; }
 
-        /// <summary>Says <paramref name="text"/> over <paramref name="anchor"/>, starting the pop from nothing.</summary>
-        public void Say(string text, Transform anchor)
+        /// <summary>Says <paramref name="text"/> over <paramref name="anchor"/> in <paramref name="layer"/>, starting the pop from nothing.</summary>
+        public void Say(string text, Transform anchor, IWorldUiLayer layer)
         {
             _text.text = text;
             _rect.sizeDelta = _text.GetPreferredValues(text) + 2f * _set.BubblePadding;
             _shownAt = _clock.Time;
             Apply(0f, 0f);
-            _follower.Follow(anchor, Vector3.zero, _set.BubbleScreenOffset);
+            _follower.Follow(layer, anchor, Vector3.zero, _set.BubbleScreenOffset);
         }
 
         public void OnSpawned(PoolLife life)

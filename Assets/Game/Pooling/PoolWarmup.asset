@@ -1,0 +1,21 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4c5d19b6f17cb6b478178252242367b5, type: 3}
+  m_Name: PoolWarmup
+  m_EditorClassIdentifier: Game::HoldIt.Pooling.PoolWarmup
+  _drawing: {fileID: 11400000, guid: 2e45c4bb1e6e0f646a5a77133bb1d802, type: 2}
+  _characters: 10
+  _markers: 60
+  _speechBubbles: 8
+  _floatTexts: 4
+  _puffs: 6
+  _puddles: 6

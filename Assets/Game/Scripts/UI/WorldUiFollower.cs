@@ -1,5 +1,4 @@
 using UnityEngine;
-using VContainer;
 
 namespace HoldIt.UI
 {
@@ -22,12 +21,13 @@ namespace HoldIt.UI
         /// <summary>Added to the anchor's position, or the fixed point itself when there is no anchor.</summary>
         public Vector3 WorldOffset { get; set; }
 
-        [Inject]
-        public void Construct(IWorldUiLayer layer) => _layer = layer;
-
-        /// <summary>Follows <paramref name="anchor"/> (null: stays on <see cref="WorldOffset"/>), placing the rect at once.</summary>
-        public void Follow(Transform anchor, Vector3 worldOffset, Vector2 screenOffset)
+        /// <summary>
+        /// Follows <paramref name="anchor"/> (null: stays on <see cref="WorldOffset"/>) in <paramref name="layer"/>, placing the
+        /// rect at once. The layer is the scene's: the prefab is pooled in the root, so it is given here, not injected.
+        /// </summary>
+        public void Follow(IWorldUiLayer layer, Transform anchor, Vector3 worldOffset, Vector2 screenOffset)
         {
+            _layer = layer;
             _anchor = anchor;
             WorldOffset = worldOffset;
             _screenOffset = screenOffset;
@@ -39,6 +39,7 @@ namespace HoldIt.UI
         {
             _following = false;
             _anchor = null;
+            _layer = null;
         }
 
         private void Awake() => _rect = (RectTransform)transform;

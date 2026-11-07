@@ -2,6 +2,7 @@
     "name": "Game.Tests",
     "rootNamespace": "HoldIt.Tests",
     "references": [
+        "Game.Tests.Fixtures",
         "GUID:4ba9e5ac19d3cb8498d097418dad4160",
         "GUID:49a10fdb401f355489a4b9579e7f2b80",
         "GUID:b0214a6008ed146ff8f122a6a9c2f6cc",

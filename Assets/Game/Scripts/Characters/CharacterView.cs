@@ -52,19 +52,25 @@ namespace HoldIt.Characters
         public Vector3 HeadPosition => _rig.AnchorTop.position;
 
         [Inject]
-        public void Construct(ICharacters characters, ITileGrid grid, IGameClock clock, IFeedback feedback, CharacterSet set)
+        public void Construct(IGameClock clock, CharacterSet set)
         {
-            _characters = characters;
-            _grid = grid;
             _clock = clock;
-            _feedback = feedback;
             _set = set;
         }
 
-        /// <summary>Follows the character from now on, starting where it is and facing where it faces.</summary>
-        public void Bind(CharacterId id)
+        /// <summary>
+        /// Follows the character from now on, starting where it is and facing where it faces. The level's and the scene's
+        /// services come with it, and are let go in <see cref="OnDespawned"/>: the view is pooled in the root.
+        /// </summary>
+        public void Bind(CharacterId id, LevelViewContext context)
         {
             _id = id;
+            _characters = context.Characters;
+            _grid = context.Grid;
+            _feedback = context.Feedback;
+            _bar.Bind(context.Projection);
+            _exit.Bind(context.Restrooms);
+            _bubble.Bind(context);
             if (!_characters.TryGet(id, out var character))
                 return;
 
@@ -140,6 +146,9 @@ namespace HoldIt.Characters
             _following = false;
             _visit = null;
             _id = default;
+            _characters = null;
+            _grid = null;
+            _feedback = null;
         }
 
         private void Awake()

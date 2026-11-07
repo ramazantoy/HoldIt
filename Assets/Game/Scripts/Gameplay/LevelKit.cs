@@ -11,13 +11,11 @@ namespace HoldIt.Gameplay
     internal sealed class LevelKit
     {
         public LevelKit(RestroomConfig restroomConfig, StallSet stallSet, CharacterConfig characterConfig,
-            CharacterSet characterSet, RunConfig runConfig, SpawnConfig spawnConfig, DrawingConfig drawingConfig,
-            BackdropConfig backdropConfig)
+            RunConfig runConfig, SpawnConfig spawnConfig, DrawingConfig drawingConfig, BackdropConfig backdropConfig)
         {
             RestroomConfig = restroomConfig;
             StallSet = stallSet;
             CharacterConfig = characterConfig;
-            CharacterSet = characterSet;
             RunConfig = runConfig;
             SpawnConfig = spawnConfig;
             DrawingConfig = drawingConfig;
@@ -27,7 +25,6 @@ namespace HoldIt.Gameplay
         public RestroomConfig RestroomConfig { get; }
         public StallSet StallSet { get; }
         public CharacterConfig CharacterConfig { get; }
-        public CharacterSet CharacterSet { get; }
         public RunConfig RunConfig { get; }
         public SpawnConfig SpawnConfig { get; }
         public DrawingConfig DrawingConfig { get; }

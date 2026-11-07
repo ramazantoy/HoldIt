@@ -1,10 +1,13 @@
 using System;
 using System.Collections.Generic;
 using System.Threading;
+using AF.Core;
 using Cysharp.Threading.Tasks;
 using HoldIt.Gameplay;
 using HoldIt.Levels;
+using MessagePipe;
 using NUnit.Framework;
+using VContainer;
 
 namespace HoldIt.Tests
 {
@@ -18,10 +21,18 @@ namespace HoldIt.Tests
         private FakePause _pause;
         private readonly List<UniTaskCompletionSource> _frames = new List<UniTaskCompletionSource>();
         private LevelSession _session;
+        private IObjectResolver _bus;
+        private IPublisher<SceneLoadingChanged> _loading;
 
         [SetUp]
         public void SetUpSession()
         {
+            var builder = new ContainerBuilder();
+            var messagePipe = builder.RegisterMessagePipe();
+            builder.RegisterMessageBroker<SceneLoadingChanged>(messagePipe);
+            _bus = builder.Build();
+            _loading = _bus.Resolve<IPublisher<SceneLoadingChanged>>();
+
             _log.Clear();
             _reveal = new FakeReveal(_log);
             _factory = new FakeFactory(this);
@@ -29,7 +40,8 @@ namespace HoldIt.Tests
             _input = new FakeInputModes();
             _pause = new FakePause();
             _frames.Clear();
-            _session = new LevelSession(_factory, _cursor, _input, _pause, _reveal, WaitForFrame);
+            _session = new LevelSession(_factory, _cursor, _input, _pause, _reveal,
+                _bus.Resolve<ISubscriber<SceneLoadingChanged>>(), WaitForFrame);
             _session.Start();
             // The first level comes in under a blocked input, like every one after it.
             Step();
@@ -37,7 +49,11 @@ namespace HoldIt.Tests
         }
 
         [TearDown]
-        public void TearDownSession() => _session.Dispose();
+        public void TearDownSession()
+        {
+            _session.Dispose();
+            ((IDisposable)_bus).Dispose();
+        }
 
         [Test]
         public void Start_BuildsTheCurrentLevelAndBringsItIn()
@@ -55,7 +71,7 @@ namespace HoldIt.Tests
             var input = new FakeInputModes();
             var pause = new FakePause();
             var session = new LevelSession(new FakeFactory(this), _cursor, input, pause, new FakeReveal(new List<string>()),
-                WaitForFrame);
+                _bus.Resolve<ISubscriber<SceneLoadingChanged>>(), WaitForFrame);
 
             session.Start();
 
@@ -198,6 +214,46 @@ namespace HoldIt.Tests
             Assert.AreEqual(0, _input.Requests.Count);
             Assert.IsFalse(_pause.IsPaused);
             Assert.IsFalse(_session.IsChanging);
+        }
+
+        [Test]
+        public void SceneLoading_TakesTheLevelDownBeforeTheSceneGoes()
+        {
+            _loading.Publish(new SceneLoadingChanged(true, "Menu"));
+
+            Assert.IsTrue(_factory.Levels[0].IsDisposed);
+            Assert.IsFalse(_session.IsOpen);
+        }
+
+        [Test]
+        public void SceneLoading_DoneLeavesTheLevelBeCalled()
+        {
+            _loading.Publish(new SceneLoadingChanged(false, "Menu"));
+
+            Assert.IsFalse(_factory.Levels[0].IsDisposed);
+            Assert.IsTrue(_session.IsOpen);
+        }
+
+        [Test]
+        public void SceneLoading_DuringAChange_StopsItAndReleasesTheInputAndThePause()
+        {
+            var change = _session.Retry();
+
+            _loading.Publish(new SceneLoadingChanged(true, "Menu"));
+
+            Assert.AreEqual(UniTaskStatus.Canceled, change.Status);
+            Assert.AreEqual(0, _input.Requests.Count);
+            Assert.IsFalse(_pause.IsPaused);
+            Assert.IsTrue(_factory.Levels[0].IsDisposed);
+        }
+
+        [Test]
+        public void SceneLoading_AfterTheSessionIsDisposed_DoesNothing()
+        {
+            _session.Dispose();
+
+            Assert.DoesNotThrow(() => _loading.Publish(new SceneLoadingChanged(true, "Menu")));
+            Assert.AreEqual(1, _factory.Levels.Count);
         }
 
         // The oldest frame still waited for passes.

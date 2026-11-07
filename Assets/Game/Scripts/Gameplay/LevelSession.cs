@@ -4,6 +4,7 @@ using AF.Core;
 using AF.Input;
 using Cysharp.Threading.Tasks;
 using HoldIt.Levels;
+using MessagePipe;
 using VContainer;
 using VContainer.Unity;
 
@@ -27,19 +28,21 @@ namespace HoldIt.Gameplay
         private readonly IBoardReveal _reveal;
         private readonly Func<CancellationToken, UniTask> _nextFrame;
         private readonly CancellationTokenSource _life = new CancellationTokenSource();
+        private readonly IDisposable _loading;
         private IDisposable _level;
         private bool _disposed;
 
         [Inject]
         public LevelSession(ILevelScopeFactory factory, ILevelCursor cursor, IInputModeService input, IPauseService pause,
-            IBoardReveal reveal)
-            : this(factory, cursor, input, pause, reveal, token => UniTask.NextFrame(token))
+            IBoardReveal reveal, ISubscriber<SceneLoadingChanged> loading)
+            : this(factory, cursor, input, pause, reveal, loading, token => UniTask.NextFrame(token))
         {
         }
 
         // Tests pass their own frames.
         internal LevelSession(ILevelScopeFactory factory, ILevelCursor cursor, IInputModeService input,
-            IPauseService pause, IBoardReveal reveal, Func<CancellationToken, UniTask> nextFrame)
+            IPauseService pause, IBoardReveal reveal, ISubscriber<SceneLoadingChanged> loading,
+            Func<CancellationToken, UniTask> nextFrame)
         {
             _factory = factory;
             _cursor = cursor;
@@ -47,6 +50,7 @@ namespace HoldIt.Gameplay
             _pause = pause;
             _reveal = reveal;
             _nextFrame = nextFrame;
+            _loading = loading.Subscribe(OnSceneLoading);
         }
 
         public bool IsChanging { get; private set; }
@@ -70,10 +74,19 @@ namespace HoldIt.Gameplay
             if (_disposed)
                 return;
             _disposed = true;
+            _loading.Dispose();
             _life.Cancel();
             _life.Dispose();
             _level?.Dispose();
             _level = null;
+        }
+
+        // A scene is about to replace this one (the menu): the level goes first, while its views are still in the scene they
+        // are shown in, since they are pooled in the root and would not go with the scene.
+        private void OnSceneLoading(SceneLoadingChanged message)
+        {
+            if (message.IsLoading)
+                Dispose();
         }
 
         private UniTask Change(bool next)

@@ -36,12 +36,14 @@ namespace HoldIt.Characters
         }
 
         [Inject]
-        public void Construct(IGameClock clock, IRestrooms restrooms, CharacterSet set)
+        public void Construct(IGameClock clock, CharacterSet set)
         {
             _clock = clock;
-            _restrooms = restrooms;
             _set = set;
         }
+
+        /// <summary>The restrooms it sits in, until it is despawned; its view hands them over.</summary>
+        public void Bind(IRestrooms restrooms) => _restrooms = restrooms;
 
         /// <summary>Gets from where it stands onto the stall's toilet and sits there until <see cref="Relieve"/>.</summary>
         public void Sit(StallVisit visit)
@@ -75,6 +77,7 @@ namespace HoldIt.Characters
         {
             _stage = Stage.None;
             _visit = null;
+            _restrooms = null;
         }
 
         private void Awake() => _rest = RestPose.Of(_rig);

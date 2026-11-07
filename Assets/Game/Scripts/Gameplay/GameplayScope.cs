@@ -37,7 +37,6 @@ namespace HoldIt.Gameplay
         [SerializeField, Required] private RestroomConfig _restroomConfig;
         [SerializeField, Required] private StallSet _stallSet;
         [SerializeField, Required] private CharacterConfig _characterConfig;
-        [SerializeField, Required] private CharacterSet _characterSet;
         [SerializeField, Required] private RunConfig _runConfig;
         [SerializeField, Required] private SpawnConfig _spawnConfig;
         [SerializeField, Required] private DrawingConfig _drawingConfig;
@@ -64,8 +63,8 @@ namespace HoldIt.Gameplay
             builder.UseSettingsScreen(_settingsScreen);
             builder.RegisterComponent(_resultScreen).As<ILevelResultView>();
             builder.RegisterInstance<ILevelScopeFactory>(new LevelScopeFactory(this,
-                new LevelKit(_restroomConfig, _stallSet, _characterConfig, _characterSet, _runConfig, _spawnConfig,
-                    _drawingConfig, _backdropConfig)));
+                new LevelKit(_restroomConfig, _stallSet, _characterConfig, _runConfig, _spawnConfig, _drawingConfig,
+                    _backdropConfig)));
             builder.RegisterInstance<IBoardReveal>(new BoardReveal(_board, _restroomView, _revealConfig));
             builder.RegisterEntryPoint<LevelSession>().As<ILevelSession>();
             builder.UseFeedbackEvents();

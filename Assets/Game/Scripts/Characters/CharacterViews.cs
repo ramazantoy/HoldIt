@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using AF.Core;
 using HoldIt.Board;
 using HoldIt.Feedback;
+using HoldIt.Pooling;
 using HoldIt.Restrooms;
-using HoldIt.UI;
 using MessagePipe;
 using UnityEngine;
 using VContainer.Unity;
@@ -21,11 +21,9 @@ namespace HoldIt.Characters
     {
         private readonly Dictionary<CharacterId, CharacterView> _views = new Dictionary<CharacterId, CharacterView>();
         private readonly Dictionary<(Gender, int), CharacterView> _seated = new Dictionary<(Gender, int), CharacterView>();
-        private readonly IPools _pools;
+        private readonly ILevelPools _pools;
         private readonly CharacterSet _set;
-        private readonly ITileGrid _grid;
-        private readonly IFeedback _feedback;
-        private readonly IWorldUiLayer _layer;
+        private readonly LevelViewContext _context;
         private readonly ISubscriber<CharacterSpawned> _spawned;
         private readonly ISubscriber<StepRefused> _refused;
         private readonly ISubscriber<CharacterRemoved> _removed;
@@ -33,15 +31,13 @@ namespace HoldIt.Characters
         private readonly ISubscriber<CharacterStateChanged> _stateChanged;
         private IDisposable _subscriptions;
 
-        public CharacterViews(IPools pools, CharacterSet set, ITileGrid grid, IFeedback feedback, IWorldUiLayer layer,
+        public CharacterViews(ILevelPools pools, CharacterSet set, LevelViewContext context,
             ISubscriber<CharacterSpawned> spawned, ISubscriber<StepRefused> refused, ISubscriber<CharacterRemoved> removed,
             ISubscriber<StallStateChanged> stallChanged, ISubscriber<CharacterStateChanged> stateChanged)
         {
             _pools = pools;
             _set = set;
-            _grid = grid;
-            _feedback = feedback;
-            _layer = layer;
+            _context = context;
             _spawned = spawned;
             _refused = refused;
             _removed = removed;
@@ -65,8 +61,8 @@ namespace HoldIt.Characters
         private void Show(CharacterSpawned message)
         {
             var pool = _pools.For(_set.Prefab(message.Gender, message.Size));
-            var view = pool.Spawn(_grid.Space.CellCenter(message.Cell), Direction.South.Rotation());
-            view.Bind(message.Id);
+            var view = pool.Spawn(_context.Grid.Space.CellCenter(message.Cell), Direction.South.Rotation());
+            view.Bind(message.Id, _context);
             _views[message.Id] = view;
         }
 
@@ -119,14 +115,14 @@ namespace HoldIt.Characters
             if (message.State != CharacterState.InStall || !_views.TryGetValue(message.Id, out var view) || !view.IsAlive())
                 return;
             var at = view.HeadPosition + Vector3.up * _set.FloatStartHeight;
-            _pools.For(_set.FloatText).Spawn(_layer.Root).Show("+1", at);
+            _pools.For(_set.FloatText).Spawn(_context.Layer.Root).Show("+1", at, _context.Layer);
         }
 
         /// <summary>A visitor is relieved and goes: a puff where it stood, and the sound of it.</summary>
         private void Puff(Vector3 at)
         {
             _pools.For(_set.Puff).Spawn(at + Vector3.up * _set.PuffHeight, Quaternion.identity);
-            _feedback.Play(FeedbackKind.Relieved);
+            _context.Feedback.Play(FeedbackKind.Relieved);
         }
 
         private void LeavePuddle(Vector3 at)

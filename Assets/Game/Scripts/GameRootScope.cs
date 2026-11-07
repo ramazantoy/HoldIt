@@ -6,10 +6,12 @@ using AF.Platform;
 using AF.Save;
 using AF.Settings;
 using HoldIt.Backdrop;
+using HoldIt.Characters;
 using HoldIt.Feedback;
 using HoldIt.Haptics;
 using HoldIt.Input;
 using HoldIt.Levels;
+using HoldIt.Pooling;
 using HoldIt.Settings;
 using MessagePipe;
 using PrimeTween;
@@ -42,6 +44,12 @@ namespace HoldIt
         [SerializeField, Required, Tooltip("The sound and the vibration of every event the game makes heard and felt.")]
         private FeedbackSet _feedback;
 
+        [SerializeField, Required, Tooltip("What the characters and their views are made of. The views are pooled here, so it is the root's.")]
+        private CharacterSet _characterSet;
+
+        [SerializeField, Required, Tooltip("How many of each pooled prefab are made while the intro plays.")]
+        private PoolWarmup _poolWarmup;
+
         // Room for a board's wave (a tween per piece) so the pool does not grow, and warn, while it plays.
         private const int TweensCapacity = 400;
 
@@ -69,6 +77,9 @@ namespace HoldIt
             builder.UseLevels(_levels);
             // The backdrop's palette outlasts the gameplay scene, which the menu unloads.
             builder.UseBackdropMemory();
+            // The views are pooled here and made while the intro plays; the set is what they are injected with.
+            builder.RegisterInstance(_characterSet);
+            builder.UsePersistentPools(_poolWarmup);
         }
     }
 }

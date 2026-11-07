@@ -29,12 +29,15 @@ namespace HoldIt.Characters
             _set = set;
         }
 
-        /// <summary>Starts the text at <paramref name="position"/>; it rises by the set's distance while it fades.</summary>
-        public void Show(string text, Vector3 position)
+        /// <summary>
+        /// Starts the text at <paramref name="position"/> in <paramref name="layer"/>; it rises by the set's distance while it
+        /// fades.
+        /// </summary>
+        public void Show(string text, Vector3 position, IWorldUiLayer layer)
         {
             _text.text = text;
             SetAlpha(1f);
-            _follower.Follow(null, position, Vector2.zero);
+            _follower.Follow(layer, null, position, Vector2.zero);
             Tween.Custom(0f, _set.FloatRise, _set.FloatSeconds, rise => _follower.WorldOffset = position + Vector3.up * rise,
                     Ease.OutCubic)
                 .SetCancellationToken(_life.Token);
