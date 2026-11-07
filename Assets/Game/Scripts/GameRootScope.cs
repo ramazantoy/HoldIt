@@ -12,6 +12,7 @@ using HoldIt.Input;
 using HoldIt.Levels;
 using HoldIt.Settings;
 using MessagePipe;
+using PrimeTween;
 using UnityEngine;
 using UnityEngine.Audio;
 using UnityEngine.InputSystem;
@@ -41,8 +42,12 @@ namespace HoldIt
         [SerializeField, Required, Tooltip("The sound and the vibration of every event the game makes heard and felt.")]
         private FeedbackSet _feedback;
 
+        // Room for a board's wave (a tween per piece) so the pool does not grow, and warn, while it plays.
+        private const int TweensCapacity = 400;
+
         protected override void ConfigureGame(IContainerBuilder builder, MessagePipeOptions messagePipe)
         {
+            PrimeTweenConfig.SetTweensCapacity(TweensCapacity);
             // First: its boot step loads the global and device data; the settings are applied as they load.
             builder.UseSave();
             builder.UseInput(_inputActions, messagePipe, InputModes.CreateOptions());
@@ -62,7 +67,7 @@ namespace HoldIt
             builder.UseFeedback(_feedback);
             // The levels, and the progress through them in the global data.
             builder.UseLevels(_levels);
-            // The backdrop's palette outlasts the gameplay scene, which is rebuilt for every level.
+            // The backdrop's palette outlasts the gameplay scene, which the menu unloads.
             builder.UseBackdropMemory();
         }
     }

@@ -1,4 +1,5 @@
 using System;
+using Cysharp.Threading.Tasks;
 using HoldIt.Gameplay;
 using HoldIt.Levels;
 using NUnit.Framework;
@@ -16,6 +17,7 @@ namespace HoldIt.Tests
         private FakePause _pause;
         private FakeInputModes _input;
         private FakeSceneLoader _scenes;
+        private FakeLevelSession _session;
         private Broker<LevelEnded> _ended;
         private BackBroker _back;
         private LevelEndFlow _flow;
@@ -31,10 +33,11 @@ namespace HoldIt.Tests
             _pause = new FakePause();
             _input = new FakeInputModes();
             _scenes = new FakeSceneLoader();
+            _session = new FakeLevelSession();
             _ended = new Broker<LevelEnded>();
             _back = new BackBroker();
-            _flow = new LevelEndFlow(_view, _run, _cursor, _config, _clock, _pause, _input, _scenes, _ended.Subscriber,
-                _back.Subscriber);
+            _flow = new LevelEndFlow(_view, _run, _cursor, _config, _clock, _pause, _input, _scenes, _session,
+                _ended.Subscriber, _back.Subscriber);
             _flow.Initialize();
             _flow.Start();
         }
@@ -147,15 +150,16 @@ namespace HoldIt.Tests
         }
 
         [Test]
-        public void Next_MovesOnAndReloadsTheGame()
+        public void Next_AsksTheSessionOnce()
         {
             ShowResult(LevelOutcome.Won);
 
             _view.ClickNext();
             _view.ClickNext();
 
-            Assert.AreEqual(1, _cursor.Index);
-            CollectionAssert.AreEqual(new[] { Scenes.Gameplay }, _scenes.Loads);
+            Assert.AreEqual(1, _session.Nexts);
+            Assert.AreEqual(0, _session.Retries);
+            Assert.AreEqual(0, _scenes.Loads.Count, "A level change does not load the scene.");
         }
 
         [Test]
@@ -166,8 +170,7 @@ namespace HoldIt.Tests
             Assert.IsTrue(_view.Shown.Value.NextOpen, "A level played again may have its next one open already.");
             _view.ClickNext();
 
-            Assert.AreEqual(1, _cursor.Index);
-            CollectionAssert.AreEqual(new[] { Scenes.Gameplay }, _scenes.Loads);
+            Assert.AreEqual(1, _session.Nexts);
         }
 
         [Test]
@@ -180,8 +183,7 @@ namespace HoldIt.Tests
             Assert.IsFalse(_view.Shown.Value.NextOpen);
             _view.ClickNext();
 
-            Assert.AreEqual(0, _cursor.Index);
-            Assert.AreEqual(0, _scenes.Loads.Count);
+            Assert.AreEqual(0, _session.Nexts);
         }
 
         [Test]
@@ -192,18 +194,20 @@ namespace HoldIt.Tests
 
             _view.ClickNext();
 
-            Assert.AreEqual(0, _scenes.Loads.Count);
+            Assert.AreEqual(0, _session.Nexts);
         }
 
         [Test]
-        public void Retry_ReloadsTheSameLevel()
+        public void Retry_AsksTheSessionOnce()
         {
             ShowResult(LevelOutcome.Lost);
 
             _view.ClickRetry();
+            _view.ClickRetry();
 
-            Assert.AreEqual(0, _cursor.Index);
-            CollectionAssert.AreEqual(new[] { Scenes.Gameplay }, _scenes.Loads);
+            Assert.AreEqual(1, _session.Retries);
+            Assert.AreEqual(0, _session.Nexts);
+            Assert.AreEqual(0, _scenes.Loads.Count, "A level change does not load the scene.");
         }
 
         [Test]
@@ -216,6 +220,7 @@ namespace HoldIt.Tests
             _view.ClickRetry();
 
             CollectionAssert.AreEqual(new[] { "MenuState Menu" }, _scenes.Loads);
+            Assert.AreEqual(0, _session.Retries);
         }
 
         [Test]
@@ -227,7 +232,8 @@ namespace HoldIt.Tests
             _view.ClickRetry();
             _view.ClickNext();
 
-            Assert.AreEqual(0, _scenes.Loads.Count);
+            Assert.AreEqual(0, _session.Nexts);
+            Assert.AreEqual(0, _session.Retries);
         }
 
         [Test]
@@ -257,6 +263,25 @@ namespace HoldIt.Tests
         {
             _clock.DeltaTime = deltaTime;
             _flow.Tick();
+        }
+
+        private sealed class FakeLevelSession : ILevelSession
+        {
+            public int Retries { get; private set; }
+            public int Nexts { get; private set; }
+            public bool IsChanging => false;
+
+            public UniTask Retry()
+            {
+                Retries++;
+                return UniTask.CompletedTask;
+            }
+
+            public UniTask Next()
+            {
+                Nexts++;
+                return UniTask.CompletedTask;
+            }
         }
 
         private sealed class FakeResultView : ILevelResultView

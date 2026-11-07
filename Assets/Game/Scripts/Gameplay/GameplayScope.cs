@@ -18,9 +18,10 @@ using VContainer.Unity;
 namespace HoldIt.Gameplay
 {
     /// <summary>
-    /// The gameplay scene's scope. It plays the root's current level (<see cref="ILevelCursor"/>): its map's board and
-    /// restrooms, the characters it brings in, the run that keeps its score, path drawing, the HUD, the pause, settings
-    /// and result screens, and for now a log of the presses.
+    /// The gameplay scene's scope: what outlasts a level (the HUD, the pause, settings and result screens, the camera,
+    /// the messages, the feedback). The root's current level (<see cref="ILevelCursor"/>) is played in a scope of its own
+    /// below this one (<see cref="LevelSession"/>): its map's board and restrooms, the characters it brings in, the run
+    /// that keeps its score, path drawing, the flows, and for now a log of the presses.
     /// </summary>
     public sealed class GameplayScope : SceneScope
     {
@@ -31,6 +32,7 @@ namespace HoldIt.Gameplay
         [SerializeField, Required] private LevelResultView _resultScreen;
         [SerializeField, Required] private BoardView _board;
         [SerializeField, Required] private BoardCamera _boardCamera;
+        [SerializeField, Required] private BoardRevealConfig _revealConfig;
         [SerializeField, Required] private RestroomView _restroomView;
         [SerializeField, Required] private RestroomConfig _restroomConfig;
         [SerializeField, Required] private StallSet _stallSet;
@@ -49,26 +51,23 @@ namespace HoldIt.Gameplay
 
         protected override void ConfigureScene(IContainerBuilder builder, MessagePipeOptions messagePipe)
         {
-            // The root scope is built before any scene's, and outlives it.
-            var level = Parent.Container.Resolve<ILevelCursor>().Current;
-
+            // What outlasts a level: the input, the views, the camera, the messages and the feedback. The level's own
+            // services are built per level (LevelScopeFactory), in a child of this scope.
             builder.UsePointerInput(messagePipe);
-            builder.UseBackdrop(_backdropConfig);
-            builder.UseBoard(level.Map, _board, _boardCamera);
-            builder.UseRestrooms(messagePipe, _restroomConfig, _stallSet, level.Map.StallsPerRestroom, _restroomView);
-            builder.UseCharacters(messagePipe, _characterConfig, _characterSet);
-            builder.UseLevelRun(messagePipe, _runConfig, level);
-            builder.UseSpawning(_spawnConfig);
-            builder.UseDrawing(_drawingConfig);
+            builder.UseBoardFrame(_board, _boardCamera);
+            builder.UseRestroomsFrame(messagePipe, _restroomView);
+            builder.UseCharacterMessages(messagePipe);
+            builder.UseLevelRunMessages(messagePipe);
             builder.RegisterComponent(_hud).As<IGameplayHudView, IBoardInsets>();
             builder.RegisterComponent(_worldUi).As<IWorldUiLayer>();
             builder.RegisterComponent(_pauseScreen).As<IPauseView>();
             builder.UseSettingsScreen(_settingsScreen);
             builder.RegisterComponent(_resultScreen).As<ILevelResultView>();
-            builder.RegisterEntryPoint<HudPresenter>();
-            builder.RegisterEntryPoint<GameplayFlow>();
-            builder.RegisterEntryPoint<LevelEndFlow>();
-            builder.RegisterEntryPoint<TouchLog>();
+            builder.RegisterInstance<ILevelScopeFactory>(new LevelScopeFactory(this,
+                new LevelKit(_restroomConfig, _stallSet, _characterConfig, _characterSet, _runConfig, _spawnConfig,
+                    _drawingConfig, _backdropConfig)));
+            builder.RegisterInstance<IBoardReveal>(new BoardReveal(_board, _restroomView, _revealConfig));
+            builder.RegisterEntryPoint<LevelSession>().As<ILevelSession>();
             builder.UseFeedbackEvents();
             builder.UseSceneMusic(_music, _musicLevel);
         }

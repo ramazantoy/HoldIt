@@ -1406,6 +1406,7 @@ MonoBehaviour:
   _resultScreen: {fileID: 1808693160}
   _board: {fileID: 1311314311}
   _boardCamera: {fileID: 1942079115}
+  _revealConfig: {fileID: 11400000, guid: f5ebe725cc459f240a9f2aedf042e5a3, type: 2}
   _restroomView: {fileID: 645478466}
   _restroomConfig: {fileID: 11400000, guid: 5a1d2b632d6469e47b36b31cd90bb3d0, type: 2}
   _stallSet: {fileID: 11400000, guid: 4905eff6964942d45902c6f18781ed6f, type: 2}

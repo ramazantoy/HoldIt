@@ -1,3 +1,4 @@
+using PrimeTween;
 using UnityEngine;
 
 namespace HoldIt.Board
@@ -24,10 +25,18 @@ namespace HoldIt.Board
         [SerializeField, Range(0f, 0.2f), Tooltip("Gap between the HUD's top bar and the board, as a part of the screen height.")]
         private float _topMargin = 0.01f;
 
+        [SerializeField, Range(0f, 3f), Tooltip("Seconds the camera takes to move to a new board's fit; 0 jumps.")]
+        private float _slideSeconds = 0.6f;
+
+        [SerializeField, Tooltip("How the camera eases into a new board's fit.")]
+        private Ease _slideEase = Ease.InOutSine;
+
         public float Tilt => _tilt;
         public float FieldOfView => _fieldOfView;
         public float SideMargin => _sideMargin;
         public float BottomMargin => _bottomMargin;
         public float TopMargin => _topMargin;
+        public float SlideSeconds => _slideSeconds;
+        public Ease SlideEase => _slideEase;
     }
 }

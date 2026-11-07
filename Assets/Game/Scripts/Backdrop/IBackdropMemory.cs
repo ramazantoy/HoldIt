@@ -1,8 +1,8 @@
 namespace HoldIt.Backdrop
 {
     /// <summary>
-    /// Which palette the backdrop is on, kept in the root scope so it outlasts the gameplay scene, which is rebuilt for
-    /// every level. A new level takes the next palette from a shuffle bag, never the one it leaves; playing the same level
+    /// Which palette the backdrop is on, kept in the root scope so it outlasts the gameplay scene (and the menu in
+    /// between). A new level takes the next palette from a shuffle bag, never the one it leaves; playing the same level
     /// again (a retry) keeps its palette.
     /// </summary>
     public interface IBackdropMemory

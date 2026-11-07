@@ -10,12 +10,12 @@ using VContainer.Unity;
 namespace HoldIt.Backdrop
 {
     /// <summary>
-    /// Paints the scene's backdrop when a level opens: it makes the scene's skybox from the config's material and changes
+    /// Paints the scene's backdrop as a level opens (in Initialize, so the first frame of the level already has it): it makes the scene's skybox from the config's material and changes
     /// it from the palette the last level left (the start colours for the first) into the level's own, which
     /// <see cref="IBackdropMemory"/> picks (<see cref="BackdropTransition"/> times it). The camera's clear flags
     /// must be Skybox. The material is the scene's own copy, and goes with the scene.
     /// </summary>
-    internal sealed class BackdropPlayer : IStartable, IDisposable
+    internal sealed class BackdropPlayer : IInitializable, IDisposable
     {
         private static readonly int _top = Shader.PropertyToID("_Top");
         private static readonly int _bottom = Shader.PropertyToID("_Bottom");
@@ -33,7 +33,7 @@ namespace HoldIt.Backdrop
             _memory = memory;
         }
 
-        public void Start()
+        public void Initialize()
         {
             _material = new Material(_config.Material);
             RenderSettings.skybox = _material;

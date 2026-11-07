@@ -6,8 +6,8 @@ namespace HoldIt.Backdrop
     public static class BackdropInstaller
     {
         /// <summary>
-        /// In the root scope: remembers which palette the backdrop is on, so it outlasts the gameplay scene, which is rebuilt
-        /// for every level.
+        /// In the root scope: remembers which palette the backdrop is on, so it outlasts the gameplay scene (and the menu in
+        /// between): the scene stays through the levels, but the menu unloads it.
         /// </summary>
         public static void UseBackdropMemory(this IContainerBuilder builder) =>
             builder.Register<IBackdropMemory>(_ => new BackdropMemory(new System.Random()), Lifetime.Singleton);

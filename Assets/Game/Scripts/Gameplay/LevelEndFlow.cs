@@ -13,7 +13,8 @@ namespace HoldIt.Gameplay
     /// A level's end. As it ends, drawing stops (an input mode without the gameplay map) and the board plays on a moment,
     /// so the last accident is seen; then the game pauses under the result screen. Next moves on to the next level when the
     /// progress has it open (a win opens it; a level played again may have it open already, lost or won), and Retry plays
-    /// this one again, both by loading the gameplay scene anew; Menu, or back, leaves for the menu. A win is in the
+    /// this one again, both through the <see cref="ILevelSession"/>, which takes this level down; Menu, or back, leaves for
+    /// the menu. A win is in the
     /// progress by the time the screen shows (<see cref="ProgressRecorder"/> keeps it as the level ends).
     /// </summary>
     internal sealed class LevelEndFlow : IInitializable, IStartable, ITickable, IDisposable
@@ -28,6 +29,7 @@ namespace HoldIt.Gameplay
         private readonly IPauseService _pause;
         private readonly IInputModeService _input;
         private readonly ISceneLoader _scenes;
+        private readonly ILevelSession _session;
         private readonly ISubscriber<LevelEnded> _ended;
         private readonly ISubscriber<BackPressed> _back;
 
@@ -39,8 +41,8 @@ namespace HoldIt.Gameplay
         private bool _leaving;
 
         public LevelEndFlow(ILevelResultView view, ILevelRun run, ILevelCursor cursor, RunConfig config, IGameClock clock,
-            IPauseService pause, IInputModeService input, ISceneLoader scenes, ISubscriber<LevelEnded> ended,
-            ISubscriber<BackPressed> back)
+            IPauseService pause, IInputModeService input, ISceneLoader scenes, ILevelSession session,
+            ISubscriber<LevelEnded> ended, ISubscriber<BackPressed> back)
         {
             _view = view;
             _run = run;
@@ -50,6 +52,7 @@ namespace HoldIt.Gameplay
             _pause = pause;
             _input = input;
             _scenes = scenes;
+            _session = session;
             _ended = ended;
             _back = back;
         }
@@ -108,8 +111,7 @@ namespace HoldIt.Gameplay
             if (!CanLeave() || !_cursor.IsNextOpen)
                 return;
             _leaving = true;
-            _cursor.Next();
-            _scenes.Load(Scenes.Gameplay).Forget();
+            _session.Next().Forget();
         }
 
         private void Retry()
@@ -117,7 +119,7 @@ namespace HoldIt.Gameplay
             if (!CanLeave())
                 return;
             _leaving = true;
-            _scenes.Load(Scenes.Gameplay).Forget();
+            _session.Retry().Forget();
         }
 
         private void ToMenu()

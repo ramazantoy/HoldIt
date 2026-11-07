@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using AF.Core;
 using HoldIt.Feedback;
 using HoldIt.UI;
@@ -42,6 +43,7 @@ namespace HoldIt.Gameplay
         [SerializeField, Required] private Button _retry;
         [SerializeField, Required] private Button _menu;
 
+        private readonly List<Tween> _pops = new List<Tween>();
         private IFeedback _feedback;
 
         public event Action NextClicked;
@@ -53,6 +55,7 @@ namespace HoldIt.Gameplay
 
         public void Show(LevelResult result)
         {
+            StopPops();
             _title.text = TitleOf(result).GetLocalizedString(result.Level);
             _served.text = _servedLabel.GetLocalizedString(result.Served, result.Crowd);
             for (var i = 0; i < _stars.Length; i++)
@@ -69,7 +72,22 @@ namespace HoldIt.Gameplay
             ShowScreen();
         }
 
-        public void Hide() => HideScreen();
+        public void Hide()
+        {
+            StopPops();
+            HideScreen();
+        }
+
+        /// <summary>
+        /// The screen outlasts a level, so a star still popping (or its sound still waiting) must not carry into the next
+        /// one. These tweens are not awaited, so stopping them is safe.
+        /// </summary>
+        private void StopPops()
+        {
+            foreach (var pop in _pops)
+                pop.Stop();
+            _pops.Clear();
+        }
 
         private void Awake()
         {
@@ -83,11 +101,11 @@ namespace HoldIt.Gameplay
         {
             var delay = _style.StarPopDelay + index * _style.StarPopGap;
             star.localScale = Vector3.zero;
-            Tween.Scale(star, Vector3.zero, Vector3.one, _style.StarPopSeconds, Ease.OutBack, startDelay: delay,
+            _pops.Add(Tween.Scale(star, Vector3.zero, Vector3.one, _style.StarPopSeconds, Ease.OutBack, startDelay: delay,
                     useUnscaledTime: true)
-                .SetCancellationToken(destroyCancellationToken);
-            Tween.Delay(delay, () => _feedback.Play(FeedbackKind.StarPop), useUnscaledTime: true)
-                .SetCancellationToken(destroyCancellationToken);
+                .SetCancellationToken(destroyCancellationToken));
+            _pops.Add(Tween.Delay(delay, () => _feedback.Play(FeedbackKind.StarPop), useUnscaledTime: true)
+                .SetCancellationToken(destroyCancellationToken));
         }
 
         private LocalizedString TitleOf(LevelResult result)
