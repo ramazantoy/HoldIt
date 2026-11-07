@@ -9,17 +9,6 @@ namespace HoldIt.Board
     public static class RevealWave
     {
         /// <summary>
-        /// How long the wave takes to cross a board <paramref name="steps"/> wide plus deep: <paramref name="step"/> a step,
-        /// but never past <paramref name="maxSeconds"/>, so a big map does not make the player wait.
-        /// </summary>
-        public static float TotalSeconds(int steps, float step, float maxSeconds)
-        {
-            if (steps <= 0 || step <= 0f || maxSeconds <= 0f)
-                return 0f;
-            return Mathf.Min(steps * step, maxSeconds);
-        }
-
-        /// <summary>
         /// Where <paramref name="x"/>, <paramref name="z"/> lies along the wave, from 0 at the top left corner of
         /// <paramref name="bounds"/> (smallest x, largest z: the map's top row is +Z) to 1 at the bottom right one. Points
         /// outside the bounds count as on its edge.

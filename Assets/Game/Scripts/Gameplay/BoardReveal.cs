@@ -38,9 +38,8 @@ namespace HoldIt.Gameplay
                 return;
 
             var bounds = _board.Bounds;
-            var grid = _board.Grid;
             var speed = show ? 1f : _config.OutSpeed;
-            var total = RevealWave.TotalSeconds(grid.Cols + grid.Rows, _config.Step, _config.MaxSeconds) / speed;
+            var total = _config.WaveSeconds / speed;
             var pieceSeconds = _config.PieceSeconds / speed;
             var ease = show ? _config.Ease : Ease.InQuad;
 

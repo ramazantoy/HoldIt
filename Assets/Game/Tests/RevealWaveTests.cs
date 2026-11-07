@@ -10,26 +10,6 @@ namespace HoldIt.Tests
         private static readonly Bounds Board = new Bounds(Vector3.zero, new Vector3(10f, 1f, 6f));
 
         [Test]
-        public void TotalSeconds_IsAStepPerTile()
-        {
-            Assert.AreEqual(1.6f, RevealWave.TotalSeconds(16, 0.1f, 5f), 1e-5f);
-        }
-
-        [Test]
-        public void TotalSeconds_NeverPassesTheMaximum()
-        {
-            Assert.AreEqual(1.2f, RevealWave.TotalSeconds(40, 0.1f, 1.2f), 1e-5f);
-        }
-
-        [TestCase(0, 0.1f, 1f)]
-        [TestCase(10, 0f, 1f)]
-        [TestCase(10, 0.1f, 0f)]
-        public void TotalSeconds_WithNothingToWaitFor_IsZero(int steps, float step, float max)
-        {
-            Assert.AreEqual(0f, RevealWave.TotalSeconds(steps, step, max));
-        }
-
-        [Test]
         public void Progress_StartsAtTheTopLeftAndEndsAtTheBottomRight()
         {
             // The map's top row is +Z, so top left is the smallest x with the largest z.

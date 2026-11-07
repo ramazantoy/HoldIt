@@ -12,8 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 45afcadde616b714dab4489f5ccc78a0, type: 3}
   m_Name: BoardRevealConfig
   m_EditorClassIdentifier: Game::HoldIt.Board.BoardRevealConfig
-  _step: 0.1
-  _maxSeconds: 1.2
-  _pieceSeconds: 0.25
+  _waveSeconds: 2
+  _pieceSeconds: 0.1
   _ease: 27
-  _outSpeed: 2
+  _outSpeed: 3
