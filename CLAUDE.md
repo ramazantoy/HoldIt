@@ -43,7 +43,7 @@ cherry-pick'ler çakışmasın diye.
   - Oynanış kodu yalnız `IPointerInput`'u bilir (Point/Press, `Gameplay` map'i); legacy `Input.*` kullanılmaz.
   - Dosyalar küçük ve tek amaçlı olur. Template API'si uydurulmaz; eksikse söylenir ve öneri yapılır.
   - Ekranlar ve HUD Canvas (uGUI) + TextMeshPro ile, her ekran bir prefab; tam ekranlar `ScreenView`'dan türer (fade,
-    gizliyken raycast ve çizim yok). Sabır barı ve konuşma balonu dünyadaki nesnelerdir (Game.md → UI).
+    gizliyken raycast ve çizim yok). Sabır barı dünyadaki nesnedir; konuşma balonu ve "+1" HUD altındaki dünya UI katmanında, ekran uzayındadır (Game.md → UI).
   - Repo public olacak: asset yalnız CC0 ya da kendi işin olur; font OFL olabilir, `OFL.txt` yanında durur. Ücretli paket
     (Asset Store, Synty) repoya girmez.
 

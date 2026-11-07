@@ -342,8 +342,19 @@ CanvasGroup:
   m_Enabled: 1
   m_Alpha: 1
   m_Interactable: 1
-  m_BlocksRaycasts: 0
+  m_BlocksRaycasts: 1
   m_IgnoreParentGroups: 0
+--- !u!114 &96653232 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 2559679367657289611, guid: 8c52d243f0f0b4c4dbb07580a4b53b63, type: 3}
+  m_PrefabInstance: {fileID: 96653227}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d2585da63a12c9e4390662150791e5fa, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Game::HoldIt.UI.WorldUiLayer
 --- !u!1001 &238397847
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1485,6 +1496,7 @@ MonoBehaviour:
   - {fileID: 1498158687}
   _bootTarget: 1
   _hud: {fileID: 96653229}
+  _worldUi: {fileID: 96653232}
   _pauseScreen: {fileID: 438340529}
   _settingsScreen: {fileID: 238397849}
   _resultScreen: {fileID: 1808693160}

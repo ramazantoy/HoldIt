@@ -32,6 +32,15 @@ namespace HoldIt.Characters
         [SerializeField, Tooltip("How speech bubbles pop up and fade.")]
         private BubbleTiming _bubble = BubbleTiming.Default;
 
+        [SerializeField, Required, Tooltip("The bubble that is drawn in the HUD's world layer when a character speaks.")]
+        private ScreenSpeechBubble _speechBubble;
+
+        [SerializeField, Tooltip("Where a bubble sits against the speaker's head anchor, in canvas units (up is positive).")]
+        private Vector2 _bubbleScreenOffset = new Vector2(0f, 90f);
+
+        [SerializeField, Tooltip("Padding around a bubble's text, in canvas units.")]
+        private Vector2 _bubblePadding = new Vector2(40f, 20f);
+
         [SerializeField, Tooltip("How the patience bar colours and when a character starts to shake.")]
         private PatienceLook _patience = PatienceLook.Default;
 
@@ -56,7 +65,7 @@ namespace HoldIt.Characters
         [SerializeField, Tooltip("How high above the character's feet the puff bursts, in tiles.")]
         private float _puffHeight = 0.5f;
 
-        [SerializeField, Required, Tooltip("The text that rises over a character when it is served.")]
+        [SerializeField, Required, Tooltip("The text that rises over a character when it is served (drawn in the HUD's world layer).")]
         private FloatTextView _floatText;
 
         [SerializeField, Min(0.1f), Tooltip("How long that text rises and fades, in seconds.")]
@@ -80,6 +89,9 @@ namespace HoldIt.Characters
         public KnockStyle Knock => _knock;
         public float SpawnPopSeconds => _spawnPopSeconds;
         public BubbleTiming Bubble => _bubble;
+        public ScreenSpeechBubble SpeechBubble => _speechBubble;
+        public Vector2 BubbleScreenOffset => _bubbleScreenOffset;
+        public Vector2 BubblePadding => _bubblePadding;
         public PatienceLook Patience => _patience;
         public SitStyle Sit => _sit;
         public ExitLook Exit => _exit;

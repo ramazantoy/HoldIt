@@ -8,6 +8,7 @@ using HoldIt.Levels;
 using HoldIt.Restrooms;
 using HoldIt.Settings;
 using HoldIt.Spawning;
+using HoldIt.UI;
 using MessagePipe;
 using UnityEngine;
 using VContainer;
@@ -23,6 +24,7 @@ namespace HoldIt.Gameplay
     public sealed class GameplayScope : SceneScope
     {
         [SerializeField, Required] private GameplayHudView _hud;
+        [SerializeField, Required] private WorldUiLayer _worldUi;
         [SerializeField, Required] private PauseView _pauseScreen;
         [SerializeField, Required] private SettingsView _settingsScreen;
         [SerializeField, Required] private LevelResultView _resultScreen;
@@ -56,6 +58,7 @@ namespace HoldIt.Gameplay
             builder.UseSpawning(_spawnConfig);
             builder.UseDrawing(_drawingConfig);
             builder.RegisterComponent(_hud).As<IGameplayHudView, IBoardInsets>();
+            builder.RegisterComponent(_worldUi).As<IWorldUiLayer>();
             builder.RegisterComponent(_pauseScreen).As<IPauseView>();
             builder.UseSettingsScreen(_settingsScreen);
             builder.RegisterComponent(_resultScreen).As<ILevelResultView>();

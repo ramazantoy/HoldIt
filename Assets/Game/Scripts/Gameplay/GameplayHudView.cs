@@ -1,6 +1,7 @@
 using System;
 using AF.Core;
 using HoldIt.Board;
+using HoldIt.UI;
 using PrimeTween;
 using TMPro;
 using UnityEngine;
@@ -43,10 +44,14 @@ namespace HoldIt.Gameplay
         [SerializeField, Required, Tooltip("The pill holding the served counter.")]
         private RectTransform _servedPill;
 
-        [SerializeField, Required, Tooltip("The HUD's group: it goes transparent and stops taking presses while the game is paused.")]
+        [SerializeField, Required, Tooltip("The HUD's group: it fades out and stops taking presses while the game is paused.")]
         private CanvasGroup _group;
 
+        [SerializeField, Required, Tooltip("The fade of the screens; the HUD fades out and in with the pause screen.")]
+        private ScreenTransitionConfig _transition;
+
         private readonly Vector3[] _corners = new Vector3[4];
+        private Tween _fade;
         private int _levelNumber;
         private Tween _livesBump;
         private Tween _servedBump;
@@ -70,10 +75,21 @@ namespace HoldIt.Gameplay
             _levelLabel.RefreshString();
         }
 
+        /// <summary>The HUD (and the world layer with it) fades out while the game is paused and back in once it goes on.</summary>
         public void SetPaused(bool paused)
         {
-            _group.alpha = paused ? 0f : 1f;
             _group.interactable = !paused;
+            if (_fade.isAlive)
+                _fade.Stop();
+
+            var alpha = paused ? 0f : 1f;
+            if (_transition.FadeSeconds <= 0f || !isActiveAndEnabled)
+            {
+                _group.alpha = alpha;
+                return;
+            }
+            _fade = Tween.Alpha(_group, alpha, _transition.FadeSeconds, useUnscaledTime: true)
+                .SetCancellationToken(destroyCancellationToken);
         }
 
         public void ShowServed(int served, int crowd, bool animate)

@@ -39,6 +39,9 @@ MonoBehaviour:
     _pop: 0.18
     _fadeAt: 1.2
     _fade: 0.3
+  _speechBubble: {fileID: 9043218927800613247, guid: bd8ab0478ea61024cbf3b80db338a5a2, type: 3}
+  _bubbleScreenOffset: {x: 0, y: 45}
+  _bubblePadding: {x: 28, y: 14}
   _patience:
     _calmHue: 0.33
     _saturation: 0.85
@@ -69,7 +72,7 @@ MonoBehaviour:
   _puff: {fileID: 6767410487687505362, guid: d0a3a11e83e786545916c0c0b8611e2d, type: 3}
   _puffSeconds: 0.7
   _puffHeight: 0.5
-  _floatText: {fileID: 4344728423439599507, guid: 5bcd6117c334ac245b03f09ae22073af, type: 3}
+  _floatText: {fileID: 4256838196677284818, guid: f6905be55450cce4991371ca25298b63, type: 3}
   _floatSeconds: 1
   _floatRise: 0.9
   _floatStartHeight: 0.3
