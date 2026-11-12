@@ -7,6 +7,7 @@ using HoldIt.Gameplay;
 using HoldIt.Levels;
 using MessagePipe;
 using NUnit.Framework;
+using UnityEngine;
 using VContainer;
 
 namespace HoldIt.Tests
@@ -108,6 +109,20 @@ namespace HoldIt.Tests
             Assert.IsTrue(_factory.Levels[0].IsDisposed);
             Assert.IsFalse(_factory.Levels[1].IsDisposed);
             Assert.AreEqual(0, _cursor.Index);
+        }
+
+        [Test]
+        public void Change_TakesTheOldLevelsContentOutWithTheBoard()
+        {
+            var piece = new GameObject("Piece").transform;
+            _factory.Levels[0].Content.Add(piece);
+
+            _session.Retry().Forget();
+            Step();
+            Step();
+
+            CollectionAssert.AreEqual(new[] { piece }, _reveal.HiddenContent);
+            UnityEngine.Object.DestroyImmediate(piece.gameObject);
         }
 
         [Test]
@@ -286,7 +301,7 @@ namespace HoldIt.Tests
             public List<int> CursorIndexAtBuild { get; } = new List<int>();
             public bool OldWasDownWhenBuilding { get; private set; }
 
-            public IDisposable Create(LevelDefinition level)
+            public ILevel Create(LevelDefinition level)
             {
                 if (Levels.Count > 0)
                     OldWasDownWhenBuilding = Levels[Levels.Count - 1].IsDisposed;
@@ -314,17 +329,23 @@ namespace HoldIt.Tests
                 return UniTask.CompletedTask;
             }
 
-            public UniTask Hide(CancellationToken cancellation)
+            public List<Transform> HiddenContent { get; } = new List<Transform>();
+
+            public UniTask Hide(IReadOnlyList<Transform> content, CancellationToken cancellation)
             {
+                HiddenContent.AddRange(content);
                 Hides++;
                 _log.Add("hide");
                 return UniTask.CompletedTask;
             }
         }
 
-        private sealed class FakeLevel : IDisposable
+        private sealed class FakeLevel : ILevel
         {
             public bool IsDisposed { get; private set; }
+            public List<Transform> Content { get; } = new List<Transform>();
+
+            public void CollectContent(List<Transform> into) => into.AddRange(Content);
 
             public void Dispose() => IsDisposed = true;
         }

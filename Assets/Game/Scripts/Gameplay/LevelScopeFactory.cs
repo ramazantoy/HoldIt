@@ -29,11 +29,12 @@ namespace HoldIt.Gameplay
             _kit = kit;
         }
 
-        public IDisposable Create(LevelDefinition level)
+        public ILevel Create(LevelDefinition level)
         {
             // Resolved here, in the parent: the feedback is scoped, and the child would get one of its own whose sounds end with it.
             var feedback = _parent.Container.Resolve<IFeedback>();
-            return _parent.CreateChild(builder => Install(builder, level, feedback), $"Level {level.name}");
+            var scope = _parent.CreateChild(builder => Install(builder, level, feedback), $"Level {level.name}");
+            return new LevelScope(scope);
         }
 
         private void Install(IContainerBuilder builder, LevelDefinition level, IFeedback feedback)

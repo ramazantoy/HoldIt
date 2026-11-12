@@ -14,7 +14,9 @@ namespace HoldIt.Pooling
     internal sealed class LevelPools : ILevelPools, IDisposable
     {
         private readonly IPersistentPools _pools;
-        private readonly List<object> _used = new List<object>();
+        // Keyed by the root's pool: the level asks for the same pool again and again and must get the same wrapper.
+        private readonly Dictionary<object, object> _used = new Dictionary<object, object>();
+        private readonly List<ISpawnedSource> _sources = new List<ISpawnedSource>();
         private readonly List<Action> _despawnAll = new List<Action>();
         private bool _disposed;
 
@@ -26,12 +28,20 @@ namespace HoldIt.Pooling
                 throw new ObjectDisposedException(nameof(LevelPools), "The level that owned these pools is gone.");
 
             var pool = _pools.For(prefab);
-            if (!_used.Contains(pool))
-            {
-                _used.Add(pool);
-                _despawnAll.Add(pool.DespawnAll);
-            }
-            return pool;
+            if (_used.TryGetValue(pool, out var known))
+                return (IPool<T>)known;
+
+            var tracking = new TrackingPool<T>(pool);
+            _used.Add(pool, tracking);
+            _sources.Add(tracking);
+            _despawnAll.Add(tracking.DespawnAll);
+            return tracking;
+        }
+
+        public void CollectActive(List<Transform> into)
+        {
+            foreach (var source in _sources)
+                source.CollectActive(into);
         }
 
         public void Dispose()
@@ -52,6 +62,7 @@ namespace HoldIt.Pooling
                 }
             }
             _used.Clear();
+            _sources.Clear();
             _despawnAll.Clear();
         }
     }

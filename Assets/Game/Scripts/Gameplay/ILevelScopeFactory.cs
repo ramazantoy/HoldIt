@@ -1,4 +1,3 @@
-using System;
 using HoldIt.Levels;
 
 namespace HoldIt.Gameplay
@@ -10,6 +9,6 @@ namespace HoldIt.Gameplay
         /// Builds everything <paramref name="level"/> needs (its board, restrooms, characters, run, spawning, drawing and
         /// flows). Disposing the result takes all of it down again, subscriptions, pools and pieces included.
         /// </summary>
-        IDisposable Create(LevelDefinition level);
+        ILevel Create(LevelDefinition level);
     }
 }

@@ -1,4 +1,6 @@
+using System.Collections.Generic;
 using AF.Core;
+using UnityEngine;
 
 namespace HoldIt.Pooling
 {
@@ -9,5 +11,7 @@ namespace HoldIt.Pooling
     /// </summary>
     public interface ILevelPools : IPools
     {
+        /// <summary>Adds the transform of everything the level has spawned that is on the board now.</summary>
+        void CollectActive(List<Transform> into);
     }
 }

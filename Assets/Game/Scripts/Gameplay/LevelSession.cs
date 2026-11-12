@@ -1,10 +1,12 @@
 using System;
+using System.Collections.Generic;
 using System.Threading;
 using AF.Core;
 using AF.Input;
 using Cysharp.Threading.Tasks;
 using HoldIt.Levels;
 using MessagePipe;
+using UnityEngine;
 using VContainer;
 using VContainer.Unity;
 
@@ -29,7 +31,8 @@ namespace HoldIt.Gameplay
         private readonly Func<CancellationToken, UniTask> _nextFrame;
         private readonly CancellationTokenSource _life = new CancellationTokenSource();
         private readonly IDisposable _loading;
-        private IDisposable _level;
+        private readonly List<Transform> _content = new List<Transform>();
+        private ILevel _level;
         private bool _disposed;
 
         [Inject]
@@ -111,7 +114,10 @@ namespace HoldIt.Gameplay
 
                     if (replace)
                     {
-                        await _reveal.Hide(token);
+                        _content.Clear();
+                        _level.CollectContent(_content);
+                        await _reveal.Hide(_content, token);
+                        _content.Clear();
 
                         _level.Dispose();
                         _level = null;

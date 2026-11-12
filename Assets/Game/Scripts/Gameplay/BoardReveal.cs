@@ -28,11 +28,12 @@ namespace HoldIt.Gameplay
             _config = config;
         }
 
-        public UniTask Show(CancellationToken cancellation) => Play(true, cancellation);
+        public UniTask Show(CancellationToken cancellation) => Play(true, null, cancellation);
 
-        public UniTask Hide(CancellationToken cancellation) => Play(false, cancellation);
+        public UniTask Hide(IReadOnlyList<Transform> content, CancellationToken cancellation) =>
+            Play(false, content, cancellation);
 
-        private async UniTask Play(bool show, CancellationToken cancellation)
+        private async UniTask Play(bool show, IReadOnlyList<Transform> content, CancellationToken cancellation)
         {
             if (!_board.IsBuilt)
                 return;
@@ -42,16 +43,27 @@ namespace HoldIt.Gameplay
             var total = _config.WaveSeconds / speed;
             var pieceSeconds = _config.PieceSeconds / speed;
             var ease = show ? _config.Ease : Ease.InQuad;
+            // What stands on the board goes with the wave, from the scale it has now.
+            var standing = Standing(content, out var overlay);
 
             try
             {
                 Start(_board.Pieces, bounds, total, pieceSeconds, ease, show);
                 Start(_restrooms.Pieces, bounds, total, pieceSeconds, ease, show);
+                Start(standing, bounds, total, pieceSeconds, ease, show);
+                // A bubble or a "+1" lives in screen space, where the wave has no place: it goes at once.
+                foreach (var piece in overlay)
+                {
+                    _tweens.Add(Tween.Scale(piece.Transform, piece.Scale, Vector3.zero, pieceSeconds, Ease.InQuad,
+                        useUnscaledTime: true));
+                }
 
                 await Tween.Delay(total + pieceSeconds, useUnscaledTime: true).ToUniTask(cancellation);
                 // Whatever the last frame left: every piece is exactly as shown, or gone.
                 Settle(_board.Pieces, show);
                 Settle(_restrooms.Pieces, show);
+                Settle(standing, show);
+                Settle(overlay, show);
             }
             finally
             {
@@ -61,6 +73,23 @@ namespace HoldIt.Gameplay
                     tween.Stop();
                 _tweens.Clear();
             }
+        }
+
+        private static List<Revealable> Standing(IReadOnlyList<Transform> content, out List<Revealable> overlay)
+        {
+            var world = new List<Revealable>();
+            overlay = new List<Revealable>();
+            if (content == null)
+                return world;
+
+            foreach (var transform in content)
+            {
+                if (transform == null)
+                    continue;
+                var piece = new Revealable(transform, transform.localScale);
+                (transform is RectTransform ? overlay : world).Add(piece);
+            }
+            return world;
         }
 
         private static void Settle(IReadOnlyList<Revealable> pieces, bool show)

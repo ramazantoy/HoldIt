@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using AF.Core;
 using HoldIt.Pooling;
@@ -32,9 +33,66 @@ namespace HoldIt.Tests
         }
 
         [Test]
-        public void For_IsTheRootsPool()
+        public void For_IsThePoolOfThePrefab()
         {
-            Assert.AreSame(_root.For(_marker), _level.For(_marker));
+            Assert.AreSame(_marker, _level.For(_marker).Prefab);
+        }
+
+        [Test]
+        public void For_TheSamePrefabTwice_IsTheSamePool()
+        {
+            Assert.AreSame(_level.For(_marker), _level.For(_marker));
+        }
+
+        [Test]
+        public void CollectActive_HasWhatTheLevelSpawned()
+        {
+            _level.For(_marker).Spawn();
+            _level.For(_bubble).Spawn();
+            var found = new List<Transform>();
+
+            _level.CollectActive(found);
+
+            CollectionAssert.AreEquivalent(new[] { _marker, _bubble }, found);
+        }
+
+        [Test]
+        public void CollectActive_LeavesOutWhatWasDespawned()
+        {
+            var pool = _level.For(_marker);
+            var spawned = pool.Spawn();
+            _level.For(_bubble).Spawn();
+            pool.Despawn(spawned);
+            var found = new List<Transform>();
+
+            _level.CollectActive(found);
+
+            CollectionAssert.AreEqual(new[] { _bubble }, found);
+        }
+
+        [Test]
+        public void CollectActive_LeavesOutAnInstanceThatWentBackByItself()
+        {
+            _level.For(_marker).Spawn();
+            // A puff despawns itself through its own life, not through the level's wrapper; the pool deactivates it.
+            _marker.gameObject.SetActive(false);
+            var found = new List<Transform>();
+
+            _level.CollectActive(found);
+
+            Assert.IsEmpty(found);
+        }
+
+        [Test]
+        public void CollectActive_AfterDispose_IsEmpty()
+        {
+            _level.For(_marker).Spawn();
+            _level.Dispose();
+            var found = new List<Transform>();
+
+            _level.CollectActive(found);
+
+            Assert.IsEmpty(found);
         }
 
         [Test]
