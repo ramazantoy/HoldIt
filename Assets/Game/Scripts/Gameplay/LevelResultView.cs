@@ -32,6 +32,9 @@ namespace HoldIt.Gameplay
         [SerializeField, Tooltip("One per star, left to right; stars past the last one are not shown.")]
         private Image[] _stars = Array.Empty<Image>();
 
+        [SerializeField, Tooltip("The pieces of confetti thrown when a level is won; they are placed from the pattern (see the style).")]
+        private Image[] _confetti = Array.Empty<Image>();
+
         [SerializeField, Required] private GameplayUiStyle _style;
 
         [SerializeField, Required] private TextMeshProUGUI _served;
@@ -69,12 +72,17 @@ namespace HoldIt.Gameplay
                     PopStar(star.rectTransform, i);
             }
             _next.gameObject.SetActive(result.NextOpen);
+            if (result.IsWon)
+                ThrowConfetti();
+            else
+                Place(Array.Empty<ConfettiPiece>(), 0f);
             ShowScreen();
         }
 
         public void Hide()
         {
             StopPops();
+            Place(Array.Empty<ConfettiPiece>(), 0f);
             HideScreen();
         }
 
@@ -106,6 +114,42 @@ namespace HoldIt.Gameplay
                 .SetCancellationToken(destroyCancellationToken));
             _pops.Add(Tween.Delay(delay, () => _feedback.Play(FeedbackKind.StarPop), useUnscaledTime: true)
                 .SetCancellationToken(destroyCancellationToken));
+        }
+
+        /// <summary>The pieces fly from where they sit in the prefab, one tween that places all of them. Unscaled: the game is paused.</summary>
+        private void ThrowConfetti()
+        {
+            var seconds = _style.ConfettiSeconds;
+            var speed = _style.ConfettiSpeed;
+            var pieces = ConfettiPattern.Make(_confetti.Length, UnityEngine.Random.Range(0, int.MaxValue), _style.ConfettiSpread,
+                speed.x, speed.y, _style.ConfettiSpin, _style.ConfettiColors.Length, _style.ConfettiDelay);
+            Place(pieces, -1f);
+            _pops.Add(Tween.Custom(0f, seconds, seconds, time => Place(pieces, time), Ease.Linear,
+                    startDelay: _style.ConfettiStart, useUnscaledTime: true)
+                .SetCancellationToken(destroyCancellationToken));
+        }
+
+        // A time before every piece's delay hides them all; no pieces at all hides every image.
+        private void Place(IReadOnlyList<ConfettiPiece> pieces, float time)
+        {
+            var colors = _style.ConfettiColors;
+            for (var i = 0; i < _confetti.Length; i++)
+            {
+                var image = _confetti[i];
+                if (i >= pieces.Count)
+                {
+                    image.enabled = false;
+                    continue;
+                }
+
+                var piece = pieces[i];
+                var color = colors.Length > 0 ? colors[piece.Color % colors.Length] : Color.white;
+                color.a = ConfettiPattern.AlphaAt(piece, time, _style.ConfettiSeconds, _style.ConfettiFadeSeconds);
+                image.enabled = true;
+                image.color = color;
+                image.rectTransform.anchoredPosition = ConfettiPattern.PositionAt(piece, time, _style.ConfettiGravity);
+                image.rectTransform.localRotation = Quaternion.Euler(0f, 0f, ConfettiPattern.AngleAt(piece, time));
+            }
         }
 
         private LocalizedString TitleOf(LevelResult result)

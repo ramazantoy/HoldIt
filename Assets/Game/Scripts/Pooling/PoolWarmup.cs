@@ -24,6 +24,10 @@ namespace HoldIt.Pooling
         [SerializeField, Min(0)] private int _speechBubbles = 8;
         [SerializeField, Min(0)] private int _floatTexts = 4;
         [SerializeField, Min(0)] private int _puffs = 6;
+        [SerializeField, Min(0)] private int _dusts = 8;
+        [SerializeField, Min(0)] private int _splashes = 4;
+        [SerializeField, Min(0)] private int _sparkles = 4;
+        [SerializeField, Min(0), Tooltip("Characters sweating at once.")] private int _sweats = 6;
         [SerializeField, Min(0)] private int _puddles = 6;
 
         public DrawingConfig Drawing => _drawing;
@@ -32,6 +36,10 @@ namespace HoldIt.Pooling
         public int SpeechBubbles => _speechBubbles;
         public int FloatTexts => _floatTexts;
         public int Puffs => _puffs;
+        public int Dusts => _dusts;
+        public int Splashes => _splashes;
+        public int Sparkles => _sparkles;
+        public int Sweats => _sweats;
         public int Puddles => _puddles;
     }
 }

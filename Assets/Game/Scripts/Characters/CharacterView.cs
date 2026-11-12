@@ -1,6 +1,7 @@
 using AF.Core;
 using HoldIt.Board;
 using HoldIt.Feedback;
+using HoldIt.Pooling;
 using HoldIt.Restrooms;
 using PrimeTween;
 using UnityEngine;
@@ -34,6 +35,9 @@ namespace HoldIt.Characters
         private ITileGrid _grid;
         private IGameClock _clock;
         private IFeedback _feedback;
+        private ILevelPools _pools;
+        private BurstView _sweat;
+        private PoolLife _sweatLife;
         private CharacterSet _set;
         private CharacterId _id;
         private bool _following;
@@ -68,6 +72,7 @@ namespace HoldIt.Characters
             _characters = context.Characters;
             _grid = context.Grid;
             _feedback = context.Feedback;
+            _pools = context.Pools;
             _bar.Bind(context.Projection);
             _exit.Bind(context.Restrooms);
             _bubble.Bind(context);
@@ -143,6 +148,8 @@ namespace HoldIt.Characters
 
         public void OnDespawned()
         {
+            EndSweat();
+            _pools = null;
             _following = false;
             _visit = null;
             _id = default;
@@ -161,6 +168,37 @@ namespace HoldIt.Characters
         {
             _following = false;
             _bar.Hide();
+            EndSweat();
+        }
+
+        /// <summary>
+        /// Sweat runs off a character close to an accident (<see cref="SweatRule"/>): a looping burst from the pool that
+        /// follows its head. It is not parented to the view, which may be going back to its pool as the burst does.
+        /// </summary>
+        private void UpdateSweat(float patience, bool waiting)
+        {
+            var sweating = waiting && SweatRule.Next(_sweatLife.IsCurrent, patience, _set.SweatFrom, _set.SweatMargin);
+            if (!sweating)
+            {
+                EndSweat();
+                return;
+            }
+
+            var at = HeadPosition + Vector3.up * _set.SweatHeight;
+            if (!_sweatLife.IsCurrent)
+            {
+                _sweat = _pools.For(_set.Sweat).Spawn(at, Quaternion.identity);
+                _sweatLife = _sweat.Life;
+            }
+            else
+                _sweat.transform.position = at;
+        }
+
+        private void EndSweat()
+        {
+            _sweatLife.Despawn();
+            _sweatLife = default;
+            _sweat = null;
         }
 
         private void LateUpdate()
@@ -190,6 +228,7 @@ namespace HoldIt.Characters
                 _bar.Hide();
             else
                 _bar.Show(character.Patience);
+            UpdateSweat(character.Patience, !inStall);
         }
 
         /// <summary>

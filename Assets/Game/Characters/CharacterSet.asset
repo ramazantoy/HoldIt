@@ -70,8 +70,16 @@ MonoBehaviour:
     _maxSize: 0.88
     _color: {r: 0.9490196, g: 0.8392157, b: 0.25490198, a: 0.85}
   _puff: {fileID: 6767410487687505362, guid: d0a3a11e83e786545916c0c0b8611e2d, type: 3}
-  _puffSeconds: 0.7
   _puffHeight: 0.5
+  _dust: {fileID: 5447053293813799415, guid: e5a462c1b6bb09549b1ff43ad9bdf31a, type: 3}
+  _dustHeight: 0.05
+  _splash: {fileID: 415693986500826093, guid: d680e2afea4818b4f9a5fdd1356a15b6, type: 3}
+  _splashHeight: 0.1
+  _sparkle: {fileID: 8938663059807743509, guid: 371bf641a22645b4dbbb86f58581d538, type: 3}
+  _sweat: {fileID: 6225352404390606883, guid: 440a0107426570742932c6c66bb8f91e, type: 3}
+  _sweatFrom: 0.55
+  _sweatMargin: 0.05
+  _sweatHeight: 0.05
   _floatText: {fileID: 4256838196677284818, guid: f6905be55450cce4991371ca25298b63, type: 3}
   _floatSeconds: 1
   _floatRise: 0.9

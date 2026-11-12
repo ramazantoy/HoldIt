@@ -47,6 +47,41 @@ namespace HoldIt.Gameplay
         [SerializeField, Min(0.01f), Tooltip("How long one star takes to pop in, in seconds.")]
         private float _starPopSeconds = 0.3f;
 
+        [Header("Result confetti")]
+        [SerializeField, Min(0.1f), Tooltip("How long the confetti of a won level flies, in seconds.")]
+        private float _confettiSeconds = 2.2f;
+
+        [SerializeField, Min(0f), Tooltip("Over how many of those seconds the pieces fade out at the end.")]
+        private float _confettiFadeSeconds = 0.6f;
+
+        [SerializeField, Tooltip("Canvas units per second squared; negative pulls the pieces down.")]
+        private float _confettiGravity = -1500f;
+
+        [SerializeField, Range(10f, 360f), Tooltip("The fan the pieces are thrown inside, in degrees around straight up.")]
+        private float _confettiSpread = 120f;
+
+        [SerializeField, Min(0f), Tooltip("The slowest and fastest throw, in canvas units per second.")]
+        private Vector2 _confettiSpeed = new Vector2(600f, 1300f);
+
+        [SerializeField, Min(0f), Tooltip("The most a piece turns, in degrees per second either way.")]
+        private float _confettiSpin = 540f;
+
+        [SerializeField, Min(0f), Tooltip("The latest a piece leaves, in seconds after the burst starts.")]
+        private float _confettiDelay = 0.2f;
+
+        [SerializeField, Min(0f), Tooltip("Seconds after the result screen shows before the confetti goes off.")]
+        private float _confettiStart = 0.3f;
+
+        [SerializeField, Tooltip("What the pieces are coloured with; they go round.")]
+        private Color[] _confettiColors =
+        {
+            new Color(0xe8 / 255f, 0x48 / 255f, 0x55 / 255f),
+            new Color(0xff / 255f, 0xc8 / 255f, 0x3d / 255f),
+            new Color(0x34 / 255f, 0xb3 / 255f, 0x6b / 255f),
+            new Color(0x46 / 255f, 0x82 / 255f, 0xdc / 255f),
+            new Color(0xb0 / 255f, 0x6a / 255f, 0xe0 / 255f),
+        };
+
         [Header("Level select")]
         [SerializeField, Tooltip("An open level's cell.")]
         private Color _cellOpen = new Color(0x46 / 255f, 0x82 / 255f, 0xdc / 255f);
@@ -83,6 +118,15 @@ namespace HoldIt.Gameplay
         public float StarPopDelay => _starPopDelay;
         public float StarPopGap => _starPopGap;
         public float StarPopSeconds => _starPopSeconds;
+        public float ConfettiSeconds => _confettiSeconds;
+        public float ConfettiFadeSeconds => _confettiFadeSeconds;
+        public float ConfettiGravity => _confettiGravity;
+        public float ConfettiSpread => _confettiSpread;
+        public Vector2 ConfettiSpeed => _confettiSpeed;
+        public float ConfettiSpin => _confettiSpin;
+        public float ConfettiDelay => _confettiDelay;
+        public float ConfettiStart => _confettiStart;
+        public Color[] ConfettiColors => _confettiColors;
         public Color CellOpen => _cellOpen;
         public Color CellNewest => _cellNewest;
         public Color CellLocked => _cellLocked;

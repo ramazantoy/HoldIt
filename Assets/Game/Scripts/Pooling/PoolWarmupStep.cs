@@ -56,6 +56,10 @@ namespace HoldIt.Pooling
             items.Add(WarmupItem.Of(set.SpeechBubble, warmup.SpeechBubbles));
             items.Add(WarmupItem.Of(set.FloatText, warmup.FloatTexts));
             items.Add(WarmupItem.Of(set.Puff, warmup.Puffs));
+            items.Add(WarmupItem.Of(set.Dust, warmup.Dusts));
+            items.Add(WarmupItem.Of(set.Splash, warmup.Splashes));
+            items.Add(WarmupItem.Of(set.Sparkle, warmup.Sparkles));
+            items.Add(WarmupItem.Of(set.Sweat, warmup.Sweats));
             items.Add(WarmupItem.Of(set.Puddle, warmup.Puddles));
             return items;
         }

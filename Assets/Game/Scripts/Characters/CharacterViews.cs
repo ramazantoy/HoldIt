@@ -61,9 +61,11 @@ namespace HoldIt.Characters
         private void Show(CharacterSpawned message)
         {
             var pool = _pools.For(_set.Prefab(message.Gender, message.Size));
-            var view = pool.Spawn(_context.Grid.Space.CellCenter(message.Cell), Direction.South.Rotation());
+            var at = _context.Grid.Space.CellCenter(message.Cell);
+            var view = pool.Spawn(at, Direction.South.Rotation());
             view.Bind(message.Id, _context);
             _views[message.Id] = view;
+            _pools.For(_set.Dust).Spawn(new Vector3(at.x, _set.DustHeight, at.z), Quaternion.identity);
         }
 
         private void Say(StepRefused message)
@@ -116,6 +118,7 @@ namespace HoldIt.Characters
                 return;
             var at = view.HeadPosition + Vector3.up * _set.FloatStartHeight;
             _pools.For(_set.FloatText).Spawn(_context.Layer.Root).Show("+1", at, _context.Layer);
+            _pools.For(_set.Sparkle).Spawn(view.HeadPosition, Quaternion.identity);
         }
 
         /// <summary>A visitor is relieved and goes: a puff where it stood, and the sound of it.</summary>
@@ -129,6 +132,7 @@ namespace HoldIt.Characters
         {
             var rotation = Quaternion.Euler(0f, UnityEngine.Random.Range(0f, 360f), 0f);
             _pools.For(_set.Puddle).Spawn(new Vector3(at.x, 0f, at.z), rotation);
+            _pools.For(_set.Splash).Spawn(new Vector3(at.x, _set.SplashHeight, at.z), Quaternion.identity);
         }
     }
 }

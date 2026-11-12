@@ -57,13 +57,37 @@ namespace HoldIt.Characters
         private PuddleLook _puddleLook = PuddleLook.Default;
 
         [SerializeField, Required, Tooltip("The cloud that bursts where a relieved character goes.")]
-        private PuffView _puff;
-
-        [SerializeField, Min(0.1f), Tooltip("How long a puff stays before it goes back to its pool, in seconds; at least its particles' life.")]
-        private float _puffSeconds = 0.7f;
+        private BurstView _puff;
 
         [SerializeField, Tooltip("How high above the character's feet the puff bursts, in tiles.")]
         private float _puffHeight = 0.5f;
+
+        [SerializeField, Required, Tooltip("The dust that rises around a character as it arrives on the board.")]
+        private BurstView _dust;
+
+        [SerializeField, Min(0f), Tooltip("How high above the floor the dust bursts, in tiles.")]
+        private float _dustHeight = 0.05f;
+
+        [SerializeField, Required, Tooltip("The drops that fly where an accident happens.")]
+        private BurstView _splash;
+
+        [SerializeField, Min(0f), Tooltip("How high above the floor the splash bursts, in tiles.")]
+        private float _splashHeight = 0.1f;
+
+        [SerializeField, Required, Tooltip("The sparkles at a character's head when it gets into a stall.")]
+        private BurstView _sparkle;
+
+        [SerializeField, Required, Tooltip("The drops that run off a character close to an accident (a looping system that follows it).")]
+        private BurstView _sweat;
+
+        [SerializeField, Range(0f, 1f), Tooltip("The patience used up from which a waiting character starts to sweat.")]
+        private float _sweatFrom = 0.55f;
+
+        [SerializeField, Range(0f, 0.5f), Tooltip("How far under that it falls before the sweat stops, so it does not blink at the edge.")]
+        private float _sweatMargin = 0.05f;
+
+        [SerializeField, Tooltip("How high above a character's head anchor the sweat comes from, in tiles.")]
+        private float _sweatHeight = 0.05f;
 
         [SerializeField, Required, Tooltip("The text that rises over a character when it is served (drawn in the HUD's world layer).")]
         private FloatTextView _floatText;
@@ -77,9 +101,17 @@ namespace HoldIt.Characters
         [SerializeField, Min(0f), Tooltip("How far above a character's head anchor it starts, in tiles.")]
         private float _floatStartHeight = 0.3f;
 
-        public PuffView Puff => _puff;
-        public float PuffSeconds => _puffSeconds;
+        public BurstView Puff => _puff;
         public float PuffHeight => _puffHeight;
+        public BurstView Dust => _dust;
+        public float DustHeight => _dustHeight;
+        public BurstView Splash => _splash;
+        public float SplashHeight => _splashHeight;
+        public BurstView Sparkle => _sparkle;
+        public BurstView Sweat => _sweat;
+        public float SweatFrom => _sweatFrom;
+        public float SweatMargin => _sweatMargin;
+        public float SweatHeight => _sweatHeight;
         public FloatTextView FloatText => _floatText;
         public float FloatSeconds => _floatSeconds;
         public float FloatRise => _floatRise;
