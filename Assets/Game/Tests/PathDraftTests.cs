@@ -24,6 +24,17 @@ namespace HoldIt.Tests
         }
 
         [Test]
+        public void ExtendToward_FromANarrowTileToItsNeighbour_DoesNotCrossThePost()
+        {
+            _draft.Begin(new Cell(4, 8));
+
+            var changed = _draft.ExtendToward(new Cell(5, 8));
+
+            Assert.IsFalse(changed);
+            CollectionAssert.AreEqual(new[] { new Cell(4, 8) }, _draft.Cells);
+        }
+
+        [Test]
         public void Begin_OutsideTheMap_Throws()
         {
             Assert.Throws<ArgumentOutOfRangeException>(() => _draft.Begin(new Cell(10, 10)));

@@ -22,6 +22,18 @@ namespace HoldIt.Tests
         }
 
         [Test]
+        public void Shortest_NeverStepsAcrossThePostsOfANarrowTile()
+        {
+            // From the narrow tile (4, 8) to its twin (5, 8) the way goes out and back, not through the post between them.
+            var path = PathFinder.Shortest(_grid, new Cell(4, 8), new Cell(5, 8), Drawable);
+
+            Assert.IsNotNull(path);
+            Assert.Greater(path.Count, 2);
+            for (var i = 1; i < path.Count; i++)
+                Assert.IsTrue(Passage.CanStep(_grid, path[i - 1], path[i]), $"{path[i - 1]} -> {path[i]}");
+        }
+
+        [Test]
         public void Shortest_GoesAroundAWall()
         {
             var path = PathFinder.Shortest(_grid, new Cell(3, 9), new Cell(3, 7), Drawable);

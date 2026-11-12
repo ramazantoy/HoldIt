@@ -87,12 +87,24 @@ namespace HoldIt.Characters
         {
             if (path == null)
                 throw new ArgumentNullException(nameof(path));
-            if (!_byId.TryGetValue(id, out var character) || !CanEndOn(id, path.End) || !character.TryWalk(path))
+            if (!_byId.TryGetValue(id, out var character) || !CanEndOn(id, path.End) || !CrossesNoPosts(path) ||
+                !character.TryWalk(path))
                 return false;
 
             if (!IsDoor(path.End))
                 _claims.Reserve(path.End, id);
             _stateChanged.Publish(new CharacterStateChanged(id, character.State));
+            return true;
+        }
+
+        // A path never goes through the posts of a narrow passage (drawing and the path finder keep to that already).
+        private bool CrossesNoPosts(CellPath path)
+        {
+            for (var i = 1; i < path.Count; i++)
+            {
+                if (!Passage.CanStep(_grid, path[i - 1], path[i]))
+                    return false;
+            }
             return true;
         }
 

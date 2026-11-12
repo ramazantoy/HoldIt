@@ -80,6 +80,13 @@ namespace HoldIt.Tests
         }
 
         [Test]
+        public void LobbyThatNeedsAStepAcrossTheSideOfANarrowTile()
+        {
+            // The entrance's only way on is sideways into a narrow tile, through its post.
+            AssertProblem("No lobby tile", "MMMWWW", "MmMWwW", "......", "#LLLLL", "En####");
+        }
+
+        [Test]
         public void LobbyFatCharactersCannotReach()
         {
             AssertProblem("Fat characters cannot reach a lobby tile", "MMMWWW", "MmMWwW", "......", "LLLLLL", "##nn##",

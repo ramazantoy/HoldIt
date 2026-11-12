@@ -33,7 +33,8 @@ namespace HoldIt.Paths
                 foreach (var direction in Directions.All)
                 {
                     var next = cell.Step(direction);
-                    if (!grid.InBounds(next) || previous.ContainsKey(next) || !canEnter(next))
+                    if (!grid.InBounds(next) || previous.ContainsKey(next) || !Passage.CanStep(grid, cell, next) ||
+                        !canEnter(next))
                         continue;
                     previous[next] = cell;
                     queue.Enqueue(next);

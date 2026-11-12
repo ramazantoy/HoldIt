@@ -117,12 +117,8 @@ namespace HoldIt.Board
             };
         }
 
-        // The posts stand across the passage: east and west of it (facing North) unless both its north and south sides are
-        // closed, which makes it an east-west passage (facing East turns the posts to the north and south edges).
-        private static Direction PassageFacing(ITileGrid grid, Cell cell) =>
-            !grid.IsWalkable(cell.Step(Direction.North)) && !grid.IsWalkable(cell.Step(Direction.South))
-                ? Direction.East
-                : Direction.North;
+        // The posts stand across the passage (facing East turns them to the north and south edges): see Passage.
+        private static Direction PassageFacing(ITileGrid grid, Cell cell) => Passage.Axis(grid, cell);
 
         private static Direction Opening(ITileGrid grid, Cell door, Gender? gender)
         {

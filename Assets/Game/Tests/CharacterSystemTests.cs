@@ -377,6 +377,20 @@ namespace HoldIt.Tests
         }
 
         [Test]
+        public void TryWalk_AcrossThePostBetweenTwoNarrowTiles_IsRefused()
+        {
+            var id = _system.Spawn(Gender.Male, BodySize.Thin, new Cell(4, 9));
+            Assert.IsTrue(_system.TryWalk(id, Path((4, 9), (4, 8))));
+            _clock.DeltaTime = 1f / _config.WalkSpeed(BodySize.Thin) + 0.01f;
+            _system.Tick();
+
+            Assert.AreEqual(new Cell(4, 8), Character(id).Cell);
+            Assert.AreEqual(CharacterState.Idle, Character(id).State);
+            Assert.IsFalse(_system.TryWalk(id, Path((4, 8), (5, 8))), "The post stands between them.");
+            Assert.IsTrue(_system.TryWalk(id, Path((4, 8), (4, 7))), "Along the passage is open.");
+        }
+
+        [Test]
         public void Tick_StoppingInFrontOfItsDoorWithAFreeStall_StepsOntoItAndGoesIn()
         {
             var id = _system.Spawn(Gender.Male, BodySize.Normal, new Cell(3, 4));

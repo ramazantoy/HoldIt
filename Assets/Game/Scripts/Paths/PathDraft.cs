@@ -102,7 +102,7 @@ namespace HoldIt.Paths
         {
             if (CutBackTo(cell))
                 return true;
-            if (!PathRules.IsDrawable(_grid, cell))
+            if (!PathRules.IsDrawable(_grid, cell) || !Passage.CanStep(_grid, Last, cell))
                 return false;
             _cells.Add(cell);
             return true;

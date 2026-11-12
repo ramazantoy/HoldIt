@@ -133,7 +133,7 @@ namespace HoldIt.Board
                 foreach (var direction in Directions.All)
                 {
                     var next = cell.Step(direction);
-                    if (!grid.IsWalkable(next) || reached.Contains(next))
+                    if (!grid.IsWalkable(next) || reached.Contains(next) || !Passage.CanStep(grid, cell, next))
                         continue;
                     if (!narrowAllowed && grid.At(next).Type == TileType.Narrow)
                         continue;
