@@ -43,8 +43,8 @@ namespace HoldIt.Tests
 
             Assert.AreEqual(5, entry.Points.Count);
             AssertNear(new Vector3(-2.5f, 0f, 3.5f), entry.Points[0]);
-            AssertNear(new Vector3(-2.5f, 0f, 4.3f), entry.Points[1]);
-            AssertNear(new Vector3(-3.75f, 0f, 4.8f), entry.Points[2]);
+            AssertNear(new Vector3(-2.5f, 0f, 3.9f), entry.Points[1]);
+            AssertNear(new Vector3(-3.75f, 0f, 3.9f), entry.Points[2]);
             AssertNear(new Vector3(-3.75f, 0f, 5.35f), entry.Points[3]);
             AssertNear(new Vector3(-3.75f, 0f, 6.05f), entry.Points[4]);
         }
@@ -92,7 +92,7 @@ namespace HoldIt.Tests
             {
                 AssertNear(outward, stall.Rotation * Vector3.forward);
                 AssertNear(door, stall.Entry.Start);
-                AssertNear(door - outward * _geometry.EntryStep, stall.Entry.Points[1]);
+                AssertNear(door - outward * (3.5f - _geometry.LaneDepth), stall.Entry.Points[1]);
                 Assert.AreEqual(_geometry.InsideDepth - 3.5f, Vector3.Dot(stall.Entry.End - door, outward), 1e-4f);
                 Assert.AreEqual(_geometry.WallThickness - 3.5f, Vector3.Dot(stall.Toilet - door, outward), 1e-4f);
                 Assert.AreEqual(_geometry.StallDepth - 3.5f, Vector3.Dot(stall.Hinge - door, outward), 1e-4f);
@@ -134,7 +134,7 @@ namespace HoldIt.Tests
             var problems = RestroomLayout.Problems(MapParser.Parse(TestMaps.Small), Gender.Female, 2, _geometry);
 
             Assert.AreEqual(1, problems.Count);
-            StringAssert.Contains("2 tiles deep from its door: the way into its stalls needs 3.5", problems[0]);
+            StringAssert.Contains("2 tiles deep from its door: the way into its stalls needs 3.6", problems[0]);
         }
 
         [Test]
@@ -164,6 +164,27 @@ namespace HoldIt.Tests
             foreach (var point in layout.Stalls.SelectMany(stall => stall.Entry.Points))
             {
                 Assert.IsTrue(point.x > -5f && point.x < 0f && point.z > 3f && point.z < 7f, $"{point} is outside.");
+            }
+        }
+
+        // An open stall door swings out as far as it is long, so the sideways walk to a stall must stay beyond that.
+        [Test]
+        public void Build_EveryWayIn_WalksSidewaysBeyondTheReachOfAnOpenDoor()
+        {
+            var layout = RestroomLayout.Build(_lobby, Gender.Male, 3, _geometry);
+            var reach = _geometry.StallDepth + _geometry.DoorWidth;
+
+            foreach (var stall in layout.Stalls)
+            {
+                var points = stall.Entry.Points;
+                for (var i = 0; i < points.Count - 1; i++)
+                {
+                    if (Mathf.Approximately(points[i].x, points[i + 1].x))
+                        continue;
+                    var depthA = 7f - points[i].z;
+                    var depthB = 7f - points[i + 1].z;
+                    Assert.Greater(Mathf.Min(depthA, depthB), reach, $"The walk {points[i]} -> {points[i + 1]} cuts through an open door.");
+                }
             }
         }
 

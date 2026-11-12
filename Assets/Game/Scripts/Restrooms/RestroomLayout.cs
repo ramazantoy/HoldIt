@@ -10,8 +10,8 @@ namespace HoldIt.Restrooms
     /// <summary>
     /// Where a restroom's stalls stand, in world space. They line the back wall, the one across from the door, and share
     /// its width evenly; a front partition runs across them with a door opening in the middle of each stall, and
-    /// partitions part neighbouring stalls. A visitor walks in from the door's centre, turns to its stall in front of the
-    /// partition and goes through the opening. The way the door opens sets the restroom's own axes, so any of the four
+    /// partitions part neighbouring stalls. A visitor walks in from the door's centre to the lane in front of the open stall
+    /// doors, along it to its stall and through the opening. The way the door opens sets the restroom's own axes, so any of the four
     /// works. Assumes a map that passes <see cref="MapCheck"/>.
     /// </summary>
     public sealed class RestroomLayout
@@ -62,8 +62,8 @@ namespace HoldIt.Restrooms
                 var entry = new WalkLine(new[]
                 {
                     frame.Door,
-                    frame.At(frame.DoorAcross, frame.DoorDepth - geometry.EntryStep),
-                    frame.At(middle, front + geometry.Approach),
+                    frame.At(frame.DoorAcross, geometry.LaneDepth),
+                    frame.At(middle, geometry.LaneDepth),
                     frame.At(middle, front - geometry.Pass),
                     frame.At(middle, geometry.InsideDepth),
                 });
@@ -118,7 +118,7 @@ namespace HoldIt.Restrooms
 
         /// <summary>How many tiles deep a restroom must be, from its door to its back wall's outer face, door tile included.</summary>
         public static float MinDepth(StallGeometry geometry) =>
-            geometry.StallDepth + geometry.Approach + geometry.EntryStep + HalfTile;
+            geometry.LaneDepth + HalfTile;
 
         private static PartitionPlan Across(Frame frame, float from, float to, float depth) =>
             new PartitionPlan(frame.At((from + to) * 0.5f, depth), Quaternion.LookRotation(frame.Across), to - from);
