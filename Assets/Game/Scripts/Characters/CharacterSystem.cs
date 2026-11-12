@@ -14,13 +14,17 @@ namespace HoldIt.Characters
     /// advances them each frame with game time, so they stop while the game is paused. It is also their step gate: the
     /// tile rules (<see cref="StepRules"/>), then the cell claims (<see cref="CellClaims"/>). At
     /// its restroom's door a character takes a free stall and walks in, or queues on the door until one frees; once in
-    /// the stall it leaves the board. Everyone else loses patience by the frame; one that runs out has an accident and
+    /// the stall it leaves the board; one that stops right in front of its door with a stall free steps onto it itself.
+    /// Everyone else loses patience by the frame; one that runs out has an accident and
     /// leaves the board where it is.
     /// </summary>
     internal sealed class CharacterSystem : ICharacters, ITickable, IStepGate
     {
         /// <summary>How far into its way in a visitor is when it steps off the door's cell.</summary>
         private const float HalfTile = 0.5f;
+
+        private static readonly Direction[] _directions =
+            { Direction.North, Direction.East, Direction.South, Direction.West };
 
         private readonly List<Character> _characters = new List<Character>();
         private readonly Dictionary<CharacterId, Character> _byId = new Dictionary<CharacterId, Character>();
@@ -154,8 +158,10 @@ namespace HoldIt.Characters
         {
             switch (character.State)
             {
-                case CharacterState.Idle when IsDoorOf(character.Cell, character.Gender):
-                    if (!TryEnterStall(character))
+                case CharacterState.Idle:
+                    if (!IsDoorOf(character.Cell, character.Gender))
+                        StepOntoDoorInFront(character);
+                    else if (!TryEnterStall(character))
                         character.Queue();
                     break;
                 case CharacterState.Queued:
@@ -165,6 +171,41 @@ namespace HoldIt.Characters
                     _claims.Vacate(character.Cell, character.Id);
                     break;
             }
+        }
+
+        /// <summary>
+        /// A character standing right in front of its own restroom's door, with a stall free, steps onto the door by itself:
+        /// the player need not draw that last tile. It does nothing when no stall is free (queueing on the door is the
+        /// player's choice) or someone holds the door.
+        /// </summary>
+        private void StepOntoDoorInFront(Character character)
+        {
+            if (!HasFreeStall(character.Gender))
+                return;
+
+            foreach (var direction in _directions)
+            {
+                var door = character.Cell.Step(direction);
+                if (!_grid.InBounds(door) || !IsDoorOf(door, character.Gender) || !_claims.IsFree(door))
+                    continue;
+                if (StepRules.Check(_grid.At(door), character.Gender, character.Size) != StepVerdict.Enter)
+                    continue;
+
+                // Its last path's end was reserved for it; it is on its way off that cell now.
+                _claims.UnreserveAll(character.Id);
+                if (character.TryWalk(new CellPath(new[] { character.Cell, door })))
+                    return;
+            }
+        }
+
+        private bool HasFreeStall(Gender gender)
+        {
+            for (var i = 0; i < _restrooms.StallCount; i++)
+            {
+                if (_restrooms.StateOf(gender, i) == StallState.Free)
+                    return true;
+            }
+            return false;
         }
 
         private bool TryEnterStall(Character character)

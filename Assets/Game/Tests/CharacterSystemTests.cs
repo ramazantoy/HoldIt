@@ -377,6 +377,79 @@ namespace HoldIt.Tests
         }
 
         [Test]
+        public void Tick_StoppingInFrontOfItsDoorWithAFreeStall_StepsOntoItAndGoesIn()
+        {
+            var id = _system.Spawn(Gender.Male, BodySize.Normal, new Cell(3, 4));
+            Assert.IsTrue(_system.TryWalk(id, Path((3, 4), (2, 4))));
+            _clock.DeltaTime = 1f / _config.WalkSpeed(BodySize.Normal) + 0.01f;
+
+            _system.Tick();
+
+            Assert.AreEqual(new Cell(2, 4), Character(id).Cell);
+            Assert.AreEqual(CharacterState.Walking, Character(id).State, "It heads for the door at once.");
+
+            _system.Tick();
+
+            Assert.AreEqual(CharacterState.InStall, Character(id).State);
+            Assert.AreEqual(StallState.Taken, _restrooms.StateOf(Gender.Male, 0));
+            CollectionAssert.AreEqual(new[] { CharacterState.Walking, CharacterState.InStall }, States(),
+                "It never stands announced as stopped, and the walk is not announced twice.");
+            Assert.AreEqual(0, _refused.Count);
+        }
+
+        [Test]
+        public void Tick_StoppingInFrontOfItsDoorWithNoStallFree_StaysWhereItIs()
+        {
+            _restrooms.Fill(Gender.Male);
+            var id = _system.Spawn(Gender.Male, BodySize.Normal, new Cell(3, 4));
+            _system.TryWalk(id, Path((3, 4), (2, 4)));
+            _clock.DeltaTime = 1f / _config.WalkSpeed(BodySize.Normal) + 0.01f;
+
+            _system.Tick();
+            _system.Tick();
+
+            Assert.AreEqual(CharacterState.Idle, Character(id).State);
+            Assert.AreEqual(new Cell(2, 4), Character(id).Cell);
+            Assert.IsTrue(_system.IsFree(_maleDoor), "Queueing on the door is the player's choice.");
+        }
+
+        [Test]
+        public void Tick_InFrontOfItsDoorWhenAStallFrees_StepsOntoIt()
+        {
+            _restrooms.Fill(Gender.Male);
+            var id = _system.Spawn(Gender.Male, BodySize.Normal, new Cell(3, 4));
+            _system.TryWalk(id, Path((3, 4), (2, 4)));
+            _clock.DeltaTime = 1f / _config.WalkSpeed(BodySize.Normal) + 0.01f;
+            _system.Tick();
+            _system.Tick();
+
+            _restrooms.Free(Gender.Male, 1);
+            _system.Tick();
+            _system.Tick();
+
+            Assert.AreEqual(CharacterState.InStall, Character(id).State);
+            Assert.AreEqual(1, Character(id).Visit.Stall);
+        }
+
+        [Test]
+        public void Tick_InFrontOfItsDoorWhileSomeoneHoldsIt_DoesNotStepOnto()
+        {
+            _restrooms.Fill(Gender.Male);
+            var queued = WalkToMaleDoor(new Cell(2, 4));
+            Assert.AreEqual(CharacterState.Queued, Character(queued).State);
+            var id = _system.Spawn(Gender.Male, BodySize.Normal, new Cell(3, 4));
+            _system.TryWalk(id, Path((3, 4), (2, 4)));
+            _restrooms.Free(Gender.Male, 0);
+            _clock.DeltaTime = 1f / _config.WalkSpeed(BodySize.Normal) + 0.01f;
+
+            _system.Tick();
+
+            Assert.AreEqual(CharacterState.InStall, Character(queued).State, "The one on the door goes first.");
+            Assert.AreEqual(CharacterState.Idle, Character(id).State);
+            Assert.AreEqual(0, _refused.Count, "It did not walk into a held door.");
+        }
+
+        [Test]
         public void Tick_WalkingIn_HoldsTheDoorUntilItHasSteppedOffIt()
         {
             var id = WalkToMaleDoor(new Cell(2, 4));
