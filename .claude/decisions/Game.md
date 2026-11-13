@@ -393,10 +393,13 @@ yeterli: `StepRules` (tek fonksiyon, üç kural da testli), `CameraFit`, `IntroF
   → M7'de teyit~~ ~~(M6) **Seviye kaydı:** seviye başına en iyi yıldız ve açılan son seviye; HoldIt slot
   kullanmaz, Global savable'da tutulur → M7~~ (`LevelProgress`, Global `game.progress` → "Seviye seçimi,
   ayarlar ve kayıt")
-- **Release APK imzası:** template Android'i imzalamıyor (debug keystore). Sideload edilen showcase APK'sı için yeterli
-  → M10'da teyit
-- **README:** kökteki README.md ve README.tr.md template'i anlatıyor. HoldIt'inki M10'da EN/TR yazılır. Repo ondan önce
-  public olursa template README'si görünür.
+- ~~**Release APK imzası:** template Android'i imzalamıyor (debug keystore). Sideload edilen showcase APK'sı için yeterli~~
+  (M10: teyit edildi. Release build 0.1.0 (kod 1), commit b7f90bd, IL2CPP + Minimal, 2:12, 53,1 MB, ARM64, hedef SDK 36;
+  `apksigner`: "CN=Android Debug"; manifest izinleri `VIBRATE` (Handheld.Vibrate ekletti) ve `INTERNET` (Unity otomatik
+  ekledi, oyun ağ kullanmıyor). Sürümü 1.0.0'a çıkarmak gerekmedi: kullanıcı kararı, showcase. Aynı debug anahtarıyla
+  imzalı sürümler üst üste kurulur; başka makinede alınan build başka anahtarla imzalanır ve önce eskisini kaldırmayı ister)
+- ~~**README:** kökteki README.md ve README.tr.md template'i anlatıyor~~ (M10: HoldIt'in README'leri EN/TR yazıldı;
+  template'in README'leri kaldırıldı, GIF'ler `docs/media/` altına gelecek)
 - ~~**Public'e geçmeden önce:** framework karar dosyalarındaki önceki projeye gönderen anlatımlar ve takma ad satırı genel
   derse çevrilir~~ (M10: çevrildi; takma ad `decisions/README.md`'den ve bu dosyadan çıktı; kişisel yol taraması temiz.
   Git geçmişinde takma ad eski commit'lerde duruyor: public'e geçişte karar verilecek). Kararlar (M10):
