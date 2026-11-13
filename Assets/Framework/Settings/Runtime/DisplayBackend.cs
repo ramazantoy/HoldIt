@@ -147,7 +147,8 @@ namespace AF.Settings
         // In exclusive fullscreen the display runs at the game's resolution, so its size is the one read before.
         private void ReadDisplay()
         {
-            if (Screen.fullScreenMode == FullScreenMode.ExclusiveFullScreen)
+            // Screen.mainWindowDisplayInfo exists on desktop standalone only; on a phone it throws, and the display is the screen.
+            if (Application.isMobilePlatform || Screen.fullScreenMode == FullScreenMode.ExclusiveFullScreen)
                 return;
             var display = Screen.mainWindowDisplayInfo;
             if (display.width <= 0 || display.height <= 0)
