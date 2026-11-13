@@ -4,7 +4,7 @@
 
 *Yollarını çiz. Sırayı gözet. Kimse altına kaçırmasın.*
 
-<!-- GIF: hero (docs/media/hero.gif): lobide iki yol çizilir, bir ziyaretçi kabine girer, "+1" -->
+<p align="center"><img src="docs/media/gameplay.tr.gif" width="320" alt="HoldIt Seviye 2, baştan sona iki kat hızda"></p>
 
 HoldIt, yukarıdan bakışlı, dikey ekranlı bir Android bulmaca oyunu. Tuvalet binasına durmadan erkekler ve kadınlar geliyor,
 her birinin hiç durmadan dolan bir sabır barı var. Bir ziyaretçiden başlayarak parmağınla kare kare doğru kapıya yol
@@ -25,11 +25,6 @@ gerçek bir Unity projesi.
 - **Sabır biter.** Her başın üstündeki bar yeşilden kırmızıya döner ve ziyaretçi titremeye başlar. Kaza bir su birikintisi
   bırakır ve üç canından birini götürür.
 - **Yıldız**, son ziyaretçi karşılandığında ya da kaybedildiğinde kalan canındır. 30 seviye var, her birinin kendi haritası.
-
-<!-- GIF: refuse (docs/media/refuse.gif): yanlış kapı balonu ve dar geçitte duran Şişman ziyaretçi -->
-<!-- GIF: queue (docs/media/queue.gif): iki kabin dolu, ziyaretçi bekler ve kapıyı çalar, sonra girer -->
-<!-- GIF: accident (docs/media/accident.gif): bar dolar, kaza flaşı, su birikintisi, kaybedilen kalp -->
-<!-- GIF: levels (docs/media/levels.gif): harita önizlemeli seviye seçimi, sonra tahta dalgasıyla bölüm geçişi -->
 
 ## İndirme
 

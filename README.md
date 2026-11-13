@@ -4,7 +4,7 @@
 
 *Draw their path. Mind the queue. Don't let anyone wet themselves.*
 
-<!-- GIF: hero (docs/media/hero.gif): two paths drawn in the lobby, one visitor reaches a stall, "+1" -->
+<p align="center"><img src="docs/media/gameplay.en.gif" width="320" alt="Level 3 of HoldIt played from start to finish, shown at double speed"></p>
 
 HoldIt is a portrait Android puzzle seen from above. Men and women keep arriving at a restroom building, each with a
 patience bar that never stops filling. You drag a path from a visitor, square by square, to the right door. The wrong
@@ -26,11 +26,6 @@ it, rather than a prototype.
 - **Patience runs out.** The bar above each head turns from green to red and the visitor starts to shake. An accident leaves
   a puddle and costs one of your three lives.
 - **Stars** are the lives you have left when the last visitor is served or lost. There are 30 levels, each with its own map.
-
-<!-- GIF: refuse (docs/media/refuse.gif): wrong-door bubble, and a Fat visitor stopped at a narrow passage -->
-<!-- GIF: queue (docs/media/queue.gif): both stalls taken, a visitor waits and knocks, then goes in -->
-<!-- GIF: accident (docs/media/accident.gif): the bar fills, the accident flash, the puddle, a heart lost -->
-<!-- GIF: levels (docs/media/levels.gif): level select with map previews, then the board wave into a level -->
 
 ## Download
 
