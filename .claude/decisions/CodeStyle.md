@@ -22,7 +22,7 @@ Kapsam: Core, Save, Input (Runtime/Editor/Tests/Fixtures) ve `Game/Scripts`, 67 
 | Sonuç | 1250 ad (184 bildirim + 1066 referans), 347 belirteç, 52 `this.`, 2 attribute; token diff 0 izinsiz fark; console 0 error; 242/242 (sonrası 10 error + 2 warning, beklenen); ValidateAll 0; `Builder.Check(Development)` 0 error (placeholder uyarısı); Menu=`Menu`, Gameplay=`Playing`, root actions = `Controls` (guid ve globalId aynı), sahneler diskten yeniden açılarak |
 | `FormerlySerializedAs` + domain reload | Açık sahnedeki değer reload'da korundu (attribute rename'le aynı refresh'te) |
 | `AssetDatabase.ForceReserializeAssets` (6.3) | İki sahneyi yeniden yazdı (tek satır: anahtar adı), `RootScope.prefab`'ı yazmadı. Prefab için bileşene `SetDirty` + `SaveAssetIfDirty` → tek satır |
-| Editor `.rsp` dosyaları | `Library/Bee/artifacts/1900b0aEDbg.dag/<asmdef>.rsp` Unity dışı Roslyn derlemesine yetiyor (11 assembly, 0 error) |
+| Editor `.rsp` dosyaları | `Library/Bee/artifacts/*.dag/<asmdef>.rsp` Unity dışı Roslyn derlemesine yetiyor (11 assembly, 0 error) |
 | `console status` | `counts` oturum boyu birikir; Editor'ın gerçek console'u `groundTruth.consoleErrors` |
 
 ### Stil dönüşümü incelemesi (bağımsız, git diff üzerinden, 2026-10-31)
