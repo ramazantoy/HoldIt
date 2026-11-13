@@ -9,9 +9,9 @@ Localization, Platform, Build. Framework kararları `.claude/decisions/`'ta (ind
 kararları `.claude/decisions/Game.md`'de.
 
 **Durum:** template'ten fork `a949bbd` (framework geçmişi `.claude/decisions/README.md` → "Fazlar"). M0–M9 Editor'da bitti
-(M5 M9'a katıldı); ayrıntı git'te ve Game.md'de. Bekleyenler Game.md → Açık'ta: cihaz testleri ve M0b (Android cihaz yok), M2b
-(karakter modelleri), kitin kabin parçaları, kalibrasyon, ses cue'ları. Sıradaki iş M10. Milestone başlarken
-plan moduna geç.
+(M5 M9'a katıldı), M10 yayın dışında bitti; ayrıntı git'te ve Game.md'de. Bekleyenler Game.md → Açık'ta: cihaz testleri ve M0b
+(tek telefonda oynandı, ayrıntılı kontrol listesi duruyor), M2b (karakter modelleri), kitin kabin parçaları, kalibrasyon, ses
+cue'ları, public'e geçiş (görünürlük, GitHub Release'e APK, geçmişteki takma ad). Yeni milestone başlarken plan moduna geç.
 
 **Yapı:** framework `Assets/Framework/` (`AF.*` namespace ve asmdef'ler, modül başına `<Modül>/{Runtime,Editor,Tests}`).
 Oyun `Assets/Game/`: asmdef `Game`, namespace `HoldIt`, özellik klasörü `HoldIt.<Özellik>`.
@@ -63,7 +63,7 @@ cherry-pick'ler çakışmasın diye.
 | M7 | Seviye seçimi, ayarlar, ilerleme kaydı | Bitti; cihaz kısmı Game.md → Açık |
 | M8 | Seviye başına harita, üretici, harita aracı, simülasyonla tuning | Bitti; kalibrasyon Game.md → Açık |
 | M9 | Juice: PrimeTween animasyonları, kare işaretlerinin cilası (eski M5), sesler, haptik | Bitti (kod ve doğrulama Editor'da); ses cue'ları kullanıcıda (Game.md → Açık → Ses cue'ları), haptik ve his kontrolü cihazda (Game.md → Açık → Cihaz testi) |
-| M10 | Eksik kalan testler, README EN/TR (GIF + diyagram), Release APK GitHub Releases'te (APK git'e girmez) | Public repo hazır |
+| M10 | Eksik kalan testler, README EN/TR (GIF + diyagram), Release APK GitHub Releases'te (APK git'e girmez) | Bitti; yayın (public'e geçiş, Release'e APK) Game.md → Açık |
 
 ## Çalışma şekli
 - Fazlarla ilerliyoruz. Her seferinde yalnız bir faz planlanır; onaylanınca uygulanır, bitince durulur.

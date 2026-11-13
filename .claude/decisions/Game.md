@@ -410,8 +410,11 @@ yeterli: `StepRules` (tek fonksiyon, üç kural da testli), `CameraFit`, `IntroF
     `License.txt`, `UI/Fonts/OFL.txt`); lisans dosyası olmayan klasörler (`Board/Models`, `UI/Sprites`, `Characters`,
     `Drawing`, `Video`) kullanıcının kendi işi, MIT kapsar; README'nin Credits tablosunda "own work" yazar.
     Referanssız `Drawing/PathMarkerTileTest.png` silindi. GIF'ler `.gitattributes`'ta zaten LFS'te.
-  - Public'e geçiş (görünürlük, GitHub Release) M10'a girmez, ayrı iş: `gh repo edit --visibility public`,
-    `gh release create`, GitHub'da Mermaid ve link kontrolü, geçmişteki takma ad.
+  - **Public'e geçiş** (görünürlük, GitHub Release) M10'a girmez, ayrı iş; yapılacaklar: (1) repo görünürlüğü (GitHub
+    ayarları), (2) APK'yı Release'e yükle: `Builds/Android/Release/HoldIt-0.1.0.apk` (yerel, gitignored; commit `b7f90bd`'den
+    derlendi, `HoldIt.apk` ile aynı dosya), tag `v0.1.0`, hedef `b7f90bd`, pre-release; `gh` kurulu değil, kullanıcı GitHub
+    web arayüzünden yükler, (3) GitHub'da README'nin Mermaid, GIF ve link kontrolü, (4) git geçmişindeki takma ad ve commit
+    geçmişini temizleme kararı (kullanıcı son konuşulacak dedi). README'deki `…/releases` bağlantısı o zamana kadar boş.
 - ~~**Ad:** GDD'deki `CharacterController` (presenter) Unity'nin bileşeniyle aynı adı taşıyor → M3~~ (
   `Character` + `CharacterSystem` → "Karakterler ve yol" → Ad)
 - **GDD ↔ prototip:** GDD "değerler prototipten" diyor ama ikisi ayrışmış. İlgili milestone'da kullanıcı karar verir:
