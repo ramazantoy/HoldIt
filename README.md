@@ -4,7 +4,9 @@
 
 *Draw their path. Mind the queue. Don't let anyone wet themselves.*
 
-<p align="center"><img src="docs/media/gameplay.en.gif" width="320" alt="Level 3 of HoldIt played from start to finish, shown at double speed"></p>
+<p align="center"><img src="docs/media/gameplay.en.gif" width="280" alt="HoldIt level 3 with the English interface, played at double speed">&nbsp;&nbsp;<img src="docs/media/gameplay.tr.gif" width="280" alt="HoldIt level 2 with the Turkish interface, played at double speed"></p>
+
+<p align="center"><em>Level 3 in English (left) and level 2 in Turkish (right), both at double speed.</em></p>
 
 HoldIt is a portrait Android puzzle seen from above. Men and women keep arriving at a restroom building, each with a
 patience bar that never stops filling. You drag a path from a visitor, square by square, to the right door. The wrong

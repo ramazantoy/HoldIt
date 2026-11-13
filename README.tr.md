@@ -4,7 +4,9 @@
 
 *Yollarını çiz. Sırayı gözet. Kimse altına kaçırmasın.*
 
-<p align="center"><img src="docs/media/gameplay.tr.gif" width="320" alt="HoldIt Seviye 2, baştan sona iki kat hızda"></p>
+<p align="center"><img src="docs/media/gameplay.en.gif" width="280" alt="HoldIt 3. seviye, İngilizce arayüz, iki kat hızda">&nbsp;&nbsp;<img src="docs/media/gameplay.tr.gif" width="280" alt="HoldIt 2. seviye, Türkçe arayüz, iki kat hızda"></p>
+
+<p align="center"><em>3. seviye İngilizce arayüzle (solda), 2. seviye Türkçe arayüzle (sağda); ikisi de iki kat hızda.</em></p>
 
 HoldIt, yukarıdan bakışlı, dikey ekranlı bir Android bulmaca oyunu. Tuvalet binasına durmadan erkekler ve kadınlar geliyor,
 her birinin hiç durmadan dolan bir sabır barı var. Bir ziyaretçiden başlayarak parmağınla kare kare doğru kapıya yol
