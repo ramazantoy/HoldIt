@@ -424,6 +424,13 @@ yeterli: `StepRules` (tek fonksiyon, üç kural da testli), `CameraFit`, `IntroF
   | ~~Kare türleri~~ | ~~Bina (M/W, yürünemez) ve lobi (L) var~~ | ~~Yok~~ | M1: prototipinki ("Harita ve tahta") |
   | Diğer | ~~Su birikintisi 12 sn~~ (M6: 12 sn, yalnız görsel), ~~beden ölçeği 0.75/1.0/1.45~~ (beden ayrı model, SPEC), ~~kamera 22° eğim / FOV 40~~ (M1'de alındı), metinler Türkçe | "Birkaç saniye" | M3–M6 (yeni numaralar) |
 
+- **Kayıt deposu (mobil):** HoldIt dosya tabanlı `FileSaveStorage` kullanıyor; mobilde `PlayerPrefsSaveStorage` daha uygun
+  olabilirdi (kullanıcı notu, M10). `File.Replace` ve thread pool IO'nun Android davranışı zaten cihaz testinde duruyor
+  ("Cihaz testi"). Ayrı bir bağlamda değerlendirilecek: cihazda sorun çıkarsa depoyu değiştirmek tek satır (`SaveOptions.Storage`).
+- ~~**Kullanılmayan paketler** (M10, kullanıcı kararı: hafif temizlik)~~ `com.unity.timeline` ve `com.unity.ai.navigation`
+  çıkarıldı (hiçbir yerde kullanılmıyordu, kimse bağımlı değildi). Framework kodu, testleri ve template'ten gelen karar dosyaları
+  bilerek kalır: çalışıyor, testli, cherry-pick akışını bozmaz.
+
 ## Template'e gidenler
 Burada bulunup template'te düzeltilen framework sorunları.
 
