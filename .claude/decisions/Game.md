@@ -397,12 +397,16 @@ yeterli: `StepRules` (tek fonksiyon, üç kural da testli), `CameraFit`, `IntroF
   → M10'da teyit
 - **README:** kökteki README.md ve README.tr.md template'i anlatıyor. HoldIt'inki M10'da EN/TR yazılır. Repo ondan önce
   public olursa template README'si görünür.
-- ~~**Public'e geçmeden önce:** `decisions/`'ın framework dosyalarındaki "eski oyun" anlatımları ve takma ad satırı genel
+- ~~**Public'e geçmeden önce:** framework karar dosyalarındaki önceki projeye gönderen anlatımlar ve takma ad satırı genel
   derse çevrilir~~ (M10: çevrildi; takma ad `decisions/README.md`'den ve bu dosyadan çıktı; kişisel yol taraması temiz.
   Git geçmişinde takma ad eski commit'lerde duruyor: public'e geçişte karar verilecek). Kararlar (M10):
   - md dili: kök README.md ve README.tr.md (EN + TR); `CLAUDE.md`, `.claude/` Türkçe kalır, kod ve framework dokümanı İngilizce.
   - `.claude/` (decisions dahil) public repoda kalır: kalıcı karar kaydı var, ignore etmek template'ten gelen
     cherry-pick'leri bozar (değişti/silindi çakışması), AI iş akışını göstermek bilerek alınmış bir karardı.
+  - Lisans: kod MIT (kök `LICENSE`). Üçüncü taraf ses ve font klasörlerinin yanında lisans dosyası var (4 ses klasörü
+    `License.txt`, `UI/Fonts/OFL.txt`); lisans dosyası olmayan klasörler (`Board/Models`, `UI/Sprites`, `Characters`,
+    `Drawing`, `Video`) kullanıcının kendi işi, MIT kapsar; README'nin Credits tablosunda "own work" yazar.
+    Referanssız `Drawing/PathMarkerTileTest.png` silindi. GIF'ler `.gitattributes`'ta zaten LFS'te.
   - Public'e geçiş (görünürlük, GitHub Release) M10'a girmez, ayrı iş: `gh repo edit --visibility public`,
     `gh release create`, GitHub'da Mermaid ve link kontrolü, geçmişteki takma ad.
 - ~~**Ad:** GDD'deki `CharacterController` (presenter) Unity'nin bileşeniyle aynı adı taşıyor → M3~~ (
