@@ -37,7 +37,8 @@ it, rather than a prototype.
 An Android APK (Android 7.1 or newer, ARM64) is attached to the project's
 [GitHub Releases](https://github.com/ramazantoy/HoldIt/releases) once a release is published. It is signed with a debug key,
 so install it by allowing installs from unknown sources; Play Protect may warn about an unknown developer. The game is not
-on any store.
+on any store. The APK is not kept in the repository; it is a Release build of version 0.1.0 and can be rebuilt from source
+(see below).
 
 ## Status
 

@@ -36,6 +36,7 @@ gerçek bir Unity projesi.
 Android APK'sı (Android 7.1 ve üstü, ARM64), bir sürüm yayımlandığında projenin
 [GitHub Releases](https://github.com/ramazantoy/HoldIt/releases) sayfasına eklenir. Debug anahtarıyla imzalı; bilinmeyen
 kaynaklardan kurulumu açarak kurulur, Play Protect bilinmeyen geliştirici uyarısı verebilir. Oyun hiçbir mağazada değil.
+APK depoda tutulmaz; 0.1.0 sürümünün Release build'idir ve kaynaktan yeniden derlenebilir (aşağıya bak).
 
 ## Durum
 
