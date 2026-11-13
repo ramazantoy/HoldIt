@@ -37,7 +37,7 @@ namespace HoldIt.Tests
         }
 
         [Test]
-        public void Build_Lobby_WalksInLikeThePrototype()
+        public void Build_Lobby_WalksInAlongTheLane()
         {
             var entry = RestroomLayout.Build(_lobby, Gender.Male, 2, _geometry).Stalls[0].Entry;
 
@@ -75,10 +75,15 @@ namespace HoldIt.Tests
         }
 
         // Doors off the middle, so the way in starts straight in from wherever the door is.
-        [TestCase(Direction.North, new[] { ".....", "MmMMM", "MMMMM", "MMMMM", "MMMMM" })]
-        [TestCase(Direction.East, new[] { "MMMM.", "MMMm.", "MMMM.", "MMMM.", "MMMM." })]
-        [TestCase(Direction.South, new[] { "MMMMM", "MMMMM", "MMMMM", "MMMmM", "....." })]
-        [TestCase(Direction.West, new[] { ".MMMM", ".MMMM", ".MMMM", ".mMMM", ".MMMM" })]
+        private static readonly TestCaseData[] _openings =
+        {
+            new TestCaseData(Direction.North, new[] { ".....", "MmMMM", "MMMMM", "MMMMM", "MMMMM" }),
+            new TestCaseData(Direction.East, new[] { "MMMM.", "MMMm.", "MMMM.", "MMMM.", "MMMM." }),
+            new TestCaseData(Direction.South, new[] { "MMMMM", "MMMMM", "MMMMM", "MMMmM", "....." }),
+            new TestCaseData(Direction.West, new[] { ".MMMM", ".MMMM", ".MMMM", ".mMMM", ".MMMM" }),
+        };
+
+        [TestCaseSource(nameof(_openings))]
         public void Build_EveryOpening_LaysTheStallsOutTheSameWay(Direction opening, string[] rows)
         {
             var grid = MapParser.Parse(rows);
@@ -186,6 +191,48 @@ namespace HoldIt.Tests
                     Assert.Greater(Mathf.Min(depthA, depthB), reach, $"The walk {points[i]} -> {points[i + 1]} cuts through an open door.");
                 }
             }
+        }
+
+        // The same walk for every way the restroom can open: it goes inward to the lane, along it, and only then in.
+        [TestCaseSource(nameof(_openings))]
+        public void Build_EveryOpening_WalksSidewaysOnlyAlongTheLane(Direction opening, string[] rows)
+        {
+            var grid = MapParser.Parse(rows);
+            var layout = RestroomLayout.Build(grid, Gender.Male, 2, _geometry);
+            var door = grid.Space.CellCenter(grid.DoorsOf(Gender.Male)[0]);
+            var outward = Quaternion.Euler(0f, 90f * (int)opening, 0f) * Vector3.forward;
+            var sideways = 0;
+
+            foreach (var stall in layout.Stalls)
+            {
+                var points = stall.Entry.Points;
+                for (var i = 0; i < points.Count - 1; i++)
+                {
+                    var along = Vector3.Dot(points[i + 1] - points[i], outward);
+                    var across = (points[i + 1] - points[i] - outward * along).magnitude;
+                    if (across < 1e-4f)
+                        continue;
+                    sideways++;
+                    Assert.AreEqual(0f, along, 1e-4f, "A sideways step must not also go in or out.");
+                    var depth = 3.5f + Vector3.Dot(points[i] - door, outward);
+                    Assert.AreEqual(_geometry.LaneDepth, depth, 1e-4f, $"The sideways step {points[i]} is off the lane.");
+                }
+            }
+            Assert.Greater(sideways, 0, "These doors are off the middle, so some stall needs a step along the lane.");
+        }
+
+        // A lane exactly as deep as the door leaves nothing to walk in to; the way in starts along the lane.
+        [Test]
+        public void Build_ALaneAsDeepAsTheDoor_SkipsTheStepIn()
+        {
+            var geometry = new StallGeometry(1.8f, 0.9f, 0.14f, 0.3f, 0.8f, 0.15f, 0.95f);
+            Assert.AreEqual(3.5f, geometry.LaneDepth, 1e-5f);
+
+            var entry = RestroomLayout.Build(_lobby, Gender.Male, 2, geometry).Stalls[0].Entry;
+
+            Assert.AreEqual(4, entry.Points.Count);
+            AssertNear(new Vector3(-2.5f, 0f, 3.5f), entry.Points[0]);
+            AssertNear(new Vector3(-3.75f, 0f, 3.5f), entry.Points[1]);
         }
 
         private static void AssertFront(PartitionPlan partition, Vector3 center, float length)

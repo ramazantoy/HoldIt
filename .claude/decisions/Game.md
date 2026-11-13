@@ -283,6 +283,20 @@ UI Toolkit'le yapılan denemenin sonuçları; HoldIt sonra Canvas'a döndü ("UI
 | Dar geçidin dikmeleri | Dar geçit karesinin dikmeleri geçidi kesen kenarlarda durur; o kenardan geçen adım (kareye yandan girmek, kareden yana çıkmak, yan yana iki dar geçit arasında yürümek) yasak. `Passage` (`HoldIt.Board`, saf): `Axis` (eski `BoardLayout.PassageFacing`: kuzey ve güney kapalıysa doğu-batı, değilse kuzey-güney) ve `CanStep(grid, from, to)`. Sorulduğu yerler: `PathDraft.TryStep` (çizim yana adımda diğer eksene döner), `PathFinder.Shortest`, `MapCheck.Reachable`, `CharacterSystem.TryWalk` (dikmeyi geçen yol reddedilir). Üretilen haritaların 30'unda dar geçit yan yana çift (40 kare); bağlantı dikey geçişle sürdüğü için Validate All 0 | Kullanıcı bulgusu (oynarken): çiftin ortasındaki dikmeden yana geçilebiliyordu. Görsel kuralla oynanış kuralı aynı olsun. Seviye ayarı ve kalibrasyon bundan etkilenmedi sayılır (yana geçiş kısa yol değildi); simülasyon yeniden koşulmadı |
 | Doğrulama (Editor) | Derleme 0 hata; Validate All 0/0. Testler: `LevelPoolsTests` (13), `LevelSessionTests` (17), yeni `ConfettiPatternTests` (9), `SweatRuleTests` (4), `BurstTimeTests` (3) geçti. Bozma turu: `TrackingPool` aktiflik süzgeci (1 test düştü), `SweatRule` marjı (2 test düştü). Play: 3 Retry, console 0 hata, dust patlaması doğup havuza döndü. **Görsel ve his kontrolü yapılmadı** (efektlerin görünüşü, konfetinin çıkış noktası, çıkış dalgasında içeriğin küçülmesi): ortak oyun oturumuna kaldı. `LevelResultScreen.prefab` Unity'nin yeniden kaydı yüzünden blok sırası değişmiş görünür (diff gürültüsü) | — |
 
+## Testler (M10)
+Kural sınıfları `Assets/Game/Tests`'le karşılaştırıldı. Eklenenler: `StallTests`, `StallGeometryTests`, `BagExtensionsTests`,
+`LanguageNamesTests`, `FeedbackPlayerTests`, `SizeWeightsTests`; `RestroomLayoutTests` şerit için güçlendirildi (dört açılış
+yönünün hepsinde yan yürüyüş yalnız şeritte; şerit kapı kadar derinse ilk adım düşer; Lobby testi `…WalksInAlongTheLane`
+oldu). Her dosyada kod bir kez bilerek bozuldu ve test kırıldı, sonra geri alındı: `Stall.Advance`'ta durum koşulu (2 test),
+`LaneDepth`'ten `_approach` (StallGeometry 2, RestroomLayout 4), `BagExtensions` avoid takası (1), `LanguageNames` büyük
+harf (1; bilinen kültürlerin yerel adı zaten büyük harfle başlıyor, bozmayı bilinmeyen kültür vakası yakalıyor),
+`FeedbackPlayer` global/sahne yönlendirmesi (3), `SizeWeights.Of` (2). `RestroomConfig.asset`'teki ölü `_entryStep` alanı
+yeniden yazımla düştü.
+
+Bilerek testsiz kalanlar (view ya da Transform/havuz/tween sürücüsü; karar mantığı ayrı testli sınıfta): `PathMarkers`
+(`MarkerDiff` testli), `RestPose`, `BoardReveal`, `BackdropPlayer`, `CharacterViews`, `TouchLog`, `SceneMusic`. Zayıf ama
+yeterli: `StepRules` (tek fonksiyon, üç kural da testli), `CameraFit`, `IntroFlow`, `ProgressRecorder`, `GameSettings`.
+
 ## Açık
 - ~~**Dil:** GDD §11 "yalnız İngilizce" diyor, template'te Localization modülü var (en/tr örneği). Mobil doğrulama listesindeki
   "System seçicisi cihaz dilini buluyor mu" maddesi tek dille anlamsız kalır. Tek dil seçilirse kontrol listesinin 13.
