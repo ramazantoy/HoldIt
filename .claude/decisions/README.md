@@ -9,7 +9,7 @@ UI ve oyuna özel oynanış sistemleri template dışında kalır.
 
 | Dosya | Konu | ⚠ Kritik tuzaklar (ayrıntı dosyada) |
 |---|---|---|
-| `README.md` (bu dosya) | Motor ve paketler, dağıtım, genel mimari, isimlendirme, eski projeden dersler, paket sürümleri, fazlar, **Açık** listesi, repo görünürlüğü | ⚠ Framework prefix'i (`AF`) yalnız constants dosyasında; kalıcı veriye girmez · ⚠ `[SerializeReference]` tipi taşınırken `[MovedFrom]` |
+| `README.md` (bu dosya) | Motor ve paketler, dağıtım, genel mimari, isimlendirme, bilinen tuzaklardan kurallar, paket sürümleri, fazlar, **Açık** listesi, repo görünürlüğü | ⚠ Framework prefix'i (`AF`) yalnız constants dosyasında; kalıcı veriye girmez · ⚠ `[SerializeReference]` tipi taşınırken `[MovedFrom]` |
 | `Core.md` | DI scope'ları, mesajlar, GameManager, boot, pause ve oyun saati, validation (F1); sahne yükleme ve intro (F5); havuz ve tween yaşam döngüsü (F6) | ⚠ VContainer sahne objesine kendiliğinden inject etmez: scope'ta serialize alan + `RegisterComponent` ya da Auto Inject · ⚠ `ITickable`/`IStartable` yalnız `RegisterEntryPoint` ile çalışır; Scoped servis entry point olmaz · ⚠ Buffered pub/sub yok (struct'ta `default(T)` gelir); publish en erken `Start` · ⚠ Tween yalnız `ToUniTask(ct)` ile await (PrimeTween'inki `Stop()` sonrası normal döner); havuzda await sonrası `life.IsCurrent` · ⚠ Sahne yalnız `ISceneLoader`; state'ler sahne yüklemez · ⚠ Run In Background kapalıyken Editor'da Play'in ve pencereli masaüstü player'ın odak kaybı da `AppSuspending(Background)` (Save yazar) |
 | `Save.md` | Save sistemi (F2) | ⚠ `Restore` fırlatmaz ve tüm state'i değiştirir; sahne savable'ının kaydı `Construct`'ta değil `Initialize`/`Start`'ta okunur · ⚠ Key sabit; enum ya da alan rename'i migration ister, yayınlanmış adım değişmez · ⚠ Hiçbir dosya otomatik silinmez; okunamayan global/device o oturum salt okunur · ⚠ Menüye girişte slot kapanır; kaydetmek isteyen load'dan önce `SaveSlot` |
 | `Input.md` | Input mod servisi, rebind, cursor (F3) | ⚠ Map/action `Enable`/`Disable` ve `Cursor`'a yalnız mod servisi dokunur; kapalı action guard sayılmaz · ⚠ "Generate C# Class" kapalı: ayrı kopya üretir · ⚠ Binding silinip yeniden yaratılmaz (id değişir, kayıtlı override düşer) · ⚠ Yükleme boyunca mod koşulsuz None · ⚠ Touch şeması yalnız native touchscreen'le seçilir; Device Simulator / Unity Remote'ta hiç |
@@ -28,8 +28,7 @@ Kullanım:
 - Yeni karar ilgili modül dosyasına, birden çok modülü kesen karar buraya yazılır. Faz kapanışında bölüm adları aynı
   kalır: "F<n> kararları (tarih)", "Doğrulananlar (F<n>, ...)", "F<n> incelemesi (...)".
 - "Açık" listesi yalnız burada; kapanan madde üstü çizilip kararın yazıldığı dosyaya gönderme yapılır.
-- Repo public olmadan önce: eski ürüne yapılan anlatımlar (ad geçmiyor, "eski oyun / eski proje" diye) genel derse
-  çevrilir; kişisel yol kalmaz.
+- Karar ve tuzak anlatımlarında başka bir ürüne gönderme ve kişisel yol bulunmaz: ders genel yazılır.
 
 ## Motor ve paketler
 | Karar | Gerekçe |
@@ -81,7 +80,7 @@ Kullanım:
 - Prefix yalnız constants dosyasında geçer; kalıcı veriye (save key, PlayerPrefs key, dosya adı) girmez.
 - `[SerializeReference]` tip adını serialize eder; namespace/sınıf taşınırken `[MovedFrom]` şart.
 
-## Eski projeden dersler → kurallar
+## Bilinen tuzaklar → kurallar
 | Ders | Kural |
 |---|---|
 | VContainer sahne objelerine otomatik inject etmez | Kayıtsız `[Inject]` bileşeni validator'da hata |
@@ -160,7 +159,7 @@ Profiling Core 1.0.3.
   (2026-11-01: player tarafı ilk gerçek oyunda, UI ile. Manual uyarısı kabul: Boot'ta kalan intro anında görünür.)
 - `SaveLifecycle`'ın PlayTime'ı `IsLoading`'de saymaması testsiz (`Time.unscaledDeltaTime` EditMode'da sabitlenemiyor).
   (2026-11-01: resume sonrası ilk karenin arka plan süresini ekleyip eklemediği de belirsiz → ilk mobil oyun.)
-- F8'e not (F3): Steam Input / Deck'te tek pad iki cihaz görünebilir (eski oyunda PS5 + Steam), Deck'te kilitli cursor dokunuşu
+- F8'e not (F3): Steam Input / Deck'te tek pad iki cihaz görünebilir (örn. PS5 + Steam), Deck'te kilitli cursor dokunuşu
   ekran ortasına düşürür. Şema takibi yalnız native cihazları sayar; bunlar Steam modülünde doğrulanır.
 - ~~F7'ye not (F3): cursor confine (pencere içi) ayarı ve rebind ekranı Settings'te; `IRebindService` hazır.~~ (2026-11-01:
   confine `IInputModeService.ConfineCursor`, değeri Settings verir; rebind ekranı UI, template'te yok → "F7 kararları")
@@ -168,7 +167,7 @@ Profiling Core 1.0.3.
   görmez). Release build'de etkin olup olmadığı F4 build'inde kontrol edilir.~~ (2026-10-31: dev build'de açılıyor, release'de
   derlenmiyor → "Doğrulananlar (F4)")
 - F8'e not (F4, 2026-10-31): mağaza build'inde Mock backend'i reddeden build kontrolü (mağaza define'ı ↔ backend), Steam'in
-  overlay-kapandı callback'inin Deck'te kaybolması (eski oyun: ilk gamepad basışı "kapandı" sayıldı), `steam_appid.txt`'nin
+  overlay-kapandı callback'inin Deck'te kaybolması (ilk gamepad basışı "kapandı" sayılabilir), `steam_appid.txt`'nin
   çıktıda olmaması, mağaza yükleme adımı. Build menüsü mağaza define'ını flavor/mağaza ekseniyle verir.
 - ~~URP build sırasında `PC_RPAsset` prefilter alanlarını ve global ayarların `m_RuntimeSettings` listesini yeniden yazıyor
   (2026-10-31; dev ve release build aynı değeri üretti). Commit edilirse sonraki build'ler kirletmez; kullanıcı kararı.~~
@@ -194,7 +193,7 @@ Profiling Core 1.0.3.
   yükleme Settings'te. Ses seviyesi "değişti" mesajı tüketicisiyle birlikte.~~ (2026-11-01: `VolumeSettings` savable'ı
   `IAudioVolumes`'tan okur/yazar; `AudioVolumeChanged` Audio'da → "F7 kararları")
 - F8'e not (F7, 2026-11-01): Steam'in oyun dili (`GetCurrentGameLanguage`) startup seçicisi olarak Steam modülünde. Deck'te
-  Exclusive sunulmamalı (eski oyun; gamescope); Proton altında Windows build'i `WindowsPlayer` görünür, `WindowModes`
+  Exclusive sunulmamalı (gamescope); Proton altında Windows build'i `WindowsPlayer` görünür, `WindowModes`
   Exclusive'i verir → Steam modülü Deck'i tanıyınca listeden çıkarır.
 - F7 (2026-11-01): ekranın kendi boyutu exclusive fullscreen'de önceden okunan değer, exclusive'de açılışta `Display.main`
   (inceleme); exclusive mod canlı denenmedi (monitör modunu değiştirir). Kalite varsayılanı "uygulamanın başladığı seviye":
@@ -215,8 +214,8 @@ Profiling Core 1.0.3.
 | Karar | Gerekçe |
 |---|---|
 | MessagePipe mesaj tipleri **açık** kaydedilir: sahibi olan özelliğin installer'ında `builder.RegisterMessageBroker<T>(options)`. Otomatik tarama yok | Reflection ile üretilen generic (`MakeGenericMethod`) struct mesajlarda IL2CPP'de runtime'da patlayabilir (mobil). Kapsam (root/sahne) kaydın yerinden görünür. Unutulan kayıt resolve'da hata verir, sessiz değil. Eski `DeclareSignal` alışkanlığının karşılığı |
-| Kod prefix'i `AF` kalır (namespace, asmdef, `AF/` menü). Kullanıcının takma adından (afoolasfallen) | Kısa, çakışma riski yok. Kişisel/marka prefix'i normal (cysharp, hadashikick) |
-| ~~Paket kimliği önerisi: `com.afoolasfallen.framework` (F1 planında teyit edilecek; olmazsa `com.af.framework`)~~ | ~~UPM kimliği benzersiz olmalı; "af" tek başına belirsiz~~ (2026-10-29: önce `com.af.framework` seçildi, sonra paket kaldırıldı; soru düştü) |
+| Kod prefix'i `AF` kalır (namespace, asmdef, `AF/` menü). Kullanıcının takma adından | Kısa, çakışma riski yok. Kişisel/marka prefix'i normal (cysharp, hadashikick) |
+| ~~Paket kimliği önerisi: `com.<takma-ad>.framework` (F1 planında teyit edilecek; olmazsa `com.af.framework`)~~ | ~~UPM kimliği benzersiz olmalı; "af" tek başına belirsiz~~ (2026-10-29: önce `com.af.framework` seçildi, sonra paket kaldırıldı; soru düştü) |
 | İleride ad değişirse repo üzerinde değiştirilir ya da bu template'ten ayrı bir public/free template türetilir | |
 
 ## Fazlar
@@ -322,11 +321,11 @@ Kod okumayla mobil yolu olan ama hiç çalışmamış şeyler; sorun çıkarsa t
 - ~~Repo iş arayışı için public olacak. `CLAUDE.md`, `decisions.md`, `.claude/` gitignored. Public'e geçerken README yazılır.~~
 - ~~Bedeli: "Use this template" bu dosyaları taşımaz → New Game Setup'ta elle kopyalama adımı.~~
 - (2026-11-01) `CLAUDE.md` gitignored'dan çıktı, commit'leniyor: template şimdilik private; AI'la nasıl çalışıldığını göstermek
-  artık istenen bir şey. `decisions.md` ve `.claude/` yerel kalır. Public'e geçmeden CLAUDE.md kişisel yol ve eski ürün atfı
-  için kontrol edilir; public repolarda eski ürüne hiçbir atıf olmaz. Push kuralı: kullanıcı "pushla" dediğinde. Commit'lere
+  artık istenen bir şey. `decisions.md` ve `.claude/` yerel kalır. CLAUDE.md'de kişisel yol ve başka ürüne atıf
+  bulunmaz. Push kuralı: kullanıcı "pushla" dediğinde. Commit'lere
   Co-Authored-By satırı eklenir (AI kullanımı gizlenmez; README'deki rol cümlesiyle dengelenir).
 - (2026-11-01) `.claude/` de commit'leniyor; karar kaydı `.claude/decisions/`'a modül başına bölündü (tek `decisions.md` ~40 bin
   token'dı, her faz başında baştan okunuyordu). Yerel kalanlar `.claude/settings.local.json`, kilit dosyaları, `prompts/` ve
   `notes/` (geçici; template'ten açılan oyuna taşınmamalı). "Use this template" ile CLAUDE.md, kararlar ve betikler yeni
-  oyuna taşınır. Public'e geçmeden `.claude/` da kişisel yol ve
-  eski ürün atfı için kontrol edilir (karar dosyalarında ürün adı yok, "eski oyun / eski proje" anlatımları var).
+  oyuna taşınır. `.claude/` da kişisel yol ve başka ürüne atıf içermez (2026-11-13: karar dosyalarındaki ürün
+  anlatımları genel derse çevrildi, takma ad satırından ad çıkarıldı).

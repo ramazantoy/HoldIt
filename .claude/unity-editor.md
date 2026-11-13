@@ -9,6 +9,8 @@ CLAUDE.md'den taşındı. Editor'da takılınca, CLI zaman aşımında ya da yen
     güncel durum için `status`'un `groundTruth.consoleErrors`'ına bak (üstteki `counts` oturum boyu birikir, recompile'da
     sıfırlanmaz).
   - Testler: `unity command test run`, `unity command test status`. Tek assembly: `--filter AF.Save.Tests --filter_type assembly`.
+    Tek sınıf: `--mode EditMode --filter <Namespace.Sınıf>` (ör. `HoldIt.Tests.StallTests`), `--filter_type` verilmez; `class`
+    ve `test_name` tipleri 0 test koşar. Yazılmayan sınıf adı ya da yanlış filtre de "0/0 passed" döner: sayıya bak.
   - Serialize alan okuma: `component get_fields --target <asset yolu | instanceId> --component <Tip> --field <ad>`. Git Bash
     `/` ile başlayan argümanı yola çevirir (`/SceneScope` → `C:/Program Files/Git/SceneScope`); sahne objesine instanceId ile
     (`scene get_hierarchy`) eriş.
@@ -87,7 +89,7 @@ CLAUDE.md'den taşındı. Editor'da takılınca, CLI zaman aşımında ya da yen
 - Yeni asmdef'e GUID ile referans vermek için önce asmdef'i yaz, refresh et, Unity'nin ürettiği `.meta`'dan GUID'i oku.
   `.meta`'yı elle yazma.
 - Yeni `.cs` dosyası bazen derlemeye girmez (F7: refresh/`ImportAsset`/temiz derleme "up to date" dedi, dosya MonoScript ama
-  assembly'de yok). Yeni dosyadan sonra `Library/Bee/artifacts/1900b0aEDbg.dag/<asmdef>.rsp`'deki `.cs` sayısını diskle
+  assembly'de yok). Yeni dosyadan sonra `Library/Bee/artifacts/*.dag/<asmdef>.rsp`'deki `.cs` sayısını diskle
   karşılaştır; eksikse `script run` ile `AssetDatabase.MoveAsset(yol, yol_tmp)` + geri taşı, sonra refresh.
 - PrimeTween Edit Mode'da `EditorApplication.update`'ten tick'lenir: tween davranışı `[UnityTest]` (yield) ile EditMode'da test
   edilir. Edit Mode'da `[ExecuteAlways]` olmayan bileşenin Awake/OnEnable/OnDestroy'u çalışmaz.
@@ -95,4 +97,17 @@ CLAUDE.md'den taşındı. Editor'da takılınca, CLI zaman aşımında ya da yen
   (menünün çağırdığı), grup `AudioMixerController.CreateNewGroup` + `AddChildToParent`, exposed parametre `AddExposedParameter`
   (`AudioGroupParameterPath(group, GetGUIDForVolume())`) + `exposedParameters` ile ad + `OnChangedExposedParameter`. Yeni mixer'da
   view yok, `AddGroupToCurrentView` patlar: `views`'a tüm grupları içeren "View" yazılır. Geri okuma `SerializedObject`.
+- `EditorSceneManager.OpenScene(Single)` başka referansı olmayan asset'leri bellekten atar: açmadan önce yüklenen asset
+  referansı "yok edilmiş" null'a döner ve atama boş yazılır (hata vermez). Asset'i sahneyi açtıktan sonra yükle.
+- Test koşusu açık sahne kirliyse "Scene(s) Have Been Modified" modal'ında bekler ve CLI zaman aşımına düşer. Koşudan önce
+  `scene get_hierarchy` → `isDirty`; bilerek dokunulmadıysa kaydetmeden `EditorSceneManager.OpenScene(yol, Single)`.
+- Odaksız Editor'da Play: `Application.runInBackground = true` (yalnız o oturum, ayar değişmez) loop'u döndürür; `Step` ile
+  duraklatılmış Play'de `VideoPlayer` ilerlemez. `script run`'dan `QueueStateEvent` olayı oyuna ulaşmaz (native fare de ezer):
+  sanal cihaz + `InputSystem.Update()` ile cihaz durumu değişir, uçtan uca tık denenemez. Test cihazı domain reload'dan sağ
+  çıkar, elle silinmeli.
+- Odaksız Editor'da custom Inspector görsel olarak doğrulanamaz (repaint yok; `PrintWindow` boş panel verir). `CreateEditor`
+  doğru tipi verir; görsel kontrol kullanıcıya kalır. `script run`'dan UniTask döndüren metodu reflection'la `Invoke` etmek
+  hatayı yutar: doğrudan çağır + `Forget()`.
+- Editor kapalıyken (`No Pipeline instance found`) `unity open` ile açılır; hazır olana kadar `editor status` "isn't reachable"
+  der. Kapanıştan kalan kayıtsız sahne `Assets/_Recovery/` altına düşer; commit'lenmez.
 

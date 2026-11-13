@@ -105,7 +105,7 @@ tuzakları. Editor'da takılınca, CLI zaman aşımında ya da yeni tür bir Edi
   yoksa sahne/prefab'daki değer sessizce default'a düşer (`SceneScope._bootTarget`, `GameRootScope._inputActions`). Attribute
   kalır; YAML aynı commit'te yeni adla yeniden yazılır: sahne `AssetDatabase.ForceReserializeAssets` ile, prefab'ı o yazmadı →
   bileşene `EditorUtility.SetDirty` + `AssetDatabase.SaveAssetIfDirty`. Sonra `unity vcs diff` ile yalnız ad değişmiş mi bak.
-- Toplu mekanik refactor: Editor'ın `Library/Bee/artifacts/1900b0aEDbg.dag/<asmdef>.rsp` dosyası Unity dışında aynı derlemeyi
+- Toplu mekanik refactor: Editor'ın `Library/Bee/artifacts/*.dag/<asmdef>.rsp` dosyası Unity dışında aynı derlemeyi
   kurmaya yetiyor (referans + define + kaynak listesi; Roslyn `Editor/Data/DotNetSdkRoslyn`'de). Semantik model ile rename
   parametre/local'e dokunmaz; ayrıca HEAD'e karşı token diff ile "yalnız izinli fark" kontrolü.
 
@@ -218,8 +218,8 @@ tuzakları. Editor'da takılınca, CLI zaman aşımında ya da yeni tür bir Edi
 
 ## Notlar
 - `CLAUDE.md` ve `.claude/` commit'li; `.claude/settings.local.json`, kilit dosyaları, `prompts/` ve `notes/` yerel.
-  Düzen `.claude/README.md`'de. HoldIt şimdilik private. Public'e geçmeden önce CLAUDE.md ve `.claude/` kişisel
-  yol ve eski ürüne atıf açısından gözden geçirilir; `decisions/`'ın framework dosyalarındakiler template'te düzeltilip alınır.
+  Düzen `.claude/README.md`'de. HoldIt şimdilik private. CLAUDE.md ve `.claude/` kişisel yol ve başka ürüne atıf
+  içermez (M10'da tarandı); `decisions/`'ın framework dosyalarında düzeltme gerekirse template'te yapılıp alınır.
 - Kalıcı kararlar: `.claude/decisions/` (önce `README.md`, sonra yalnız ilgili modül dosyası). Tek seferlik prompt'lar
   `.claude/prompts/`, gerektiğinde iş notları `.claude/notes/<konu>/` (ikisi de yerel), tekrar kullanılan editor betikleri `.claude/scripts/`.
 - Framework sistem dokümanı commit'li (`Assets/Framework/Documentation~/`, modül başına bir dosya). İnsan için, İngilizce yazılır.

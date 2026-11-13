@@ -14,7 +14,7 @@ Karar değişirse satır silinmez; eskisinin üstü çizilir, yenisi tarihle ekl
 | Çalışma dili | Türkçe (CLAUDE.md, `.claude/`, `Design/`). Kod, yorum, commit mesajı ve framework dokümanı İngilizce. README EN/TR, M10'da yazılır | Template'teki düzenle aynı. md dosyalarının public'teki dili "Açık"ta |
 | Oyun dilleri | İngilizce + Türkçe. Template'in Localization modülü kalır; örnek tablolar (`UI`, `menu.play`) oyunun tablolarıyla değişir. Balon metinleri dahil bütün metinler `LocalizedString` ile bağlanır. Ayarlarda dil seçimi `ILocaleService` ile (M7). Specific (yedek) seçici M0'da belirlenir (öneri: en) | Kullanıcı kararı. Mobil doğrulama listesindeki System seçicisi ancak iki dille denenebilir. Modülü çıkarmak (Addressables) template'te hiç denenmemiş bir yol |
 | Namespace | Kök `HoldIt`, özellik klasörü `HoldIt.<Özellik>`. Asmdef `Game` kalır. Testler `Assets/Game/Tests/`'te (`Game.Tests`, namespace `HoldIt.Tests`). `Game.Editor` ilk editor script'iyle açılır. Geçiş M0'da yapılır (yapıldı; klasörler `Intro`, `Menu`, `Gameplay`, `Input`, `UI`) | Template kontrol listesinin 7. adımı: asmdef adı `[SerializeReference]` verisine yazılır, sabit kalan ad veriyi kırmaz. Kodda görünen kimlik namespace'tir |
-| Kimlik (M0) | Company `ramazantoy`, Product `HoldIt`, identifier `com.ramazantoy.holdit` (küçük harf için override açık; override global olduğu için Standalone ve iOS'unki de aynı), Version 0.1.0, bundle version code 1. Yön Portrait, otomatik döndürme kapalı | Repo `github.com/ramazantoy` altında: paket adı, GitHub adresi ve kayıt klasörü (`LocalLow/ramazantoy/HoldIt`) aynı adı taşır. Takma ad `afoolasfallen` framework'ün `AF` önekinde kalır |
+| Kimlik (M0) | Company `ramazantoy`, Product `HoldIt`, identifier `com.ramazantoy.holdit` (küçük harf için override açık; override global olduğu için Standalone ve iOS'unki de aynı), Version 0.1.0, bundle version code 1. Yön Portrait, otomatik döndürme kapalı | Repo `github.com/ramazantoy` altında: paket adı, GitHub adresi ve kayıt klasörü (`LocalLow/ramazantoy/HoldIt`) aynı adı taşır. Framework'ün `AF` öneki kullanıcının takma adından gelir ve kalır |
 | Lisans: font (M0) | ~~Asset yalnız CC0 ya da kendi işin~~ → fontlar SIL Open Font License (OFL) olabilir; `OFL.txt` fontun yanında durur | OFL public repoda dağıtıma izin verir (fontla lisans dosyası birlikte, tek başına satılmaz). Kural ücretli paketleri dışarıda tutmak içindi |
 
 ## UI
@@ -397,12 +397,14 @@ yeterli: `StepRules` (tek fonksiyon, üç kural da testli), `CameraFit`, `IntroF
   → M10'da teyit
 - **README:** kökteki README.md ve README.tr.md template'i anlatıyor. HoldIt'inki M10'da EN/TR yazılır. Repo ondan önce
   public olursa template README'si görünür.
-- **Public'e geçmeden önce:** `decisions/`'ın framework dosyalarındaki "eski oyun" anlatımları ve takma ad satırı genel derse
-  çevrilir (`README.md` kuralı). Düzeltme template'te yapılıp alınır. Ayrıca o zaman karar verilecek iki konu:
-  - md dosyalarının dili: hedef yurt dışıysa İngilizce. Çeviri template'te yapılıp alınır.
-  - `.claude/` (decisions dahil) public repoda kalacak mı? Önerim: kalsın. İçinde kalıcı karar kaydı var, ignore etmek
-    template'ten gelen cherry-pick'leri bozar (değişti/silindi çakışması), ayrıca AI iş akışını göstermek bilerek alınmış bir
-    karardı.
+- ~~**Public'e geçmeden önce:** `decisions/`'ın framework dosyalarındaki "eski oyun" anlatımları ve takma ad satırı genel
+  derse çevrilir~~ (M10: çevrildi; takma ad `decisions/README.md`'den ve bu dosyadan çıktı; kişisel yol taraması temiz.
+  Git geçmişinde takma ad eski commit'lerde duruyor: public'e geçişte karar verilecek). Kararlar (M10):
+  - md dili: kök README.md ve README.tr.md (EN + TR); `CLAUDE.md`, `.claude/` Türkçe kalır, kod ve framework dokümanı İngilizce.
+  - `.claude/` (decisions dahil) public repoda kalır: kalıcı karar kaydı var, ignore etmek template'ten gelen
+    cherry-pick'leri bozar (değişti/silindi çakışması), AI iş akışını göstermek bilerek alınmış bir karardı.
+  - Public'e geçiş (görünürlük, GitHub Release) M10'a girmez, ayrı iş: `gh repo edit --visibility public`,
+    `gh release create`, GitHub'da Mermaid ve link kontrolü, geçmişteki takma ad.
 - ~~**Ad:** GDD'deki `CharacterController` (presenter) Unity'nin bileşeniyle aynı adı taşıyor → M3~~ (
   `Character` + `CharacterSystem` → "Karakterler ve yol" → Ad)
 - **GDD ↔ prototip:** GDD "değerler prototipten" diyor ama ikisi ayrışmış. İlgili milestone'da kullanıcı karar verir:
