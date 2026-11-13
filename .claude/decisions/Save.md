@@ -33,6 +33,7 @@ Karar değişirse satır silinmez; eskisinin üstü çizilir, yenisi tarihle ekl
 | Okuma hataları | `RecoveredFromBackup` (ana `.corrupt`'a taşınır), `Corrupt` (kopya, yerinde kalır), `TooNew`, `ReadFailed`, `Failed` (migration/data sınıfı hatası, dosyaya dokunulmaz, hiçbir savable restore edilmez), `NotFound`. Global/device hiçbirinde boot'u durdurmaz; TooNew/ReadFailed/Failed'da oturum boyunca salt okunur | Okunamayanı silen/ezen eski davranışın tersi |
 | Sonuç | `SaveResult {Written, Skipped, Refused, Failed}`; capture hatası `SaveDataException` fırlatır | UI yalnız `IsWritten`'da "kaydedildi" der |
 | Dev oturumu | Playing'e slot olmadan girilince bellekte, yazılmaz; build'de `Log.Error` | Her sahneden Play |
+| Slotsuz oyun | `SaveOptions.UsesSlots = false`: dev oturumu ve build'deki `Log.Error` yok; `ListSlots`/`LoadSlot`/`NewSlot`/`SaveSlot`/`DeleteSlot` `InvalidOperationException` fırlatır, `CloseSlot` zararsız. Global ve device aynen | İlerlemesi Global'de tutulan oyunda (HoldIt) her seviye girişinde yanlış alarm olurdu |
 | Şifreleme/sıkıştırma | Yok; isteyen `ISaveStorage` dekoratörü yazar | Tek oyunculuda koruma sağlamaz, debug/mod/desteği zorlaştırır |
 | JSON | `SaveJson`: StringEnum, TypeNameHandling None, ObjectCreationHandling Replace, DateParseHandling None, invariant culture, Unity struct converter'ları | Newtonsoft tuzakları (liste ikilenmesi, tarih string'i bozulması, Vector3 döngüsü, tr-TR) |
 

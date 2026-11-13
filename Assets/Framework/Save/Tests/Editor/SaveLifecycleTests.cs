@@ -69,6 +69,25 @@ namespace AF.Save.Tests
         }
 
         [Test]
+        public void GameplayWithoutSlots_StartsNoSession()
+        {
+            _lifecycle.Dispose();
+            var storage = new MemoryStorage();
+            _save = new SaveService(new SaveRegistry(), storage, new SaveOptions { Storage = storage, UsesSlots = false });
+            _lifecycle = new SaveLifecycle(_save, _game, _container.Resolve<IPauseService>(), new IdleSceneLoader(),
+                _container.Resolve<ISubscriber<GameStateChanged>>(), _container.Resolve<ISubscriber<AppSuspending>>());
+
+            GoTo<PlayingState>();
+
+            Assert.IsFalse(_save.HasSession);
+            Assert.IsFalse(_save.IsDevSession);
+
+            GoTo<MenuState>();
+
+            Assert.IsFalse(_save.HasSession);
+        }
+
+        [Test]
         public void MenuAtBoot_HasNoSessionToClose()
         {
             GoTo<MenuState>();

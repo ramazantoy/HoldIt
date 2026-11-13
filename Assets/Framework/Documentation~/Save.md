@@ -146,6 +146,13 @@ Pressing Play in a gameplay scene enters `PlayingState` without a slot. The save
 data lives in memory and `SaveSlot` returns `Skipped`. To test saving, press Play in the menu scene. In a build, entering
 gameplay without a slot is logged as an error, because the progress would be lost.
 
+### Games without slots
+
+A game whose progress lives in global data (levels cleared, settings) has no slots. Set `SaveOptions.UsesSlots = false`
+in `UseSave`: entering gameplay then starts no session, so there is no dev session and no error in a build. Every slot
+operation (`ListSlots`, `LoadSlot`, `NewSlot`, `SaveSlot`, `DeleteSlot`) throws `InvalidOperationException`; global and
+device data are saved as usual, including on suspend.
+
 ## Writing
 
 Every storage operation goes through one queue, in order. A save captures every savable on the main thread in the same

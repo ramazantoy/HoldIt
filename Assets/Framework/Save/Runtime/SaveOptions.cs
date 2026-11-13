@@ -16,6 +16,13 @@ namespace AF.Save
         /// </summary>
         public bool AutosaveSlotOnSuspend { get; set; } = true;
 
+        /// <summary>
+        /// Whether the game keeps slots. Off for a game whose progress lives in global data only: gameplay then starts without
+        /// a dev session (and without its error log in a build), and every slot operation throws. Global and device data are
+        /// unaffected.
+        /// </summary>
+        public bool UsesSlots { get; set; } = true;
+
         internal SaveSchema SchemaOf(SaveDocument document) => document switch
         {
             SaveDocument.Global => Global,

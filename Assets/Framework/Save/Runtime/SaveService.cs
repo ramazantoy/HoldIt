@@ -38,10 +38,15 @@ namespace AF.Save
         public bool HasSession => _registry.Current(SaveDocument.Slot) != null;
         public string ActiveSlot { get; private set; }
         public bool IsDevSession { get; private set; }
+
+        /// <summary>False when the game was set up without slots (<see cref="SaveOptions.UsesSlots"/>): slot operations throw.</summary>
+        public bool UsesSlots => _options.UsesSlots;
+
         public TimeSpan PlayTime => TimeSpan.FromSeconds(_playTimeSeconds);
 
         public async UniTask<IReadOnlyList<SlotInfo>> ListSlots(CancellationToken cancellation = default)
         {
+            EnsureUsesSlots();
             var slots = new List<SlotInfo>();
             foreach (var entry in await _queue.List(SLOT_ENTRY_PREFIX).AttachExternalCancellation(cancellation))
             {
@@ -59,6 +64,7 @@ namespace AF.Save
 
         public async UniTask<LoadResult> LoadSlot(string slotId, CancellationToken cancellation = default)
         {
+            EnsureUsesSlots();
             var entry = SlotEntry(slotId);
             EnsureNotLoading();
             _loading = true;
@@ -103,6 +109,7 @@ namespace AF.Save
 
         public void NewSlot(string slotId)
         {
+            EnsureUsesSlots();
             var entry = SlotEntry(slotId);
             EnsureNotLoading();
             var document = new DocumentState(SaveDocument.Slot, entry, writable: true, new JObject());
@@ -115,6 +122,7 @@ namespace AF.Save
 
         public UniTask<SaveResult> SaveSlot(CancellationToken cancellation = default)
         {
+            EnsureUsesSlots();
             if (IsDevSession)
                 return SaveSlot(null, cancellation);
             if (ActiveSlot == null)
@@ -124,6 +132,7 @@ namespace AF.Save
 
         public UniTask<SaveResult> SaveSlot(string slotId, CancellationToken cancellation = default)
         {
+            EnsureUsesSlots();
             EnsureNotLoading();
             var session = _registry.Current(SaveDocument.Slot) ??
                           throw new InvalidOperationException("No slot is open. Call LoadSlot or NewSlot first.");
@@ -162,6 +171,7 @@ namespace AF.Save
 
         public async UniTask<SaveResult> DeleteSlot(string slotId, CancellationToken cancellation = default)
         {
+            EnsureUsesSlots();
             var entry = SlotEntry(slotId);
             EnsureNotLoading();
             if (slotId == ActiveSlot)
@@ -348,6 +358,12 @@ namespace AF.Save
             if (kind == SaveDocument.Slot)
                 meta[SaveFormat.PlayTimeProperty] = Math.Round(_playTimeSeconds, 3);
             return meta;
+        }
+
+        private void EnsureUsesSlots()
+        {
+            if (!_options.UsesSlots)
+                throw new InvalidOperationException("This game was set up without slots (SaveOptions.UsesSlots is false).");
         }
 
         private void EnsureNotLoading()

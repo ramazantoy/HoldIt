@@ -219,6 +219,39 @@ namespace AF.Save.Tests
         }
 
         [Test]
+        public void WithoutSlots_EverySlotOperationThrows()
+        {
+            Create(new SaveOptions { UsesSlots = false });
+
+            Assert.IsFalse(_service.UsesSlots);
+            Assert.Throws<InvalidOperationException>(() => _service.NewSlot("1"));
+            Assert.Throws<InvalidOperationException>(() => _service.LoadSlot("1").Result());
+            Assert.Throws<InvalidOperationException>(() => _service.ListSlots().Result());
+            Assert.Throws<InvalidOperationException>(() => _service.DeleteSlot("1").Result());
+            Assert.Throws<InvalidOperationException>(() => _service.SaveSlot());
+            Assert.Throws<InvalidOperationException>(() => _service.SaveSlot("1"));
+            Assert.IsFalse(_service.HasSession);
+            Assert.IsEmpty(_storage.Writes);
+        }
+
+        [Test]
+        public void WithoutSlots_GlobalDataStillSaves()
+        {
+            Create(new SaveOptions { UsesSlots = false });
+
+            Assert.DoesNotThrow(() => _service.SaveGlobal().Result());
+            Assert.DoesNotThrow(() => _service.FlushForSuspend());
+            Assert.DoesNotThrow(() => _service.CloseSlot());
+        }
+
+        [Test]
+        public void WithSlots_IsTheDefault()
+        {
+            Assert.IsTrue(new SaveOptions().UsesSlots);
+            Assert.IsTrue(_service.UsesSlots);
+        }
+
+        [Test]
         public void Suspend_WritesOnlyWhatChanged()
         {
             var settings = new Counter("settings", SaveDocument.Global);

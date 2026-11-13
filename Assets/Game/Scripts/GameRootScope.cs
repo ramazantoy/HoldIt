@@ -57,7 +57,8 @@ namespace HoldIt
         {
             PrimeTweenConfig.SetTweensCapacity(TweensCapacity);
             // First: its boot step loads the global and device data; the settings are applied as they load.
-            builder.UseSave();
+            // The progress is global data: there are no slots, so no dev session either.
+            builder.UseSave(new SaveOptions { UsesSlots = false });
             builder.UseInput(_inputActions, messagePipe, InputModes.CreateOptions());
             // UI/Cancel is the game's only back action: Escape, and the Android back button.
             builder.UseBackButton(messagePipe);

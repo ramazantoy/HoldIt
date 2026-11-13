@@ -173,7 +173,8 @@ tuzakları. Editor'da takılınca, CLI zaman aşımında ya da yeni tür bir Edi
   Unity objesi/interface/abstract üye yok (validator yakalar). Enum ya da alan rename'i migration adımı ister. Sahne
   savable'ı scope build'inde restore edilir: `[Inject] Construct`'tan sonra, entry point'lerden önce → kayıtlı state
   `Construct`'ta okunmaz, `Initialize`/`Start`'ta okunur.
-- Save: `NewSlot` ve save-as dolu slotun üzerine yazar; oyuncuya sormak oyunun işi (`ListSlots`).
+- Save: `NewSlot` ve save-as dolu slotun üzerine yazar; oyuncuya sormak oyunun işi (`ListSlots`). Slot kullanmayan oyun
+  `SaveOptions.UsesSlots = false` verir (dev oturumu ve build'deki hata gider, slot işlemleri fırlatır).
 - Save: hiçbir dosya otomatik silinmez; kilit/IO hatası bozuk sayılmaz. Migration adımı tek fonksiyon + önce/sonra testi;
   yayınlanmış adım değiştirilmez. "Kaydedildi" geri bildirimi yalnız `SaveResult.IsWritten`'da.
 - Arka plana geçiş/çıkış işi `AppSuspending` aboneliğinde senkron biter; await edilen hiçbir şey tamamlanmayabilir.

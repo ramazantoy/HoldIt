@@ -6,7 +6,8 @@ using VContainer.Unity;
 namespace AF.Save
 {
     /// <summary>
-    /// Connects the save service to the app: starts a dev session when gameplay begins without a slot, closes the session when
+    /// Connects the save service to the app: starts a dev session when gameplay begins without a slot (a game without slots,
+    /// <see cref="SaveOptions.UsesSlots"/> off, has none), closes the session when
     /// the game returns to the menu, counts play time, and writes before the app is suspended or quits.
     /// </summary>
     internal sealed class SaveLifecycle : ITickable, IDisposable
@@ -41,7 +42,7 @@ namespace AF.Save
 
         private void OnStateChanged(GameStateChanged change)
         {
-            if (change.Current is PlayingState && !_save.HasSession)
+            if (change.Current is PlayingState && !_save.HasSession && _save.UsesSlots)
                 _save.StartDevSession();
 
             // The menu has no session: a slot left open would be written by the next suspend autosave, progress the player
