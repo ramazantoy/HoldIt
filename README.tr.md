@@ -26,6 +26,12 @@ gerçek bir Unity projesi.
   bırakır ve üç canından birini götürür.
 - **Yıldız**, son ziyaretçi karşılandığında ya da kaybedildiğinde kalan canındır. 30 seviye var, her birinin kendi haritası.
 
+## Ekran görüntüleri
+
+<p align="center"><img src="docs/media/screens.jpg" alt="HoldIt: ana menü, seviye seçimi, oynanmakta bir seviye, sonuç ekranı ve ayarlar"></p>
+
+*Ana menü, seviye seçimi, oynanmakta bir seviye, sonuç ekranı ve ayarlar (İngilizce arayüzle).*
+
 ## İndirme
 
 Android APK'sı (Android 7.1 ve üstü, ARM64), bir sürüm yayımlandığında projenin
@@ -104,7 +110,7 @@ havuzlar, ayarlar, yerelleştirme, platform servisleri ve kontrollü bir build h
 
 ## Katkılar ve lisanslar
 
-Kod [MIT lisansı](LICENSE) altında. Üçüncü taraf asset'ler kendi lisanslarını korur; her klasörde lisans metni dosyaların
+Kod [MIT lisansı](LICENSE) altında. Üçüncü taraf asset ve paketler kendi lisanslarını korur; her asset klasöründe lisans metni dosyaların
 yanında durur.
 
 | Asset | Yazar ve kaynak | Lisans |
@@ -117,6 +123,10 @@ yanında durur.
 | Baloo 2 fontu | [The Baloo 2 Project Authors](https://github.com/EkType/Baloo2) | SIL OFL 1.1 (`Assets/Game/UI/Fonts/OFL.txt`) |
 | Liberation Sans fontu (TextMesh Pro varsayılanı) | Red Hat, Inc.; sayısallaştırılmış veri Google | SIL OFL 1.1 |
 | Ortam kiti, UI sprite'ları, karakterler, açılış videosu | Kendi işim | Kod gibi MIT |
+| Ekran görüntüleri ve GIF'ler | Yazar tarafından çalışan oyundan, Unity Editor'da kaydedildi; GIF'ler iki kat hızda oynar | Kendi işim, kod gibi MIT; içlerindeki font ve görseller yukarıdaki lisansları korur |
+| VContainer, UniTask, MessagePipe | [hadashiA](https://github.com/hadashiA/VContainer) ve [Cysharp](https://github.com/Cysharp) | MIT |
+| PrimeTween | [Kyrylo Kuzyk](https://github.com/KyryloKuzyk/PrimeTween) | PrimeTween lisansı; şartları gereği npm'den kurulur, bu depoya kopyalanmaz |
+| Input System, Localization, URP ve diğer Unity paketleri; Newtonsoft Json | Unity Technologies; James Newton-King | Unity paket şartları (Package Manager ile kurulur); MIT |
 
 ## Yazarlık
 

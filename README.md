@@ -27,6 +27,12 @@ it, rather than a prototype.
   a puddle and costs one of your three lives.
 - **Stars** are the lives you have left when the last visitor is served or lost. There are 30 levels, each with its own map.
 
+## Screenshots
+
+<p align="center"><img src="docs/media/screens.jpg" alt="HoldIt: main menu, level select, a level in progress, the result screen and settings"></p>
+
+*Main menu, level select, a level in progress, the result screen and settings.*
+
 ## Download
 
 An Android APK (Android 7.1 or newer, ARM64) is attached to the project's
@@ -106,7 +112,7 @@ settings, localization, platform services and a checked build pipeline), documen
 
 ## Credits and licenses
 
-The code is under the [MIT license](LICENSE). Third-party assets keep their own licenses, and each folder holds the license
+The code is under the [MIT license](LICENSE). Third-party assets and packages keep their own licenses, and each asset folder holds the license
 text next to the files.
 
 | Asset | Author and source | License |
@@ -119,6 +125,10 @@ text next to the files.
 | Font Baloo 2 | [The Baloo 2 Project Authors](https://github.com/EkType/Baloo2) | SIL OFL 1.1 (`Assets/Game/UI/Fonts/OFL.txt`) |
 | Font Liberation Sans (TextMesh Pro default) | Red Hat, Inc.; digitized data by Google | SIL OFL 1.1 |
 | Environment kit, UI sprites, characters, splash video | Own work | MIT, like the code |
+| Screenshots and GIFs | Recorded by the author from the running game in the Unity Editor; the GIFs play at double speed | Own work, MIT like the code; the fonts and art in them keep the licenses above |
+| VContainer, UniTask, MessagePipe | [hadashiA](https://github.com/hadashiA/VContainer) and [Cysharp](https://github.com/Cysharp) | MIT |
+| PrimeTween | [Kyrylo Kuzyk](https://github.com/KyryloKuzyk/PrimeTween) | PrimeTween license; installed from npm and not copied into this repository, as its terms require |
+| Input System, Localization, URP and other Unity packages; Newtonsoft Json | Unity Technologies; James Newton-King | Unity package terms (installed through the Package Manager); MIT |
 
 ## Authorship
 
